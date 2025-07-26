@@ -44,14 +44,18 @@
               ("C-f" . vertico-exit)
               ("M-h" . vertico-directory-up)))
 
-;; Marginalia for rich annotations in minibuffer
+;; Enhanced Marginalia for rich annotations in minibuffer
 (use-package marginalia
   :ensure t
   :init
   (marginalia-mode 1)
   :config
-  (setq marginalia-max-relative-age 0
-        marginalia-align 'center)
+  ;; Enhanced marginalia settings
+  (setq marginalia-max-relative-age 0      ; Show full timestamps
+        marginalia-align 'right            ; Right-align annotations
+        marginalia-align-offset -1         ; Slight offset for better appearance
+        marginalia-truncate-width 80       ; Prevent overly long annotations
+        marginalia-separator "  ")         ; Clean separator between candidate and annotation
   
   ;; Bind marginalia-cycle to cycle between annotation levels
   :bind (:map minibuffer-local-map
@@ -90,6 +94,50 @@
               ("M-d" . corfu-info-documentation)
               ("M-l" . corfu-info-location)
               ("C-g" . corfu-quit)))
+
+;; Kind-icon for corfu completion type icons
+(use-package kind-icon
+  :ensure t
+  :after corfu
+  :custom
+  (kind-icon-use-icons t)
+  (kind-icon-default-face 'corfu-default)
+  (kind-icon-blend-background nil)
+  (kind-icon-blend-frac 0.08)
+  :config
+  ;; Add kind-icon to corfu
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+
+;; Alternative: Simple text-based completion type indicators (without icons)
+;; If you prefer simple text indicators instead of kind-icon, use this:
+(defun corfu-kind-text-formatter (metadata)
+  "Simple text-based kind formatter for corfu."
+  (let ((kind (completion-metadata-get metadata 'completion-kind)))
+    (pcase kind
+      ('function "ƒ ")
+      ('method "ƒ ")
+      ('variable "v ")
+      ('field "f ")
+      ('constant "c ")
+      ('keyword "k ")
+      ('class "C ")
+      ('interface "I ")
+      ('module "M ")
+      ('property "p ")
+      ('enum "e ")
+      ('struct "s ")
+      ('event "E ")
+      ('operator "o ")
+      ('text "t ")
+      ('snippet "S ")
+      ('file "F ")
+      ('folder "D ")
+      ('reference "r ")
+      ('unit "u ")
+      (_ "• "))))
+
+;; Uncomment the following line if you prefer simple text indicators
+;; (add-to-list 'corfu-margin-formatters #'corfu-kind-text-formatter)
 
 ;; Corfu popupinfo for documentation popup
 (use-package corfu-popupinfo
@@ -137,65 +185,6 @@
                        #'cape-keyword))))
   
   (add-hook 'text-mode-hook #'cape-capf-setup-corfu))
-
-;; Consult for enhanced search and navigation
-(use-package consult
-  :ensure t
-  :bind (;; C-c bindings in `mode-specific-map'
-         ("C-c M-x" . consult-mode-command)
-         ("C-c h" . consult-history)
-         ("C-c k" . consult-kmacro)
-         ("C-c m" . consult-man)
-         ("C-c i" . consult-info)
-         ;; C-x bindings in `ctl-x-map'
-         ("C-x M-:" . consult-complex-command)
-         ("C-x b" . consult-buffer)
-         ("C-x 4 b" . consult-buffer-other-window)
-         ("C-x 5 b" . consult-buffer-other-frame)
-         ("C-x r b" . consult-bookmark)
-         ("C-x p b" . consult-project-buffer)
-         ;; M-g bindings in `goto-map'
-         ("M-g e" . consult-compile-error)
-         ("M-g f" . consult-flymake)
-         ("M-g g" . consult-goto-line)
-         ("M-g M-g" . consult-goto-line)
-         ("M-g o" . consult-outline)
-         ("M-g m" . consult-mark)
-         ("M-g k" . consult-global-mark)
-         ("M-g i" . consult-imenu)
-         ("M-g I" . consult-imenu-multi)
-         ;; M-s bindings in `search-map'
-         ("M-s d" . consult-find)
-         ("M-s D" . consult-locate)
-         ("M-s g" . consult-grep)
-         ("M-s G" . consult-git-grep)
-         ("M-s r" . consult-ripgrep)
-         ("M-s l" . consult-line)
-         ("M-s L" . consult-line-multi)
-         ("M-s k" . consult-keep-lines)
-         ("M-s u" . consult-focus-lines)
-         ;; Isearch integration
-         ("M-s e" . consult-isearch-history)
-         :map isearch-mode-map
-         ("M-e" . consult-isearch-history)
-         ("M-s e" . consult-isearch-history)
-         ("M-s l" . consult-line)
-         ("M-s L" . consult-line-multi)
-         ;; Minibuffer history
-         :map minibuffer-local-map
-         ("M-s" . consult-history)
-         ("M-r" . consult-history))
-  :config
-  ;; Consult configuration
-  (setq consult-narrow-key "<"
-        consult-line-numbers-widen t
-        consult-async-min-input 2
-        consult-async-refresh-delay 0.15
-        consult-async-input-throttle 0.2
-        consult-async-input-debounce 0.1)
-  
-  ;; Configure consult-ripgrep
-  (setq consult-ripgrep-args "rg --null --line-buffered --color=never --max-columns=1000 --path-separator / --smart-case --no-heading --with-filename --line-number --search-zip"))
 
 ;; Global eglot configuration for all programming languages
 (use-package eglot
@@ -246,7 +235,7 @@
 
 ;; Better minibuffer history
 (use-package savehist
-  :ensure nil
+  :ensure t
   :init
   (savehist-mode 1)
   :config
@@ -254,15 +243,6 @@
         savehist-additional-variables '(search-ring regexp-search-ring
                                        extended-command-history
                                        kill-ring)))
-
-;; Recent files
-(use-package recentf
-  :ensure nil
-  :init
-  (recentf-mode 1)
-  :config
-  (setq recentf-max-saved-items 200
-        recentf-exclude '("/tmp/" "/ssh:" "/sudo:" "\\.git/")))
 
 ;; Enhanced dabbrev
 (use-package dabbrev
@@ -274,7 +254,7 @@
 (setq completion-pcm-complete-word-inserts-delimiters t
       completion-pcm-word-delimiters "-_./:| ")
 
-;; Use corfu for in-region completion (not consult)
+;; Use corfu for in-region completion
 (setq completion-in-region-function #'corfu-completion-in-region)
 
 ;; Enhanced corfu behavior
@@ -300,6 +280,18 @@
     (corfu-mode 1)))
 
 (add-hook 'minibuffer-setup-hook #'corfu-enable-in-minibuffer)
+
+;; Enhanced marginalia integration helper functions
+(defun marginalia-toggle-annotations ()
+  "Toggle marginalia annotations on/off."
+  (interactive)
+  (if marginalia-mode
+      (marginalia-mode -1)
+    (marginalia-mode 1))
+  (message "Marginalia annotations %s" (if marginalia-mode "enabled" "disabled")))
+
+;; Bind the toggle function
+(global-set-key (kbd "C-c m t") 'marginalia-toggle-annotations)
 
 (provide 'completion)
 ;;; completion.el ends here
