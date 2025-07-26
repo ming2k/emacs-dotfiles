@@ -6,9 +6,8 @@
 
 ;;; Code:
 
-;; Load XDG path configuration before anything else
+;; Add config/system to load path for system-specific configurations
 (add-to-list 'load-path (expand-file-name "config/system" user-emacs-directory))
-(require 'xdg-paths)
 
 ;; Disable auto save feature
 (setq auto-save-default nil)

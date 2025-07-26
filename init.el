@@ -10,7 +10,7 @@
 (add-to-list 'load-path (expand-file-name "config/system" user-emacs-directory))
 
 ;; System-specific
-(require 'paths-detailed)  ; Load detailed XDG paths
+(require 'paths)  ; Load file path configurations
 (pcase system-type
   ('darwin (require 'macos))
   ('gnu/linux (require 'linux))
@@ -29,7 +29,8 @@
 
 ;; Tools
 (require 'git)
-(require 'org-roam)
+(require 'org-config)
+(require 'org-roam-config)
 
 ;; Languages
 (require 'c-cpp)

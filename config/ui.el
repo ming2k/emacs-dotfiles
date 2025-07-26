@@ -64,17 +64,58 @@
   :ensure t
   :hook (prog-mode . rainbow-delimiters-mode))
 
-;; Which-key
-; (use-package which-key
-;   :ensure t
-;   :init
-;   (which-key-mode)
-;   :config
-;   (setq which-key-idle-delay 0.3
-;         which-key-prefix-prefix "◉ "
-;         which-key-sort-order 'which-key-key-order-alpha
-;         which-key-min-display-lines 3
-;         which-key-max-display-columns nil))
+;; Which-key - displays available keybindings in popup
+(use-package which-key
+  :ensure t
+  :init
+  (which-key-mode 1)
+  :config
+  ;; Basic which-key settings
+  (setq which-key-idle-delay 0.5          ; Show popup after 0.5 seconds
+        which-key-idle-secondary-delay 0.05 ; Update quickly when typing
+        which-key-sort-order 'which-key-key-order-alpha
+        which-key-sort-uppercase-first nil
+        which-key-add-column-padding 1
+        which-key-max-display-columns nil
+        which-key-min-display-lines 6
+        which-key-side-window-slot -10
+        which-key-side-window-max-height 0.25
+        which-key-separator " → "
+        which-key-prefix-prefix "+"
+        which-key-special-keys '("SPC" "TAB" "RET" "ESC" "DEL"))
+  
+  ;; Better popup appearance
+  (setq which-key-show-prefix 'echo
+        which-key-popup-type 'side-window
+        which-key-side-window-location 'bottom
+        which-key-allow-imprecise-window-fit nil
+        which-key-max-description-length 32
+        which-key-compute-remaps t
+        which-key-use-C-h-commands t)
+  
+  ;; Custom descriptions for common prefixes
+  (which-key-add-key-based-replacements
+    "C-c l" "LSP commands"
+    "C-c n" "Org-roam notes"
+    "C-c g" "Git commands"
+    "C-c p" "Project commands"
+    "C-c f" "File commands"
+    "C-c b" "Buffer commands"
+    "C-c w" "Window commands"
+    "C-c t" "Toggle commands"
+    "C-c s" "Search commands"
+    "C-c d" "Debug commands"
+    "C-c c" "Compile commands"
+    "C-c i" "Insert commands"
+    "C-c h" "Help commands"
+    "C-c m" "Mode-specific commands")
+  
+  ;; Performance optimization
+  (setq which-key-lighter nil)  ; Don't show in mode line
+  
+  ;; Bind toggle function
+  :bind (("C-h K" . which-key-show-top-level)
+         ("C-h M" . which-key-show-major-mode)))
 
 (provide 'ui)
 ;;; ui.el ends here

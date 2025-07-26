@@ -1,4 +1,3 @@
-# === Temporary and Backup Files ===
 # Emacs backup files
 *~
 \#*\#
@@ -16,17 +15,16 @@ auto-save-list/
 *.tmp
 *.temp
 
-# === Compiled Files ===
 # Byte-compiled Lisp files
 *.elc
 
 # Native compilation cache (Emacs 28+)
 eln-cache/
 
-# === Emacs State and History Files ===
 # Desktop sessions
 .emacs.desktop
 .emacs.desktop.lock
+desktop
 
 # File history and bookmarks
 bookmarks
@@ -47,13 +45,14 @@ eshell/lastdir
 # Terminal emulator files
 vterm/
 
-# === Package Management ===
 # ELPA packages
 elpa/
 
 # Straight.el (except versions file)
 straight/build/
 straight/repos/
+
+transient/
 
 # Quelpa
 quelpa/
@@ -69,13 +68,11 @@ var/
 # Package installation logs
 *-autoloads.el
 
-# === Project Management ===
 # Projectile
 projectile-bookmarks.eld
 projectile.cache
 .projectile
 
-# === Development and IDE Features ===
 # LSP workspace folders
 .lsp-session-*
 .lsp/
@@ -87,7 +84,6 @@ company-statistics-cache.el
 # Flycheck
 flycheck_*.el
 
-# === Web and Network ===
 # URL package cache
 url/
 url/cache/
@@ -96,10 +92,6 @@ url/cookies
 # Network security
 network-security.data
 
-# === Games and Entertainment ===
-games/
-
-# === Personal Customization ===
 # Custom file (contains personal settings)
 custom.el
 custom-set-variables.el
@@ -110,12 +102,10 @@ abbrev_defs
 # Personal snippets (if using yasnippet)
 snippets/personal/
 
-# === Org Mode ===
 # Org clock data
 .org-id-locations
 org-clock-save.el
 
-# === Logs and Debugging ===
 # Debug files
 *-debug.log
 *.log
@@ -123,7 +113,6 @@ org-clock-save.el
 # Profiling data
 profile-dotemacs.el
 
-# === OS-specific Files ===
 # macOS
 .DS_Store
 .AppleDouble
@@ -137,7 +126,6 @@ Desktop.ini
 # Linux
 .directory
 
-# === IDE and Editor Files ===
 # VS Code
 .vscode/
 
@@ -145,7 +133,6 @@ Desktop.ini
 *.swp
 *.swo
 
-# === Version Control ===
 # Git
 .git/
 

@@ -221,18 +221,6 @@
                                  #'cape-file
                                  #'cape-keyword))))))
 
-;; Which-key for command hints
-(use-package which-key
-  :ensure nil
-  :init
-  (which-key-mode 1)
-  :config
-  (setq which-key-idle-delay 0.5
-        which-key-prefix-prefix "◉ "
-        which-key-sort-order 'which-key-key-order-alpha
-        which-key-min-display-lines 3
-        which-key-max-display-columns nil))
-
 ;; Better minibuffer history
 (use-package savehist
   :ensure t
