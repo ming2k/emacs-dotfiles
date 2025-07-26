@@ -1,0 +1,201 @@
+# === Temporary and Backup Files ===
+# Emacs backup files
+*~
+\#*\#
+*.bak
+
+# Lock files
+.#*
+
+# Auto-save files
+\#*
+.saves-*
+auto-save-list/
+
+# Temporary files
+*.tmp
+*.temp
+
+# === Compiled Files ===
+# Byte-compiled Lisp files
+*.elc
+
+# Native compilation cache (Emacs 28+)
+eln-cache/
+
+# === Emacs State and History Files ===
+# Desktop sessions
+.emacs.desktop
+.emacs.desktop.lock
+
+# File history and bookmarks
+bookmarks
+recentf
+places
+savehist
+history
+
+# Recent files
+.recentf
+
+# === Shell and Terminal ===
+# Eshell files
+eshell/
+eshell/history
+eshell/lastdir
+
+# Terminal emulator files
+vterm/
+
+# === Package Management ===
+# ELPA packages
+elpa/
+
+# Straight.el (except versions file)
+straight/build/
+straight/repos/
+
+# Quelpa
+quelpa/
+
+# Package archives
+archives/
+
+# Cache directories
+.cache/
+var/
+.local/
+
+# Package installation logs
+*-autoloads.el
+
+# === Project Management ===
+# Projectile
+projectile-bookmarks.eld
+projectile.cache
+.projectile
+
+# === Development and IDE Features ===
+# LSP workspace folders
+.lsp-session-*
+.lsp/
+workspace/
+
+# Company mode
+company-statistics-cache.el
+
+# Flycheck
+flycheck_*.el
+
+# === Web and Network ===
+# URL package cache
+url/
+url/cache/
+url/cookies
+
+# Network security
+network-security.data
+
+# === Games and Entertainment ===
+games/
+
+# === Personal Customization ===
+# Custom file (contains personal settings)
+custom.el
+custom-set-variables.el
+
+# Abbreviations
+abbrev_defs
+
+# Personal snippets (if using yasnippet)
+snippets/personal/
+
+# === Org Mode ===
+# Org clock data
+.org-id-locations
+org-clock-save.el
+
+# === Logs and Debugging ===
+# Debug files
+*-debug.log
+*.log
+
+# Profiling data
+profile-dotemacs.el
+
+# === OS-specific Files ===
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+.directory
+
+# === IDE and Editor Files ===
+# VS Code
+.vscode/
+
+# Vim
+*.swp
+*.swo
+
+# === Version Control ===
+# Git
+.git/
+
+# Subversion
+.svn/
+
+
+# Claude
+CLAUDE.md
+.claude/
+
+
+
+
+
+# Essential configuration files
+!init.el
+!early-init.el
+!config.org
+!configuration.org
+
+# Custom Lisp directories
+!lisp/
+!lisp/*.el
+!config/
+!config/*.el
+!modules/
+!modules/*.el
+
+# Straight.el version locks (important for reproducibility)
+!straight/versions/
+
+# Custom themes
+!themes/
+!themes/*.el
+
+# Custom snippets structure (but not personal ones)
+!snippets/
+!snippets/**/
+snippets/personal/
+
+# Documentation
+!README.md
+!README.org
+!CHANGELOG.md
+!LICENSE
+
+# Configuration templates
+!templates/
+!templates/*.el
+
+
+
