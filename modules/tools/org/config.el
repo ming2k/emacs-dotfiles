@@ -18,7 +18,7 @@
   
   ;; Basic appearance
   (org-startup-folded 'content)
-  (org-hide-emphasis-markers t)
+  (org-hide-emphasis-markers nil)
   (org-pretty-entities t)
   
   ;; TODO and logging
