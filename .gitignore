@@ -139,6 +139,8 @@ Desktop.ini
 # Subversion
 .svn/
 
+packages.el
+
 # Claude
 CLAUDE.md
 .claude/
