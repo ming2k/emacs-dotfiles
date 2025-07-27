@@ -1,8 +1,4 @@
-;;; config/languages/python-lang.el --- Python language support with modern completion -*- lexical-binding: t; -*-
-;;; Commentary:
-;; Minimal Python development setup using built-in packages, eglot LSP, and corfu completion
-;; Simple and native approach without complex LSP configurations
-;;; Code:
+;;; modules/lang/python/config.el -*- lexical-binding: t; -*-
 
 ;; Python basic settings
 (setq python-indent-offset 4
@@ -72,11 +68,11 @@
 
 ;; Simple Python LSP server configuration
 (with-eval-after-load 'eglot
-  ;; 添加 pylsp 支持
+  ;; Add pylsp support
   (add-to-list 'eglot-server-programs
                '(python-mode . ("pylsp")))
   
-  ;; 如果有 pyright，使用它
+  ;; If pyright is available, use it
   (when (executable-find "pyright-langserver")
     (setf (alist-get 'python-mode eglot-server-programs)
           '("pyright-langserver" "--stdio"))))
@@ -86,7 +82,7 @@
   "Format Python buffer with available formatter."
   (interactive)
   (cond
-   ;; 优先使用 black
+   ;; Prefer black
    ((executable-find "black")
     (let ((original-point (point)))
       (shell-command-on-region
@@ -94,7 +90,7 @@
        "black --quiet -"
        (current-buffer) t)
       (goto-char original-point)))
-   ;; 使用 autopep8
+   ;; Use autopep8
    ((executable-find "autopep8")
     (let ((original-point (point)))
       (shell-command-on-region
@@ -102,7 +98,7 @@
        "autopep8 -"
        (current-buffer) t)
       (goto-char original-point)))
-   ;; 使用 LSP 格式化
+   ;; Use LSP formatting
    ((fboundp 'eglot-format-buffer)
     (eglot-format-buffer))
    (t (message "No Python formatter found. Install black or autopep8"))))
@@ -115,6 +111,3 @@
     (if file
         (compile (format "%s %s" python-shell-interpreter file))
       (message "Buffer is not visiting a file"))))
-
-(provide 'python-lang)
-;;; python-config.el ends here

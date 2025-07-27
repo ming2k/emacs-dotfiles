@@ -1,7 +1,4 @@
-;;; config/languages/rust.el --- Rust language support with modern completion -*- lexical-binding: t; -*-
-;;; Commentary:
-;; Modern Rust development setup using built-in packages, eglot LSP, and corfu completion
-;;; Code:
+;;; modules/lang/rust/config.el -*- lexical-binding: t; -*-
 
 ;; Enhanced Rust settings
 (setq rust-indent-offset 4
@@ -149,7 +146,3 @@
           (compile "cargo expand")
         (message "cargo-expand not found. Install with: cargo install cargo-expand"))
     (message "Not in a Rust project (no Cargo.toml found)")))
-
-
-(provide 'rust)
-;;; rust.el ends here

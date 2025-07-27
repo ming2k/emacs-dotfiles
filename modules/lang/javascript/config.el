@@ -1,7 +1,4 @@
-;;; config/languages/javascript.el --- JavaScript/TypeScript language support with modern completion -*- lexical-binding: t; -*-
-;;; Commentary:
-;; Modern JavaScript and TypeScript development setup using built-in packages, eglot LSP, and corfu completion
-;;; Code:
+;;; modules/lang/javascript/config.el -*- lexical-binding: t; -*-
 
 ;; Enhanced JavaScript/TypeScript settings
 (setq js-indent-level 2
@@ -181,6 +178,3 @@
 (add-to-list 'auto-mode-alist '("\\.babelrc\\'" . json-mode))
 (add-to-list 'auto-mode-alist '("\\.eslintrc\\'" . json-mode))
 (add-to-list 'auto-mode-alist '("tsconfig\\.json\\'" . json-mode))
-
-(provide 'javascript)
-;;; javascript.el ends here

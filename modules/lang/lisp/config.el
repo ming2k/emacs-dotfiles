@@ -1,7 +1,4 @@
-;;; lisp.el --- Simple Lisp development setup with built-in completion
-;;; Commentary:
-;; Clean and minimal Lisp configuration using Emacs built-in completion
-;;; Code:
+;;; modules/lang/lisp/config.el -*- lexical-binding: t; -*-
 
 ;;; Common Lisp Mode Configuration
 (use-package lisp-mode
@@ -34,6 +31,3 @@
 
 (add-hook 'lisp-mode-hook #'setup-lisp-hippie-expand)
 (add-hook 'emacs-lisp-mode-hook #'setup-lisp-hippie-expand)
-
-(provide 'lisp)
-;;; lisp.el ends here

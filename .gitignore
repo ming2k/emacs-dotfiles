@@ -139,13 +139,9 @@ Desktop.ini
 # Subversion
 .svn/
 
-
 # Claude
 CLAUDE.md
 .claude/
-
-
-
 
 
 # Essential configuration files

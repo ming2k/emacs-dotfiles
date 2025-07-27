@@ -1,7 +1,4 @@
-;;; config/languages/go.el --- Go language support with modern completion -*- lexical-binding: t; -*-
-;;; Commentary:
-;; Modern Go development setup using built-in packages, eglot LSP, and corfu completion
-;;; Code:
+;;; modules/lang/go/config.el -*- lexical-binding: t; -*-
 
 ;; Enhanced Go settings
 (setq go-ts-mode-indent-offset 4
@@ -197,6 +194,3 @@
 
 ;; Uncomment to enable format on save
 ;; (add-hook 'before-save-hook 'go-format-on-save)
-
-(provide 'go)
-;;; go.el ends here

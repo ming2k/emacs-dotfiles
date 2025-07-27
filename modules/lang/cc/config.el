@@ -1,8 +1,4 @@
-;;; config/languages/c-cpp.el --- C/C++ language support with modern completion -*- lexical-binding: t; -*-
-;;; Commentary:
-;; Modern C/C++ development setup using built-in packages, eglot LSP, and corfu completion
-;; Simple and native approach to header file resolution
-;;; Code:
+;;; modules/lang/cc/config.el -*- lexical-binding: t; -*-
 
 ;; Enhanced C/C++ settings
 (setq c-default-style "linux"
@@ -14,7 +10,7 @@
 (use-package cc-mode
   :ensure nil
   :mode (("\\.c\\'" . c-mode)
-         ("\\.h\\'" . c-mode)                    ; Simple .h = C mode
+         ("\\.h\\'" . c-mode)
          ("\\.cpp\\'" . c++-mode)
          ("\\.cxx\\'" . c++-mode)
          ("\\.cc\\'" . c++-mode)
@@ -62,7 +58,6 @@
 (defun c-cpp-setup-lsp ()
   "Setup LSP for C/C++ if available."
   (when (executable-find "clangd")
-    ;; 设置基本的 include 路径
     (c-cpp-setup-include-paths)
     (eglot-ensure)))
 
@@ -76,7 +71,7 @@
   (local-set-key (kbd "C-c C-i") 'eglot-find-implementation)
   (local-set-key (kbd "C-c C-s") 'c-cpp-switch-header-source))
 
-;; 简化的 clangd 配置
+;; Simplified clangd configuration
 (with-eval-after-load 'eglot
   (add-to-list 'eglot-server-programs
                '((c-mode c++-mode) . ("clangd"
@@ -84,7 +79,7 @@
                                       "--header-insertion=iwyu"
                                       "--completion-style=detailed"))))
 
-;; 简单的 include 路径设置
+;; Simple include path setup
 (defun c-cpp-setup-include-paths ()
   "Setup basic include paths for current project."
   (let* ((current-dir (if buffer-file-name
@@ -97,7 +92,7 @@
          (include-dir (expand-file-name "include" project-root))
          (src-dir (expand-file-name "src" project-root)))
     
-    ;; 设置 flycheck 的 include 路径（如果使用）
+    ;; Set flycheck include paths (if using)
     (when (boundp 'flycheck-gcc-include-path)
       (setq-local flycheck-gcc-include-path 
                   (list project-root include-dir src-dir)))
@@ -175,6 +170,3 @@
       (eglot-execute-command (eglot-current-server) "clangd.switchSourceHeader" 
                              (vector (eglot--path-to-uri (buffer-file-name))))
     (message "clangd not running. Start LSP first.")))
-
-(provide 'c-cpp)
-;;; c-cpp.el ends here

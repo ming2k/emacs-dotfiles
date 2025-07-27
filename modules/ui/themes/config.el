@@ -1,9 +1,4 @@
-;; =============================================================================
-;; config/ui.el - UI and theme configuration
-;; =============================================================================
-;;; Commentary:
-;; UI configuration and theming
-;;; Code:
+;;; modules/ui/themes/config.el -*- lexical-binding: t; -*-
 
 ;; Font configuration
 (when (display-graphic-p)
@@ -12,7 +7,7 @@
                       :height 130
                       :weight 'normal))
 
-;; Theme
+;; Doom themes
 (use-package doom-themes
   :ensure t
   :config
@@ -22,7 +17,7 @@
   (doom-themes-visual-bell-config)
   (doom-themes-org-config))
 
-;; Modeline
+;; Doom modeline
 (use-package doom-modeline
   :ensure t
   :init
@@ -44,19 +39,21 @@
         doom-modeline-vcs-max-length 12
         doom-modeline-env-version t))
 
-;; Icons
+;; Icons (optional)
 (use-package all-the-icons
   :ensure t
   :if (display-graphic-p))
 
 ;; Line numbers
 (use-package display-line-numbers
+  :ensure nil
   :hook ((prog-mode text-mode conf-mode) . display-line-numbers-mode)
   :config
   (setq display-line-numbers-width-start t))
 
 ;; Highlight current line
 (use-package hl-line
+  :ensure nil
   :hook ((prog-mode text-mode conf-mode) . hl-line-mode))
 
 ;; Rainbow delimiters
@@ -71,8 +68,8 @@
   (which-key-mode 1)
   :config
   ;; Basic which-key settings
-  (setq which-key-idle-delay 0.5          ; Show popup after 0.5 seconds
-        which-key-idle-secondary-delay 0.05 ; Update quickly when typing
+  (setq which-key-idle-delay 0.5
+        which-key-idle-secondary-delay 0.05
         which-key-sort-order 'which-key-key-order-alpha
         which-key-sort-uppercase-first nil
         which-key-add-column-padding 1
@@ -111,11 +108,7 @@
     "C-c m" "Mode-specific commands")
   
   ;; Performance optimization
-  (setq which-key-lighter nil)  ; Don't show in mode line
+  (setq which-key-lighter nil)
   
-  ;; Bind toggle function
   :bind (("C-h K" . which-key-show-top-level)
          ("C-h M" . which-key-show-major-mode)))
-
-(provide 'ui)
-;;; ui.el ends here

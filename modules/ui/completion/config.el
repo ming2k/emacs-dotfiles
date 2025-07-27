@@ -1,8 +1,4 @@
-;;; config/completion.el --- Modern completion stack with vertico, corfu, marginalia, and orderless
-;;; Commentary:
-;; Modern completion configuration using vertico for minibuffer completion,
-;; corfu for in-buffer completion, marginalia for annotations, and orderless for matching
-;;; Code:
+;;; modules/ui/completion/config.el -*- lexical-binding: t; -*-
 
 ;; Enhanced completion settings
 (setq completion-cycle-threshold 3
@@ -51,11 +47,11 @@
   (marginalia-mode 1)
   :config
   ;; Enhanced marginalia settings
-  (setq marginalia-max-relative-age 0      ; Show full timestamps
-        marginalia-align 'right            ; Right-align annotations
-        marginalia-align-offset -1         ; Slight offset for better appearance
-        marginalia-truncate-width 80       ; Prevent overly long annotations
-        marginalia-separator "  ")         ; Clean separator between candidate and annotation
+  (setq marginalia-max-relative-age 0
+        marginalia-align 'right
+        marginalia-align-offset -1
+        marginalia-truncate-width 80
+        marginalia-separator "  ")
   
   ;; Bind marginalia-cycle to cycle between annotation levels
   :bind (:map minibuffer-local-map
@@ -70,16 +66,16 @@
   ;; Enhanced corfu settings for prominent popup
   (setq corfu-cycle t
         corfu-auto t
-        corfu-auto-delay 0.1          ; Faster popup
-        corfu-auto-prefix 1           ; Show after 1 character
-        corfu-quit-at-boundary nil    ; Don't quit at word boundary
-        corfu-quit-no-match nil       ; Don't quit when no match
-        corfu-preview-current t       ; Show preview
+        corfu-auto-delay 0.1
+        corfu-auto-prefix 1
+        corfu-quit-at-boundary nil
+        corfu-quit-no-match nil
+        corfu-preview-current t
         corfu-scroll-margin 5
-        corfu-max-width 120           ; Wider popup
+        corfu-max-width 120
         corfu-min-width 15
-        corfu-count 15                ; More completion candidates
-        corfu-preselect 'prompt)      ; Preselect first candidate
+        corfu-count 15
+        corfu-preselect 'prompt)
   
   ;; Enhanced corfu keybindings
   :bind (:map corfu-map
@@ -108,44 +104,13 @@
   ;; Add kind-icon to corfu
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
-;; Alternative: Simple text-based completion type indicators (without icons)
-;; If you prefer simple text indicators instead of kind-icon, use this:
-(defun corfu-kind-text-formatter (metadata)
-  "Simple text-based kind formatter for corfu."
-  (let ((kind (completion-metadata-get metadata 'completion-kind)))
-    (pcase kind
-      ('function "ƒ ")
-      ('method "ƒ ")
-      ('variable "v ")
-      ('field "f ")
-      ('constant "c ")
-      ('keyword "k ")
-      ('class "C ")
-      ('interface "I ")
-      ('module "M ")
-      ('property "p ")
-      ('enum "e ")
-      ('struct "s ")
-      ('event "E ")
-      ('operator "o ")
-      ('text "t ")
-      ('snippet "S ")
-      ('file "F ")
-      ('folder "D ")
-      ('reference "r ")
-      ('unit "u ")
-      (_ "• "))))
-
-;; Uncomment the following line if you prefer simple text indicators
-;; (add-to-list 'corfu-margin-formatters #'corfu-kind-text-formatter)
-
 ;; Corfu popupinfo for documentation popup
 (use-package corfu-popupinfo
   :ensure nil
   :after corfu
   :hook (corfu-mode . corfu-popupinfo-mode)
   :config
-  (setq corfu-popupinfo-delay '(0.5 . 0.2)  ; Show docs quickly
+  (setq corfu-popupinfo-delay '(0.5 . 0.2)
         corfu-popupinfo-max-width 80
         corfu-popupinfo-max-height 20)
   :bind (:map corfu-map
@@ -223,7 +188,7 @@
 
 ;; Better minibuffer history
 (use-package savehist
-  :ensure t
+  :ensure nil
   :init
   (savehist-mode 1)
   :config
@@ -280,6 +245,3 @@
 
 ;; Bind the toggle function
 (global-set-key (kbd "C-c m t") 'marginalia-toggle-annotations)
-
-(provide 'completion)
-;;; completion.el ends here

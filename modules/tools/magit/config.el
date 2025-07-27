@@ -1,9 +1,4 @@
-;; =============================================================================
-;; config/tools/git.el - Git integration
-;; =============================================================================
-;;; Commentary:
-;; Git integration with magit
-;;; Code:
+;;; modules/tools/magit/config.el -*- lexical-binding: t; -*-
 
 (use-package magit
   :ensure t
@@ -22,6 +17,3 @@
 (use-package git-timemachine
   :ensure t
   :bind ("C-x v t" . git-timemachine))
-
-(provide 'git)
-;;; git.el ends here

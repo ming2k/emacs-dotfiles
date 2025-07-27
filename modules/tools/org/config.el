@@ -1,7 +1,4 @@
-;;; config/tools/org.el --- Org-mode configuration -*- lexical-binding: t; -*-
-;;; Commentary:
-;; Configuration for org-mode - the powerful document editing and organizing mode
-;;; Code:
+;;; modules/tools/org/config.el -*- lexical-binding: t; -*-
 
 (use-package org
   :ensure nil  ; Built-in package
@@ -122,14 +119,12 @@
   :config
   (setq org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
-
 ;; Better org table editing
 (use-package org-table
   :ensure nil
   :after org
   :config
-  (setq org-table-automatic-realign t)
-)
+  (setq org-table-automatic-realign t))
 
 ;; Org-tempo for structure templates (< s TAB, etc.)
 (use-package org-tempo
@@ -152,6 +147,3 @@
           ("w" "Weekly review" agenda ""
            ((org-agenda-start-day "-7d")
             (org-agenda-span 7))))))
-
-(provide 'org-config)
-;;; org.el ends here
