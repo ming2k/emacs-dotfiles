@@ -224,9 +224,35 @@
               (append completion-at-point-functions
                       '(cape-dabbrev cape-file cape-keyword))))
 
+;; Org-mode specific completion setup
+(defun setup-org-mode-completion ()
+  "Setup completion for org-mode with selective corfu."
+  (setq-local corfu-auto-delay 0.3
+              corfu-auto-prefix 2)
+  ;; Custom function to check if we should complete in org-mode
+  (setq-local completion-at-point-functions
+              (list (lambda ()
+                      ;; Don't complete in org headers/keywords
+                      (when (not (org-in-keyword-p))
+                        (funcall (cape-capf-super
+                                 #'cape-dabbrev
+                                 #'cape-file)))))))
+
+(defun org-in-keyword-p ()
+  "Check if point is in an org keyword line (#+TITLE, #+AUTHOR, etc.)."
+  (save-excursion
+    (beginning-of-line)
+    (looking-at "^[ \t]*#\\+")))
+
 ;; Apply aggressive corfu to programming modes
 (add-hook 'prog-mode-hook #'setup-corfu-aggressive)
-(add-hook 'text-mode-hook #'setup-corfu-aggressive)
+;; Use selective completion for org-mode
+(add-hook 'org-mode-hook #'setup-org-mode-completion)
+;; Apply aggressive corfu to other text modes (excluding org-mode)
+(add-hook 'text-mode-hook 
+          (lambda ()
+            (unless (derived-mode-p 'org-mode)
+              (setup-corfu-aggressive))))
 
 ;; Ensure corfu works in minibuffer when needed
 (defun corfu-enable-in-minibuffer ()
