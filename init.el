@@ -146,7 +146,7 @@
 ;; System-specific configurations
 (let ((system-config 
        (expand-file-name 
-        (format "config/system/%s.el" 
+        (format "modules/system/%s.el" 
                 (pcase system-type
                   ('darwin "macos")
                   ('gnu/linux "linux")

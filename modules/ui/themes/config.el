@@ -89,24 +89,7 @@
         which-key-max-description-length 32
         which-key-compute-remaps t
         which-key-use-C-h-commands t)
-  
-  ;; Custom descriptions for common prefixes
-  (which-key-add-key-based-replacements
-    "C-c l" "LSP commands"
-    "C-c n" "Org-roam notes"
-    "C-c g" "Git commands"
-    "C-c p" "Project commands"
-    "C-c f" "File commands"
-    "C-c b" "Buffer commands"
-    "C-c w" "Window commands"
-    "C-c t" "Toggle commands"
-    "C-c s" "Search commands"
-    "C-c d" "Debug commands"
-    "C-c c" "Compile commands"
-    "C-c i" "Insert commands"
-    "C-c h" "Help commands"
-    "C-c m" "Mode-specific commands")
-  
+    
   ;; Performance optimization
   (setq which-key-lighter nil)
   

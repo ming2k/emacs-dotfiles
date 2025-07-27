@@ -91,18 +91,21 @@
               ("M-l" . corfu-info-location)
               ("C-g" . corfu-quit)))
 
-;; Kind-icon for corfu completion type icons
-(use-package kind-icon
-  :ensure t
-  :after corfu
-  :custom
-  (kind-icon-use-icons t)
-  (kind-icon-default-face 'corfu-default)
-  (kind-icon-blend-background nil)
-  (kind-icon-blend-frac 0.08)
-  :config
-  ;; Add kind-icon to corfu
-  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+;; Remove redundant annotations by disabling them
+(setq corfu-margin-formatters nil)
+
+;; Optional: Keep kind-icon available but commented out
+;; (use-package kind-icon
+;;   :ensure t
+;;   :after corfu
+;;   :custom
+;;   (kind-icon-use-icons t)
+;;   (kind-icon-default-face 'corfu-default)
+;;   (kind-icon-blend-background nil)
+;;   (kind-icon-blend-frac 0.08)
+;;   :config
+;;   ;; Add kind-icon to corfu
+;;   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
 ;; Corfu popupinfo for documentation popup
 (use-package corfu-popupinfo
