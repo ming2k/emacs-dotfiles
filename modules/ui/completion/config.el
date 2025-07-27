@@ -5,7 +5,9 @@
       tab-always-indent 'complete
       completion-ignore-case t
       read-extended-command-predicate #'command-completion-default-include-p
-      enable-recursive-minibuffers t)
+      enable-recursive-minibuffers t
+      resize-mini-windows t
+      max-mini-window-height 0.33)
 
 ;; Orderless completion style for flexible matching
 (use-package orderless
@@ -31,7 +33,8 @@
   :config
   (setq vertico-count 15
         vertico-resize t
-        vertico-cycle t)
+        vertico-cycle t
+        vertico-scroll-margin 2)
   
   ;; Vertico keybindings
   :bind (:map vertico-map
@@ -46,12 +49,13 @@
   :init
   (marginalia-mode 1)
   :config
-  ;; Enhanced marginalia settings
+  ;; Enhanced marginalia settings for better formatting
   (setq marginalia-max-relative-age 0
         marginalia-align 'right
-        marginalia-align-offset -1
-        marginalia-truncate-width 80
-        marginalia-separator "  ")
+        marginalia-align-offset -3
+        marginalia-truncate-width 100
+        marginalia-separator "   "
+        marginalia-field-width 30)
   
   ;; Bind marginalia-cycle to cycle between annotation levels
   :bind (:map minibuffer-local-map
@@ -93,19 +97,6 @@
 
 ;; Remove redundant annotations by disabling them
 (setq corfu-margin-formatters nil)
-
-;; Optional: Keep kind-icon available but commented out
-;; (use-package kind-icon
-;;   :ensure t
-;;   :after corfu
-;;   :custom
-;;   (kind-icon-use-icons t)
-;;   (kind-icon-default-face 'corfu-default)
-;;   (kind-icon-blend-background nil)
-;;   (kind-icon-blend-frac 0.08)
-;;   :config
-;;   ;; Add kind-icon to corfu
-;;   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
 ;; Corfu popupinfo for documentation popup
 (use-package corfu-popupinfo
@@ -274,3 +265,46 @@
 
 ;; Bind the toggle function
 (global-set-key (kbd "C-c m t") 'marginalia-toggle-annotations)
+
+;; Consult for enhanced completion commands
+(use-package consult
+  :ensure t
+  :config
+  ;; Configure consult for better formatting and performance
+  (setq consult-narrow-key "<"
+        consult-line-numbers-widen t
+        consult-async-min-input 2
+        consult-async-refresh-delay 0.15
+        consult-async-input-throttle 0.2
+        consult-async-input-debounce 0.1
+        consult-preview-key '(:debounce 0.2 any)
+        consult-fontify-preserve t
+        consult-fontify-max-size 1048576)
+  
+  ;; Configure project root detection for file searches
+  (setq consult-project-function 
+        (lambda (_) 
+          (cond
+           ((and (fboundp 'projectile-project-root) (projectile-project-root))
+            (projectile-project-root))
+           ((vc-root-dir))
+           (t default-directory))))
+  
+  ;; Essential key bindings for consult commands
+  :bind (;; Buffer switching
+         ("C-c f" . consult-find)
+         ("C-c r" . consult-recent-file)
+         ("C-x b" . consult-buffer))
+
+  ;; Enable automatic preview at point in the *Completions* buffer
+  :hook (completion-list-mode . consult-preview-at-point-mode)
+
+  ;; Configure the command line tools that consult uses
+  :init
+  ;; Use Consult to select xref locations with preview
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref)
+
+  ;; Configure register formatting
+  (setq register-preview-delay 0.5
+        register-preview-function #'consult-register-format))
