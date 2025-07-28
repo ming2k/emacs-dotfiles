@@ -1,6 +1,6 @@
 ;;; modules/ui/completion/config.el -*- lexical-binding: t; -*-
 
-;; Auto-completion focused settings
+;; Built-in completion settings
 (setq completion-cycle-threshold 3
       tab-always-indent t
       completion-ignore-case t
@@ -9,8 +9,14 @@
       resize-mini-windows t
       max-mini-window-height 0.33
       completion-pcm-complete-word-inserts-delimiters t
-      completion-pcm-word-delimiters "-_./:| "
-      tab-first-completion nil)
+      completion-pcm-word-delimiters "-_./:| ")
+
+;; Enhanced completion-in-region settings
+(setq completion-in-region-function #'completion--in-region
+      completion-auto-help t
+      completion-auto-select nil
+      completion-show-help t
+      completion-show-inline-help t)
 
 ;; Orderless completion style for flexible matching
 (use-package orderless
@@ -69,96 +75,6 @@
   :bind (:map minibuffer-local-map
               ("M-A" . marginalia-cycle)))
 
-;; Corfu for in-buffer completion popup
-(use-package corfu
-  :ensure t
-  :init
-  (global-corfu-mode 1)
-  :config
-  ;; Performance-optimized settings for terminals
-  (setq corfu-cycle t
-        corfu-auto t
-        corfu-auto-delay (if (display-graphic-p) 0.05 0.1)
-        corfu-auto-prefix 1
-        corfu-quit-at-boundary nil
-        corfu-quit-no-match nil
-        corfu-preview-current t
-        corfu-scroll-margin 5
-        corfu-max-width (if (display-graphic-p) 120 80)
-        corfu-min-width 15
-        corfu-count (if (display-graphic-p) 15 10)
-        corfu-preselect 'prompt
-        corfu-separator ?\s
-        corfu-on-exact-match nil
-        ;; Terminal-specific optimizations
-        corfu-echo-delay (if (display-graphic-p) 0.0 0.2))
-  
-  ;; Auto-completion focused keybindings (no TAB triggers)
-  :bind (:map corfu-map
-              ("C-n" . corfu-next)
-              ("C-p" . corfu-previous)
-              ("C-j" . corfu-next)
-              ("C-k" . corfu-previous)
-              ("RET" . corfu-insert)
-              ("<return>" . corfu-insert)
-              ("C-RET" . corfu-complete)
-              ("C-SPC" . corfu-insert-separator)
-              ("M-d" . corfu-info-documentation)
-              ("M-l" . corfu-info-location)
-              ("C-g" . corfu-quit)))
-
-;; Remove redundant annotations by disabling them
-(setq corfu-margin-formatters nil)
-
-;; Corfu popupinfo for documentation popup
-(use-package corfu-popupinfo
-  :ensure nil
-  :after corfu
-  :hook (corfu-mode . corfu-popupinfo-mode)
-  :config
-  (setq corfu-popupinfo-delay '(0.5 . 0.2)
-        corfu-popupinfo-max-width 80
-        corfu-popupinfo-max-height 20)
-  :bind (:map corfu-map
-              ("M-p" . corfu-popupinfo-scroll-down)
-              ("M-n" . corfu-popupinfo-scroll-up)
-              ("M-t" . corfu-popupinfo-toggle)))
-
-;; Corfu terminal support with performance optimizations
-(use-package corfu-terminal
-  :ensure t
-  :when (not (display-graphic-p))
-  :config
-  (corfu-terminal-mode 1)
-  ;; Terminal-specific performance settings
-  (setq corfu-terminal-bar-width 0.5
-        corfu-terminal-disable-on-gui nil))
-
-;; Modern corfu extensions (2025 enhancements)
-(use-package corfu-history
-  :ensure nil
-  :after corfu
-  :config
-  (corfu-history-mode 1)
-  (add-to-list 'savehist-additional-variables 'corfu-history))
-
-(use-package corfu-indexed
-  :ensure nil
-  :after corfu
-  :config
-  (corfu-indexed-mode 1)
-  :bind (:map corfu-map
-              ("M-1" . corfu-indexed-complete)
-              ("M-2" . corfu-indexed-complete)
-              ("M-3" . corfu-indexed-complete)
-              ("M-4" . corfu-indexed-complete)
-              ("M-5" . corfu-indexed-complete)
-              ("M-6" . corfu-indexed-complete)
-              ("M-7" . corfu-indexed-complete)
-              ("M-8" . corfu-indexed-complete)
-              ("M-9" . corfu-indexed-complete)
-              ("M-0" . corfu-indexed-complete)))
-
 ;; Cape for additional completion backends
 (use-package cape
   :ensure t
@@ -174,16 +90,16 @@
               (add-to-list 'completion-at-point-functions #'cape-keyword t)
               (add-to-list 'completion-at-point-functions #'cape-symbol t)))
   
-  ;; Enhanced completion setup for better corfu integration
-  (defun cape-capf-setup-corfu ()
-    "Setup cape completion functions for corfu."
+  ;; Enhanced completion setup for better integration
+  (defun cape-capf-setup-builtin ()
+    "Setup cape completion functions for built-in completion."
     (setq-local completion-at-point-functions
                 (list (cape-capf-super
                        #'cape-dabbrev
                        #'cape-file
                        #'cape-keyword))))
   
-  (add-hook 'text-mode-hook #'cape-capf-setup-corfu))
+  (add-hook 'text-mode-hook #'cape-capf-setup-builtin))
 
 ;; Global eglot configuration for all programming languages
 (use-package eglot
@@ -231,33 +147,23 @@
                                        extended-command-history
                                        kill-ring)))
 
-;; Enhanced dabbrev
+;; Enhanced dabbrev for better word completion
 (use-package dabbrev
   :ensure nil
   :config
   (setq dabbrev-ignored-buffer-regexps '("\\.\\(?:pdf\\|jpe?g\\|png\\)\\'")))
 
-;; Use corfu for in-region completion (2025 standard)
-(setq completion-in-region-function #'corfu-completion-in-region)
-
-;; Enhanced corfu behavior with terminal optimization
-(defun setup-corfu-aggressive ()
-  "Setup aggressive corfu completion with terminal considerations."
-  ;; Adjust delays based on display type for better cursor behavior
-  (setq-local corfu-auto-delay (if (display-graphic-p) 0.0 0.1)
-              corfu-auto-prefix 1
-              ;; Reduce echo delay in terminals to minimize cursor flicker
-              corfu-echo-delay (if (display-graphic-p) 0.0 0.15))
-  ;; Enhance completion functions
+;; Built-in completion enhancements
+(defun setup-builtin-completion ()
+  "Setup built-in completion for programming modes."
+  ;; Enhanced completion settings for programming
   (setq-local completion-at-point-functions
               (append completion-at-point-functions
                       '(cape-dabbrev cape-file cape-keyword))))
 
 ;; Org-mode specific completion setup
 (defun setup-org-mode-completion ()
-  "Setup completion for org-mode with selective corfu."
-  (setq-local corfu-auto-delay 0.3
-              corfu-auto-prefix 2)
+  "Setup completion for org-mode with built-in completion."
   ;; Custom function to check if we should complete in org-mode
   (setq-local completion-at-point-functions
               (list (lambda ()
@@ -273,26 +179,15 @@
     (beginning-of-line)
     (looking-at "^[ \t]*#\\+")))
 
-;; Apply aggressive corfu to programming modes
-(add-hook 'prog-mode-hook #'setup-corfu-aggressive)
+;; Apply built-in completion to programming modes
+(add-hook 'prog-mode-hook #'setup-builtin-completion)
 ;; Use selective completion for org-mode
 (add-hook 'org-mode-hook #'setup-org-mode-completion)
-;; Apply aggressive corfu to other text modes (excluding org-mode)
+;; Apply built-in completion to other text modes (excluding org-mode)
 (add-hook 'text-mode-hook 
           (lambda ()
             (unless (derived-mode-p 'org-mode)
-              (setup-corfu-aggressive))))
-
-;; Ensure corfu works in minibuffer when needed
-(defun corfu-enable-in-minibuffer ()
-  "Enable corfu in minibuffer if vertico is not active."
-  (when (not (bound-and-true-p vertico--input))
-    (setq-local corfu-auto nil
-                ;; Reduce delays in minibuffer for better responsiveness
-                corfu-echo-delay (if (display-graphic-p) 0.0 0.2))
-    (corfu-mode 1)))
-
-(add-hook 'minibuffer-setup-hook #'corfu-enable-in-minibuffer)
+              (setup-builtin-completion))))
 
 ;; Enhanced marginalia integration helper functions
 (defun marginalia-toggle-annotations ()
@@ -303,23 +198,21 @@
     (marginalia-mode 1))
   (message "Marginalia annotations %s" (if marginalia-mode "enabled" "disabled")))
 
-;; Manual completion shortcuts (alternative to TAB)
+;; Manual completion shortcuts
 (global-set-key (kbd "C-c m t") 'marginalia-toggle-annotations)
 (global-set-key (kbd "C-c TAB") 'completion-at-point)
 (global-set-key (kbd "C-c SPC") 'completion-at-point)
 (global-set-key (kbd "C-M-i") 'completion-at-point)
 (global-set-key (kbd "C-M-/") 'dabbrev-completion)
 
-;; Alternative manual completion triggers
-(defun manual-corfu-complete ()
-  "Manually trigger corfu completion."
+;; Manual completion triggers
+(defun manual-completion ()
+  "Manually trigger completion."
   (interactive)
-  (if (corfu-mode)
-      (completion-at-point)
-    (completion-at-point)))
+  (completion-at-point))
 
-(global-set-key (kbd "C-c c") 'manual-corfu-complete)
-(global-set-key (kbd "M-/") 'manual-corfu-complete)
+(global-set-key (kbd "C-c c") 'manual-completion)
+(global-set-key (kbd "M-/") 'manual-completion)
 
 ;; Consult for enhanced completion commands
 (use-package consult
@@ -386,3 +279,14 @@
   ;; Configure register formatting
   (setq register-preview-delay 0.5
         register-preview-function #'consult-register-format))
+
+;; Completion enhancements
+(setq completion-show-help t
+      completion-auto-help t
+      completion-auto-select nil)
+
+;; Normal TAB behavior (indent only)
+(setq tab-always-indent t)
+
+(provide 'completion-config)
+;;; modules/ui/completion/config.el ends here

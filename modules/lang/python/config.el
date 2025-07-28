@@ -19,7 +19,7 @@
          ("\\.pyw\\'" . python-mode))
   :interpreter (("python" . python-mode)
                 ("python3" . python-mode))
-  :hook ((python-mode . python-setup-corfu)
+  :hook ((python-mode . python-setup-completion)
          (python-mode . python-setup-minor-modes)
          (python-mode . python-setup-lsp)
          (python-mode . python-setup-keybindings))
@@ -30,11 +30,9 @@
         python-shell-completion-native-enable nil))
 
 ;; Python completion setup
-(defun python-setup-corfu ()
-  "Setup corfu completion for Python with LSP priority."
-  (setq-local corfu-auto-delay 0.0
-              corfu-auto-prefix 1
-              completion-at-point-functions
+(defun python-setup-completion ()
+  "Setup built-in completion for Python with LSP priority."
+  (setq-local completion-at-point-functions
               (list (cape-capf-super
                      #'eglot-completion-at-point
                      #'cape-dabbrev
@@ -53,7 +51,7 @@
               fill-column 88
               tab-always-indent t
               electric-indent-inhibit nil)
-  (local-set-key (kbd "TAB") 'python-indent-line))
+  (local-set-key (kbd "TAB") 'indent-for-tab-command))
 
 ;; Python LSP setup
 (defun python-setup-lsp ()

@@ -56,10 +56,7 @@ body { box-sizing: border-box; max-width: 740px; width: 100%; margin: 40px auto;
               (list (cape-capf-super
                      #'cape-dabbrev
                      #'cape-file
-                     #'cape-keyword)))
-  ;; Moderate completion settings for writing
-  (setq-local corfu-auto-delay 0.3
-              corfu-auto-prefix 2))
+                     #'cape-keyword))))
 
 ;; Markdown keybindings
 (defun markdown-setup-keybindings ()
