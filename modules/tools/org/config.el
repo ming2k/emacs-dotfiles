@@ -13,8 +13,6 @@
   ;; Core settings
   (org-directory "~/org/")
   (org-default-notes-file (concat org-directory "tmp.org"))
-  (org-agenda-files (list (concat org-directory "journals/")
-                          (concat org-directory "tasks/")))
   
   ;; Basic appearance
   (org-startup-folded 'content)
@@ -59,6 +57,26 @@
     (make-directory (concat org-directory "journals/") t))
   (unless (file-directory-p (concat org-directory "tasks/"))
     (make-directory (concat org-directory "tasks/") t))
+
+  ;; Set agenda files to include all org files in tasks directory
+  (let ((tasks-dir (expand-file-name "tasks/" org-directory)))
+    (when (file-directory-p tasks-dir)
+      (setq org-agenda-files (directory-files-recursively tasks-dir "\\.org$"))))
+  
+  ;; Also set up a function to refresh agenda files when needed
+  (defun my/refresh-org-agenda-files ()
+    "Refresh org-agenda-files to include all .org files in tasks directory."
+    (interactive)
+    (let ((tasks-dir (expand-file-name "tasks/" org-directory)))
+      (when (file-directory-p tasks-dir)
+        (setq org-agenda-files (directory-files-recursively tasks-dir "\\.org$"))
+        (message "Refreshed org-agenda-files: %s" org-agenda-files))))
+  
+  ;; Ensure agenda files are set when agenda is accessed
+  (add-hook 'org-agenda-mode-hook 
+            (lambda ()
+              (unless org-agenda-files
+                (my/refresh-org-agenda-files))))
   
   ;; Enable babel languages
   (org-babel-do-load-languages
