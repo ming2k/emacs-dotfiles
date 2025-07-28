@@ -73,11 +73,18 @@
             ;; Disable dabbrev key binding
             (define-key org-mode-map (kbd "M-/") nil)))
 
-;; Simple bullet points
-(use-package org-bullets
-  :ensure t
-  :after org
-  :hook (org-mode . org-bullets-mode))
+;; Modern bullet points (built-in alternative)
+(use-package org
+  :ensure nil
+  :config
+  ;; Use built-in org-superstar-like functionality
+  (setq org-hide-leading-stars t
+        org-odd-levels-only t)
+  ;; Custom bullet characters
+  (font-lock-add-keywords 'org-mode
+    '(("^\\*\\{1\\} " (0 (prog1 () (compose-region (match-beginning 0) (match-end 0) "•"))))
+      ("^\\*\\{2\\} " (0 (prog1 () (compose-region (match-beginning 0) (match-end 0) "  ◦"))))
+      ("^\\*\\{3\\} " (0 (prog1 () (compose-region (match-beginning 0) (match-end 0) "    ▪")))))))
 
 ;; Template expansion
 (use-package org-tempo

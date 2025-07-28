@@ -4,8 +4,11 @@
 ;;; Code:
 
 ;; Package system is initialized in early-init.el
-;; Load package-specific configurations
-(load (expand-file-name "packages.el" user-emacs-directory))
+(require 'package)
+
+;; Additional use-package optimizations  
+(setq use-package-expand-minimally t
+      use-package-compute-statistics t)
 
 ;;; Core Settings
 ;; UTF-8 everywhere
@@ -68,8 +71,9 @@
 ;; Flycheck for syntax checking
 (use-package flycheck
   :ensure t
+  :defer t
   :init
-  (global-flycheck-mode)
+  (add-hook 'after-init-hook #'global-flycheck-mode)
   :config
   (setq flycheck-indication-mode 'right-fringe))
 
@@ -90,8 +94,11 @@
 ;; Smartparens
 (use-package smartparens
   :ensure t
+  :init
+  ;; Load smartparens-config after smartparens is loaded
+  (with-eval-after-load 'smartparens
+    (require 'smartparens-config))
   :config
-  (require 'smartparens-config)
   (smartparens-global-mode)
   (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
   (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil))

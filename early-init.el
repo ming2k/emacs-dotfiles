@@ -41,6 +41,9 @@
 (eval-when-compile
   (require 'use-package))
 
+;; Also require use-package at runtime
+(require 'use-package)
+
 ;; Make use-package verbose during startup (optional)
 (setq use-package-verbose t)
 (setq use-package-always-ensure t) ; Automatically install packages

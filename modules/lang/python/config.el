@@ -1,10 +1,16 @@
 ;;; modules/lang/python/config.el -*- lexical-binding: t; -*-
+;;; Commentary:
+;; Comprehensive Python language support
+;;; Code:
 
-;; Python basic settings
+;; Python settings
 (setq python-indent-offset 4
       python-indent-guess-indent-offset nil
       python-shell-interpreter "python3"
-      python-shell-completion-native-enable nil)
+      python-shell-completion-native-enable nil
+      python-shell-prompt-detect-failure-warning nil
+      python-shell-prompt-detect-enabled nil
+      python-shell-completion-native-disabled-interpreters '("python3"))
 
 ;; Built-in Python mode configuration
 (use-package python
@@ -23,7 +29,7 @@
         python-shell-interpreter "python3"
         python-shell-completion-native-enable nil))
 
-;; Enhanced Python completion setup
+;; Python completion setup
 (defun python-setup-corfu ()
   "Setup corfu completion for Python with LSP priority."
   (setq-local corfu-auto-delay 0.0
@@ -39,19 +45,20 @@
 (defun python-setup-minor-modes ()
   "Enable helpful minor modes for Python."
   (electric-pair-local-mode 1)
-  (electric-indent-local-mode 1)
   (subword-mode 1)
   (hs-minor-mode 1)
   (flyspell-prog-mode)
   (setq-local tab-width 4
               indent-tabs-mode nil
-              fill-column 88))  ; Black formatter default
+              fill-column 88
+              tab-always-indent t
+              electric-indent-inhibit nil)
+  (local-set-key (kbd "TAB") 'python-indent-line))
 
-;; Simple Python LSP setup
+;; Python LSP setup
 (defun python-setup-lsp ()
-  "Setup LSP for Python if available."
-  (when (or (executable-find "pylsp")
-            (executable-find "pyright-langserver"))
+  "Setup Pyright LSP for Python."
+  (when (executable-find "pyright-langserver")
     (eglot-ensure)))
 
 ;; Python keybindings setup
@@ -66,23 +73,34 @@
   (local-set-key (kbd "C-c C-i") 'eglot-find-implementation)
   (local-set-key (kbd "C-c C-x") 'python-execute-file))
 
-;; Simple Python LSP server configuration
+;; Python LSP server configuration
 (with-eval-after-load 'eglot
-  ;; Add pylsp support
   (add-to-list 'eglot-server-programs
-               '(python-mode . ("pylsp")))
+               '(python-mode . ("pyright-langserver" "--stdio")))
   
-  ;; If pyright is available, use it
-  (when (executable-find "pyright-langserver")
-    (setf (alist-get 'python-mode eglot-server-programs)
-          '("pyright-langserver" "--stdio"))))
+  (defun python-eglot-workspace-config ()
+    "Return comprehensive workspace configuration for Pyright."
+    '(:python 
+      (:analysis 
+       (:typeCheckingMode "basic"
+        :autoImportCompletions t
+        :autoSearchPaths t
+        :useLibraryCodeForTypes t
+        :diagnosticMode "workspace"))))
+  
+  (add-hook 'eglot-managed-mode-hook
+            (lambda ()
+              (when (derived-mode-p 'python-mode)
+                (setq-local eglot-workspace-configuration
+                           (python-eglot-workspace-config))
+                (setq-local eglot-ignored-server-capabilities 
+                           '(:documentHighlightProvider))))))
 
 ;; Python utility functions
 (defun python-format-buffer ()
   "Format Python buffer with available formatter."
   (interactive)
   (cond
-   ;; Prefer black
    ((executable-find "black")
     (let ((original-point (point)))
       (shell-command-on-region
@@ -90,7 +108,6 @@
        "black --quiet -"
        (current-buffer) t)
       (goto-char original-point)))
-   ;; Use autopep8
    ((executable-find "autopep8")
     (let ((original-point (point)))
       (shell-command-on-region
@@ -98,7 +115,6 @@
        "autopep8 -"
        (current-buffer) t)
       (goto-char original-point)))
-   ;; Use LSP formatting
    ((fboundp 'eglot-format-buffer)
     (eglot-format-buffer))
    (t (message "No Python formatter found. Install black or autopep8"))))
@@ -111,3 +127,84 @@
     (if file
         (compile (format "%s %s" python-shell-interpreter file))
       (message "Buffer is not visiting a file"))))
+
+;; Python testing support
+(defun python-run-pytest ()
+  "Run pytest in the current project."
+  (interactive)
+  (let ((default-directory (or (locate-dominating-file default-directory "pyproject.toml")
+                              (locate-dominating-file default-directory "setup.py")
+                              (locate-dominating-file default-directory "pytest.ini")
+                              default-directory)))
+    (compile "python -m pytest -v")))
+
+(defun python-run-pytest-current ()
+  "Run pytest on current file."
+  (interactive)
+  (when buffer-file-name
+    (compile (format "python -m pytest -v %s" buffer-file-name))))
+
+(defun python-run-unittest ()
+  "Run unittest on current file or directory."
+  (interactive)
+  (if buffer-file-name
+      (compile (format "python -m unittest %s -v" 
+                      (file-name-sans-extension 
+                       (file-name-nondirectory buffer-file-name))))
+    (compile "python -m unittest discover -v")))
+
+;; Virtual environment support
+(defun python-activate-venv ()
+  "Activate Python virtual environment in current directory."
+  (interactive)
+  (let ((venv-path (or (locate-dominating-file default-directory "venv/")
+                      (locate-dominating-file default-directory ".venv/")
+                      (locate-dominating-file default-directory "env/"))))
+    (when venv-path
+      (let* ((venv-dir (expand-file-name 
+                       (cond ((file-exists-p (expand-file-name "venv/" venv-path)) "venv")
+                             ((file-exists-p (expand-file-name ".venv/" venv-path)) ".venv")
+                             ((file-exists-p (expand-file-name "env/" venv-path)) "env"))
+                       venv-path))
+             (python-exe (expand-file-name "bin/python" venv-dir)))
+        (when (file-exists-p python-exe)
+          (setq-local python-shell-interpreter python-exe)
+          (message "Activated venv: %s" venv-dir))))))
+
+;; Enhanced Python development features
+(defun python-toggle-breakpoint ()
+  "Toggle a breakpoint at the current line."
+  (interactive)
+  (save-excursion
+    (beginning-of-line)
+    (if (looking-at ".*breakpoint()")
+        (progn
+          (kill-whole-line)
+          (message "Breakpoint removed"))
+      (progn
+        (python-indent-line)
+        (insert "breakpoint()")
+        (newline-and-indent)
+        (message "Breakpoint added")))))
+
+(defun python-check-syntax ()
+  "Check Python syntax using python -m py_compile."
+  (interactive)
+  (when buffer-file-name
+    (save-buffer)
+    (compile (format "python3 -m py_compile %s" buffer-file-name))))
+
+;; Auto-activate venv when opening Python files
+(add-hook 'python-mode-hook 'python-activate-venv)
+
+;; Additional keybindings
+(with-eval-after-load 'python
+  (define-key python-mode-map (kbd "C-c C-t") 'python-run-pytest)
+  (define-key python-mode-map (kbd "C-c C-T") 'python-run-pytest-current)
+  (define-key python-mode-map (kbd "C-c C-u") 'python-run-unittest)
+  (define-key python-mode-map (kbd "C-c C-v") 'python-activate-venv)
+  (define-key python-mode-map (kbd "C-c C-b") 'python-toggle-breakpoint)
+  (define-key python-mode-map (kbd "C-c C-s") 'python-check-syntax))
+
+(provide 'python-config)
+;;; modules/lang/python/config.el ends here

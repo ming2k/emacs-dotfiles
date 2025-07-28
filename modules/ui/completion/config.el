@@ -1,13 +1,16 @@
 ;;; modules/ui/completion/config.el -*- lexical-binding: t; -*-
 
-;; Enhanced completion settings
+;; Auto-completion focused settings
 (setq completion-cycle-threshold 3
-      tab-always-indent 'complete
+      tab-always-indent t
       completion-ignore-case t
       read-extended-command-predicate #'command-completion-default-include-p
       enable-recursive-minibuffers t
       resize-mini-windows t
-      max-mini-window-height 0.33)
+      max-mini-window-height 0.33
+      completion-pcm-complete-word-inserts-delimiters t
+      completion-pcm-word-delimiters "-_./:| "
+      tab-first-completion nil)
 
 ;; Orderless completion style for flexible matching
 (use-package orderless
@@ -36,12 +39,17 @@
         vertico-cycle t
         vertico-scroll-margin 2)
   
-  ;; Vertico keybindings
+  ;; Standard vertico keybindings
   :bind (:map vertico-map
+              ("C-n" . vertico-next)
+              ("C-p" . vertico-previous)
               ("C-j" . vertico-next)
               ("C-k" . vertico-previous)
-              ("C-f" . vertico-exit)
-              ("M-h" . vertico-directory-up)))
+              ("RET" . vertico-directory-enter)
+              ("M-RET" . vertico-exit)
+              ("DEL" . vertico-directory-delete-char)
+              ("C-<backspace>" . vertico-directory-delete-word)
+              ("C-w" . vertico-directory-delete-word)))
 
 ;; Enhanced Marginalia for rich annotations in minibuffer
 (use-package marginalia
@@ -67,10 +75,10 @@
   :init
   (global-corfu-mode 1)
   :config
-  ;; Enhanced corfu settings for prominent popup
+  ;; Auto-completion only settings (no manual triggers)
   (setq corfu-cycle t
         corfu-auto t
-        corfu-auto-delay 0.1
+        corfu-auto-delay 0.05
         corfu-auto-prefix 1
         corfu-quit-at-boundary nil
         corfu-quit-no-match nil
@@ -79,18 +87,20 @@
         corfu-max-width 120
         corfu-min-width 15
         corfu-count 15
-        corfu-preselect 'prompt)
+        corfu-preselect 'prompt
+        corfu-separator ?\s
+        corfu-on-exact-match nil)
   
-  ;; Enhanced corfu keybindings
+  ;; Auto-completion focused keybindings (no TAB triggers)
   :bind (:map corfu-map
-              ("TAB" . corfu-next)
-              ("<tab>" . corfu-next)
-              ("S-TAB" . corfu-previous)
-              ("<backtab>" . corfu-previous)
-              ("RET" . corfu-insert)
-              ("<return>" . corfu-insert)
               ("C-n" . corfu-next)
               ("C-p" . corfu-previous)
+              ("C-j" . corfu-next)
+              ("C-k" . corfu-previous)
+              ("RET" . corfu-insert)
+              ("<return>" . corfu-insert)
+              ("C-RET" . corfu-complete)
+              ("C-SPC" . corfu-insert-separator)
               ("M-d" . corfu-info-documentation)
               ("M-l" . corfu-info-location)
               ("C-g" . corfu-quit)))
@@ -118,6 +128,31 @@
   :when (not (display-graphic-p))
   :config
   (corfu-terminal-mode 1))
+
+;; Modern corfu extensions (2025 enhancements)
+(use-package corfu-history
+  :ensure nil
+  :after corfu
+  :config
+  (corfu-history-mode 1)
+  (add-to-list 'savehist-additional-variables 'corfu-history))
+
+(use-package corfu-indexed
+  :ensure nil
+  :after corfu
+  :config
+  (corfu-indexed-mode 1)
+  :bind (:map corfu-map
+              ("M-1" . corfu-indexed-complete)
+              ("M-2" . corfu-indexed-complete)
+              ("M-3" . corfu-indexed-complete)
+              ("M-4" . corfu-indexed-complete)
+              ("M-5" . corfu-indexed-complete)
+              ("M-6" . corfu-indexed-complete)
+              ("M-7" . corfu-indexed-complete)
+              ("M-8" . corfu-indexed-complete)
+              ("M-9" . corfu-indexed-complete)
+              ("M-0" . corfu-indexed-complete)))
 
 ;; Cape for additional completion backends
 (use-package cape
@@ -197,17 +232,13 @@
   :config
   (setq dabbrev-ignored-buffer-regexps '("\\.\\(?:pdf\\|jpe?g\\|png\\)\\'")))
 
-;; Completion performance optimizations
-(setq completion-pcm-complete-word-inserts-delimiters t
-      completion-pcm-word-delimiters "-_./:| ")
-
-;; Use corfu for in-region completion
+;; Use corfu for in-region completion (2025 standard)
 (setq completion-in-region-function #'corfu-completion-in-region)
 
 ;; Enhanced corfu behavior
 (defun setup-corfu-aggressive ()
   "Setup aggressive corfu completion."
-  ;; Make corfu popup more often
+  ;; Make corfu popup more often (pure auto-completion)
   (setq-local corfu-auto-delay 0.0
               corfu-auto-prefix 1)
   ;; Enhance completion functions
@@ -263,8 +294,23 @@
     (marginalia-mode 1))
   (message "Marginalia annotations %s" (if marginalia-mode "enabled" "disabled")))
 
-;; Bind the toggle function
+;; Manual completion shortcuts (alternative to TAB)
 (global-set-key (kbd "C-c m t") 'marginalia-toggle-annotations)
+(global-set-key (kbd "C-c TAB") 'completion-at-point)
+(global-set-key (kbd "C-c SPC") 'completion-at-point)
+(global-set-key (kbd "C-M-i") 'completion-at-point)
+(global-set-key (kbd "C-M-/") 'dabbrev-completion)
+
+;; Alternative manual completion triggers
+(defun manual-corfu-complete ()
+  "Manually trigger corfu completion."
+  (interactive)
+  (if (corfu-mode)
+      (completion-at-point)
+    (completion-at-point)))
+
+(global-set-key (kbd "C-c c") 'manual-corfu-complete)
+(global-set-key (kbd "M-/") 'manual-corfu-complete)
 
 ;; Consult for enhanced completion commands
 (use-package consult
@@ -290,11 +336,34 @@
            ((vc-root-dir))
            (t default-directory))))
   
-  ;; Essential key bindings for consult commands
-  :bind (;; Buffer switching
-         ("C-c f" . consult-find)
+  ;; Standard consult keybindings (2025 best practices)
+  :bind (("C-c f" . consult-find)
          ("C-c r" . consult-recent-file)
-         ("C-x b" . consult-buffer))
+         ("C-x b" . consult-buffer)
+         ("C-s" . consult-line)
+         ("C-M-s" . consult-line-multi)
+         ("M-g g" . consult-goto-line)
+         ("M-g M-g" . consult-goto-line)
+         ("M-g i" . consult-imenu)
+         ("M-g I" . consult-imenu-multi)
+         ("M-s d" . consult-find)
+         ("M-s D" . consult-locate)
+         ("M-s g" . consult-grep)
+         ("M-s G" . consult-git-grep)
+         ("M-s r" . consult-ripgrep)
+         ("M-s l" . consult-line)
+         ("M-s L" . consult-line-multi)
+         ("M-s k" . consult-keep-lines)
+         ("M-s u" . consult-focus-lines)
+         ("M-s e" . consult-isearch-history)
+         :map isearch-mode-map
+         ("M-e" . consult-isearch-history)
+         ("M-s e" . consult-isearch-history)
+         ("M-s l" . consult-line)
+         ("M-s L" . consult-line-multi)
+         :map minibuffer-local-map
+         ("M-s" . consult-history)
+         ("M-r" . consult-history))
 
   ;; Enable automatic preview at point in the *Completions* buffer
   :hook (completion-list-mode . consult-preview-at-point-mode)

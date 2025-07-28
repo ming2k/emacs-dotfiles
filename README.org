@@ -1,7 +1,7 @@
-#+TITLE: Modern Emacs Configuration
+#+TITLE: Emacs Configuration
 #+AUTHOR: Ming
 #+DATE: 2025
-#+DESCRIPTION: A clean, modular Emacs configuration built on modern principles
+#+DESCRIPTION: A Emacs configuration
 #+OPTIONS: toc:2 num:nil
 #+STARTUP: showeverything
 
