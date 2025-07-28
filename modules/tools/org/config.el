@@ -42,9 +42,12 @@
   
   ;; Simple capture templates
   (org-capture-templates
-   '(("t" "Task" entry (file+datetree (lambda () (expand-file-name (format-time-string "tasks/%Y/%Y-%m.org") org-directory)))
-      "* TODO %?\n  %U\n  %i\n  %a")
-     ("j" "Journal" entry (file+datetree (lambda () (expand-file-name (format-time-string "journals/%Y/%Y-%m.org") org-directory)))
+   '(("t" "Quick Task" entry (file (lambda () (expand-file-name (format-time-string "tasks/%Y/%Y-%m.org") org-directory)))
+      "* TODO %?\n  %U")
+     ("T" "Task" entry (file (lambda () (expand-file-name (format-time-string "tasks/%Y/%Y-%m.org") org-directory)))
+      "* TODO %?\n  SCHEDULED: %t\n  %U\n  %a\n  %i"
+      :empty-lines 1)
+     ("j" "Journal" entry (file (lambda () (expand-file-name (format-time-string "journals/%Y/%Y-%m.org") org-directory)))
       "* %?\n  %U\n  %i\n  %a")))
   
   :config
