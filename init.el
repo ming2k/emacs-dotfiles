@@ -150,6 +150,7 @@
 (load-config-module "lang" "svelte")
 (load-config-module "lang" "go")
 (load-config-module "lang" "lisp")
+(load-config-module "lang" "markdown")
 
 ;; System-specific configurations
 (let ((system-config 

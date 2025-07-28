@@ -75,21 +75,23 @@
   :init
   (global-corfu-mode 1)
   :config
-  ;; Auto-completion only settings (no manual triggers)
+  ;; Performance-optimized settings for terminals
   (setq corfu-cycle t
         corfu-auto t
-        corfu-auto-delay 0.05
+        corfu-auto-delay (if (display-graphic-p) 0.05 0.1)
         corfu-auto-prefix 1
         corfu-quit-at-boundary nil
         corfu-quit-no-match nil
         corfu-preview-current t
         corfu-scroll-margin 5
-        corfu-max-width 120
+        corfu-max-width (if (display-graphic-p) 120 80)
         corfu-min-width 15
-        corfu-count 15
+        corfu-count (if (display-graphic-p) 15 10)
         corfu-preselect 'prompt
         corfu-separator ?\s
-        corfu-on-exact-match nil)
+        corfu-on-exact-match nil
+        ;; Terminal-specific optimizations
+        corfu-echo-delay (if (display-graphic-p) 0.0 0.2))
   
   ;; Auto-completion focused keybindings (no TAB triggers)
   :bind (:map corfu-map
@@ -122,12 +124,15 @@
               ("M-n" . corfu-popupinfo-scroll-up)
               ("M-t" . corfu-popupinfo-toggle)))
 
-;; Corfu terminal support (for terminal Emacs)
+;; Corfu terminal support with performance optimizations
 (use-package corfu-terminal
   :ensure t
   :when (not (display-graphic-p))
   :config
-  (corfu-terminal-mode 1))
+  (corfu-terminal-mode 1)
+  ;; Terminal-specific performance settings
+  (setq corfu-terminal-bar-width 0.5
+        corfu-terminal-disable-on-gui nil))
 
 ;; Modern corfu extensions (2025 enhancements)
 (use-package corfu-history
@@ -235,12 +240,14 @@
 ;; Use corfu for in-region completion (2025 standard)
 (setq completion-in-region-function #'corfu-completion-in-region)
 
-;; Enhanced corfu behavior
+;; Enhanced corfu behavior with terminal optimization
 (defun setup-corfu-aggressive ()
-  "Setup aggressive corfu completion."
-  ;; Make corfu popup more often (pure auto-completion)
-  (setq-local corfu-auto-delay 0.0
-              corfu-auto-prefix 1)
+  "Setup aggressive corfu completion with terminal considerations."
+  ;; Adjust delays based on display type for better cursor behavior
+  (setq-local corfu-auto-delay (if (display-graphic-p) 0.0 0.1)
+              corfu-auto-prefix 1
+              ;; Reduce echo delay in terminals to minimize cursor flicker
+              corfu-echo-delay (if (display-graphic-p) 0.0 0.15))
   ;; Enhance completion functions
   (setq-local completion-at-point-functions
               (append completion-at-point-functions
@@ -280,7 +287,9 @@
 (defun corfu-enable-in-minibuffer ()
   "Enable corfu in minibuffer if vertico is not active."
   (when (not (bound-and-true-p vertico--input))
-    (setq-local corfu-auto nil)
+    (setq-local corfu-auto nil
+                ;; Reduce delays in minibuffer for better responsiveness
+                corfu-echo-delay (if (display-graphic-p) 0.0 0.2))
     (corfu-mode 1)))
 
 (add-hook 'minibuffer-setup-hook #'corfu-enable-in-minibuffer)
