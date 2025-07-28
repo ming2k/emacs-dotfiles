@@ -55,7 +55,23 @@
   (unless (file-directory-p (concat org-directory "journals/"))
     (make-directory (concat org-directory "journals/") t))
   (unless (file-directory-p (concat org-directory "tasks/"))
-    (make-directory (concat org-directory "tasks/") t)))
+    (make-directory (concat org-directory "tasks/") t))
+  
+  ;; Enable babel languages
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (shell . t)
+     (python . t))))
+
+;; Disable dabbrev in org mode
+(add-hook 'org-mode-hook
+          (lambda ()
+            ;; Remove dabbrev from completion functions
+            (setq-local completion-at-point-functions
+                        (remove #'cape-dabbrev completion-at-point-functions))
+            ;; Disable dabbrev key binding
+            (define-key org-mode-map (kbd "M-/") nil)))
 
 ;; Simple bullet points
 (use-package org-bullets
