@@ -51,6 +51,10 @@
   (subword-mode 1)
   (hs-minor-mode 1)
   (flyspell-prog-mode)
+  ;; Disable problematic flymake backends
+  (when (boundp 'flymake-diagnostic-functions)
+    (setq-local flymake-diagnostic-functions
+                (remq 'flymake-cc flymake-diagnostic-functions)))
   (setq-local tab-width 4
               indent-tabs-mode nil))
 

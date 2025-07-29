@@ -46,6 +46,10 @@
   (subword-mode 1)
   (hs-minor-mode 1)
   (flyspell-prog-mode)
+  ;; Disable problematic flymake backends
+  (when (boundp 'flymake-diagnostic-functions)
+    (setq-local flymake-diagnostic-functions
+                (remq 'python-flymake flymake-diagnostic-functions)))
   (setq-local tab-width 4
               indent-tabs-mode nil
               fill-column 88

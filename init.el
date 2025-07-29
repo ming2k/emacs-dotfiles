@@ -137,7 +137,7 @@
 ;; Load core modules
 (load-config-module "core" "completion")
 (load-config-module "core" "project")
-(load-config-module "core" "desktop")
+(load-config-module "core" "editing")
 
 ;; Load UI modules
 (load-config-module "ui" "themes")
