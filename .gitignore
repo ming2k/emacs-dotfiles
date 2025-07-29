@@ -24,7 +24,9 @@ eln-cache/
 # Desktop sessions
 .emacs.desktop
 .emacs.desktop.lock
-desktop
+
+# Tramp
+tramp
 
 # File history and bookmarks
 bookmarks

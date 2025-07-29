@@ -61,6 +61,16 @@
   :ensure t
   :hook (prog-mode . rainbow-delimiters-mode))
 
+;; Rainbow mode for color visualization
+(use-package rainbow-mode
+  :ensure t
+  :hook ((css-mode . rainbow-mode)
+         (web-mode . rainbow-mode)
+         (html-mode . rainbow-mode)
+         (scss-mode . rainbow-mode)
+         (sass-mode . rainbow-mode)
+         (org-mode . rainbow-mode)))
+
 ;; Which-key - displays available keybindings in popup
 (use-package which-key
   :ensure t
