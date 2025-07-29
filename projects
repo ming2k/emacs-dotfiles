@@ -1,2 +1,3 @@
 ;;; -*- lisp-data -*-
-(("/home/ming/.emacs.d/") ("/home/ming/projects/mini-blog-m2k-web-pub/"))
+(("/home/ming/projects/letsmove/") ("/home/ming/.emacs.d/")
+ ("/home/ming/projects/mini-blog-m2k-web-pub/"))
