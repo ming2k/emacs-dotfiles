@@ -134,9 +134,12 @@
     (when (file-exists-p config-file)
       (load config-file))))
 
+;; Load core modules
+(load-config-module "core" "completion")
+(load-config-module "core" "project")
+
 ;; Load UI modules
 (load-config-module "ui" "themes")
-(load-config-module "ui" "completion")
 
 ;; Load tool modules  
 (load-config-module "tools" "magit")

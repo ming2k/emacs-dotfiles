@@ -24,7 +24,8 @@
   :config
   (setq completion-styles '(orderless basic)
         completion-category-defaults nil
-        completion-category-overrides '((file (styles partial-completion))
+        completion-category-overrides '((file (styles orderless))
+                                       (project-file (styles orderless))
                                        (command (styles orderless))
                                        (variable (styles orderless))
                                        (symbol (styles orderless))))
@@ -214,71 +215,23 @@
 (global-set-key (kbd "C-c c") 'manual-completion)
 (global-set-key (kbd "M-/") 'manual-completion)
 
-;; Consult for enhanced completion commands
-(use-package consult
-  :ensure t
-  :config
-  ;; Configure consult for better formatting and performance
-  (setq consult-narrow-key "<"
-        consult-line-numbers-widen t
-        consult-async-min-input 2
-        consult-async-refresh-delay 0.15
-        consult-async-input-throttle 0.2
-        consult-async-input-debounce 0.1
-        consult-preview-key '(:debounce 0.2 any)
-        consult-fontify-preserve t
-        consult-fontify-max-size 1048576)
-  
-  ;; Configure project root detection for file searches
-  (setq consult-project-function 
-        (lambda (_) 
-          (cond
-           ((and (fboundp 'projectile-project-root) (projectile-project-root))
-            (projectile-project-root))
-           ((vc-root-dir))
-           (t default-directory))))
-  
-  ;; Standard consult keybindings (2025 best practices)
-  :bind (("C-c f" . consult-find)
-         ("C-c r" . consult-recent-file)
-         ("C-x b" . consult-buffer)
-         ("C-s" . consult-line)
-         ("C-M-s" . consult-line-multi)
-         ("M-g g" . consult-goto-line)
-         ("M-g M-g" . consult-goto-line)
-         ("M-g i" . consult-imenu)
-         ("M-g I" . consult-imenu-multi)
-         ("M-s d" . consult-find)
-         ("M-s D" . consult-locate)
-         ("M-s g" . consult-grep)
-         ("M-s G" . consult-git-grep)
-         ("M-s r" . consult-ripgrep)
-         ("M-s l" . consult-line)
-         ("M-s L" . consult-line-multi)
-         ("M-s k" . consult-keep-lines)
-         ("M-s u" . consult-focus-lines)
-         ("M-s e" . consult-isearch-history)
-         :map isearch-mode-map
-         ("M-e" . consult-isearch-history)
-         ("M-s e" . consult-isearch-history)
-         ("M-s l" . consult-line)
-         ("M-s L" . consult-line-multi)
-         :map minibuffer-local-map
-         ("M-s" . consult-history)
-         ("M-r" . consult-history))
+;; Built-in search and navigation commands
 
-  ;; Enable automatic preview at point in the *Completions* buffer
-  :hook (completion-list-mode . consult-preview-at-point-mode)
-
-  ;; Configure the command line tools that consult uses
+;; Enable recentf for recent files
+(use-package recentf
+  :ensure nil
   :init
-  ;; Use Consult to select xref locations with preview
-  (setq xref-show-xrefs-function #'consult-xref
-        xref-show-definitions-function #'consult-xref)
+  (recentf-mode 1)
+  :config
+  (setq recentf-max-saved-items 50
+        recentf-max-menu-items 15))
 
-  ;; Configure register formatting
-  (setq register-preview-delay 0.5
-        register-preview-function #'consult-register-format))
+;; Enhanced isearch
+(setq isearch-allow-scroll t
+      isearch-lazy-highlight t
+      lazy-highlight-cleanup nil
+      lazy-highlight-initial-delay 0)
+
 
 ;; Completion enhancements
 (setq completion-show-help t
