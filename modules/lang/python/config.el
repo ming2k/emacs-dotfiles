@@ -42,7 +42,6 @@
 ;; Python minor modes setup
 (defun python-setup-minor-modes ()
   "Enable helpful minor modes for Python."
-  (electric-pair-local-mode 1)
   (subword-mode 1)
   (hs-minor-mode 1)
   (flyspell-prog-mode)

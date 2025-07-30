@@ -91,17 +91,6 @@
   :ensure t
   :bind ("C-=" . er/expand-region))
 
-;; Smartparens
-(use-package smartparens
-  :ensure t
-  :init
-  ;; Load smartparens-config after smartparens is loaded
-  (with-eval-after-load 'smartparens
-    (require 'smartparens-config))
-  :config
-  (smartparens-global-mode)
-  (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
-  (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil))
 
 ;; Better movement
 (use-package avy

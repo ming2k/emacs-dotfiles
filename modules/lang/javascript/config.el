@@ -78,7 +78,6 @@
 ;; JavaScript/TypeScript minor modes setup
 (defun js-setup-minor-modes ()
   "Enable helpful minor modes for JavaScript/TypeScript."
-  (electric-pair-local-mode 1)
   (electric-indent-local-mode 1)
   (subword-mode 1)
   (hs-minor-mode 1)

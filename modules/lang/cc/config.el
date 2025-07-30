@@ -46,7 +46,6 @@
 ;; C/C++ minor modes setup
 (defun c-cpp-setup-minor-modes ()
   "Enable helpful minor modes for C/C++."
-  (electric-pair-local-mode 1)
   (electric-indent-local-mode 1)
   (subword-mode 1)
   (hs-minor-mode 1)

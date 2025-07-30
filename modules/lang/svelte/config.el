@@ -63,7 +63,6 @@
 ;; Minimal minor modes setup
 (defun svelte-setup-minor-modes ()
   "Enable essential minor modes for Svelte development."
-  (electric-pair-local-mode 1)
   (subword-mode 1)
   (setq-local tab-width 2
               indent-tabs-mode nil))

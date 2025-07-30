@@ -18,7 +18,7 @@
     
     ;; Parentheses matching
     (show-paren-mode 1)
-    (electric-pair-local-mode 1)))
+))
 
 ;;; Hippie-expand configuration for Lisp
 (defun setup-lisp-hippie-expand ()
