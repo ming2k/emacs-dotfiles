@@ -59,7 +59,7 @@
 ;; Disable startup screen
 (setq inhibit-startup-screen t)
 (setq inhibit-startup-message t)
-(setq initial-scratch-message nil)
+(setq initial-scratch-message "")
 
 ;; Disable file dialog boxes
 (setq use-dialog-box nil)
@@ -70,6 +70,13 @@
 ;; Frame settings
 (setq frame-resize-pixelwise t)
 (setq frame-inhibit-implied-resize t)
+
+;; Remove margins and borders
+(add-to-list 'default-frame-alist '(internal-border-width . 0))
+(add-to-list 'default-frame-alist '(border-width . 0))
+(setq-default left-margin-width 0)
+(setq-default right-margin-width 0)
+(set-window-fringes nil 0 0)
 
 ;; Performance optimizations
 (setq read-process-output-max (* 1024 1024)) ; 1MB for LSP
