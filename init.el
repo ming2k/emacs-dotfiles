@@ -160,7 +160,6 @@
 ;; Essential settings
 (setq select-enable-clipboard t
       select-enable-primary t)
-(set-frame-parameter nil 'undecorated t)
 
 ;; Performance optimizations
 (setq-default cursor-in-non-selected-windows nil)

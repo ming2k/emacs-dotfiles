@@ -70,6 +70,7 @@
 ;; Frame settings
 (setq frame-resize-pixelwise t)
 (setq frame-inhibit-implied-resize t)
+(set-frame-parameter nil 'undecorated t)
 
 ;; Remove margins and borders
 (add-to-list 'default-frame-alist '(internal-border-width . 0))
@@ -92,3 +93,5 @@
             (setq gc-cons-threshold 16777216) ; 16MB
             (setq gc-cons-percentage 0.1)))
 
+(provide 'early-init)
+;;; early-init.el ends here
