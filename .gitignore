@@ -21,23 +21,20 @@ auto-save-list/
 # Native compilation cache (Emacs 28+)
 eln-cache/
 
-# Desktop sessions
-.emacs.desktop
-.emacs.desktop.lock
-
 # Tramp
 tramp
 
-# File history and bookmarks
+# Session
 bookmarks
 recentf
 places
 savehist
 saveplace
 history
-
-# Recent files
+projects
 .recentf
+.emacs.desktop
+.emacs.desktop.lock
 
 # === Shell and Terminal ===
 # Eshell files
