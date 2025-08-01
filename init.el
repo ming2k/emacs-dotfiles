@@ -49,28 +49,7 @@
   (global-set-key [mouse-5] 'scroll-up-line))
 
 ;;; Session Management
-(use-package saveplace
-  :ensure nil
-  :config
-  (setq save-place-limit 1000
-        save-place-forget-unreadable-files t)
-  (save-place-mode 1))
-
-(use-package recentf
-  :ensure nil
-  :config
-  (setq recentf-max-saved-items 100)
-  (recentf-mode 1))
-
-(use-package savehist
-  :ensure nil
-  :init
-  (savehist-mode 1)
-  :config
-  (setq savehist-length 1000
-        savehist-additional-variables '(search-ring regexp-search-ring
-                                       extended-command-history
-                                       kill-ring)))
+;; Session management moved to modules/core/session/config.el
 
 ;;; Programming
 ;; Tree-sitter (built-in in Emacs 29+)
@@ -136,6 +115,7 @@
 (load-config-module "core" "completion")
 (load-config-module "core" "project")
 (load-config-module "core" "editing")
+(load-config-module "core" "session")
 
 ;; Load UI modules
 (load-config-module "ui" "themes")
