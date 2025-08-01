@@ -39,6 +39,15 @@
 (global-auto-revert-mode 1)
 (delete-selection-mode 1)
 
+;; Window navigation with Shift+arrow keys
+(windmove-default-keybindings)
+
+;; Enable mouse support in terminal
+(unless (display-graphic-p)
+  (xterm-mouse-mode 1)
+  (global-set-key [mouse-4] 'scroll-down-line)
+  (global-set-key [mouse-5] 'scroll-up-line))
+
 ;;; Session Management
 (use-package saveplace
   :ensure nil
