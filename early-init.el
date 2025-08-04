@@ -6,6 +6,14 @@
 
 ;;; Code:
 
+;; Frame settings
+;; Remove the frame title (window title bar text)
+;(setq frame-title-format nil)
+;; Remove window decorations (title bar, borders) from the current frame
+;(set-frame-parameter nil 'undecorated t)
+;; Set all new frames to be created without decorations by default
+(add-to-list 'default-frame-alist '(undecorated . t))
+
 ;; Add config/system to load path for system-specific configurations
 (add-to-list 'load-path (expand-file-name "config/system" user-emacs-directory))
 
@@ -66,11 +74,6 @@
 
 ;; Disable ring bell
 (setq ring-bell-function 'ignore)
-
-;; Frame settings
-(setq frame-resize-pixelwise t)
-(setq frame-inhibit-implied-resize t)
-(set-frame-parameter nil 'undecorated t)
 
 ;; Remove margins and borders
 (add-to-list 'default-frame-alist '(internal-border-width . 0))
