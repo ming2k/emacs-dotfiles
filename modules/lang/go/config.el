@@ -1,5 +1,12 @@
 ;;; modules/lang/go/config.el -*- lexical-binding: t; -*-
 
+;; Declare functions to suppress native compilation warnings
+(declare-function eglot-rename "eglot")
+(declare-function eglot-code-actions "eglot") 
+(declare-function eglot--code-action-bounds "eglot")
+(declare-function lsp-rename "lsp-mode")
+(declare-function lsp-execute-code-action-by-kind "lsp-mode")
+
 ;; Enhanced Go settings
 (setq go-ts-mode-indent-offset 4
       gofmt-command "gofmt"
