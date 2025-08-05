@@ -6,10 +6,6 @@
 ;; Package system is initialized in early-init.el
 (require 'package)
 
-;; Additional use-package optimizations  
-(setq use-package-expand-minimally t
-      use-package-compute-statistics t)
-
 ;;; Core Settings
 ;; UTF-8 everywhere
 (set-language-environment "UTF-8")

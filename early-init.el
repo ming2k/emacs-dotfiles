@@ -7,12 +7,14 @@
 ;;; Code:
 
 ;; Frame settings
-;; Remove the frame title (window title bar text)
-;(setq frame-title-format nil)
-;; Remove window decorations (title bar, borders) from the current frame
-;(set-frame-parameter nil 'undecorated t)
 ;; Set all new frames to be created without decorations by default
 (add-to-list 'default-frame-alist '(undecorated . t))
+;; Remove margins and borders
+(add-to-list 'default-frame-alist '(internal-border-width . 0))
+(add-to-list 'default-frame-alist '(border-width . 0))
+(setq-default left-margin-width 0)
+(setq-default right-margin-width 0)
+(set-window-fringes nil 0 0)
 
 ;; Add config/system to load path for system-specific configurations
 (add-to-list 'load-path (expand-file-name "config/system" user-emacs-directory))
@@ -75,20 +77,11 @@
 ;; Disable ring bell
 (setq ring-bell-function 'ignore)
 
-;; Remove margins and borders
-(add-to-list 'default-frame-alist '(internal-border-width . 0))
-(add-to-list 'default-frame-alist '(border-width . 0))
-(setq-default left-margin-width 0)
-(setq-default right-margin-width 0)
-(set-window-fringes nil 0 0)
-
 ;; Performance optimizations
 (setq read-process-output-max (* 1024 1024)) ; 1MB for LSP
 (setq process-adaptive-read-buffering nil)
 
-;; Font configuration (optional - adjust to your preference)
-(when (member "JetBrains Mono" (font-family-list))
-  (set-face-attribute 'default nil :font "JetBrains Mono-12"))
+(set-face-attribute 'default nil :family "Monospace" :height 120)
 
 ;; Restore garbage collection settings after startup
 (add-hook 'emacs-startup-hook

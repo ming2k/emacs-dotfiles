@@ -1,12 +1,5 @@
 ;;; modules/ui/themes/config.el -*- lexical-binding: t; -*-
 
-;; Font configuration
-(when (display-graphic-p)
-  (set-face-attribute 'default nil
-                      :family "JetBrainsMonoNL Nerd Font"
-                      :height 130
-                      :weight 'normal))
-
 ;; Doom themes
 (use-package doom-themes
   :ensure t
