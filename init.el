@@ -34,6 +34,11 @@
 (show-paren-mode 1)
 (global-auto-revert-mode 1)
 (delete-selection-mode 1)
+(global-display-fill-column-indicator-mode 1)
+
+;; Auto-fill mode for automatic line wrapping
+(add-hook 'text-mode-hook 'auto-fill-mode)
+(add-hook 'org-mode-hook 'auto-fill-mode)
 
 ;; Window navigation with Shift+arrow keys
 (windmove-default-keybindings)
