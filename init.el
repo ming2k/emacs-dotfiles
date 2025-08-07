@@ -164,6 +164,7 @@
 (load-config-module "lang" "go")
 (load-config-module "lang" "lisp")
 (load-config-module "lang" "markdown")
+(load-config-module "lang" "shell")
 
 ;; System-specific configurations
 (let ((system-config 
