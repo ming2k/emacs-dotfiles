@@ -64,6 +64,32 @@
   :config
   (setq flymake-mode-line-counter-format '("" flymake-mode-line-exception-counter flymake-mode-line-counters)
         flymake-mode-line-format '(" " flymake-mode-line-counter-format))
+  
+  ;; Function to disable traditional flymake checkers for LSP languages
+  (defun flymake-disable-traditional-checkers ()
+    "Disable built-in flymake checkers that conflict with LSP."
+    (setq-local flymake-diagnostic-functions
+                (seq-filter (lambda (func)
+                              ;; Remove traditional checkers that LSP replaces
+                              (not (memq func '(python-flymake 
+                                               flymake-cc
+                                               elisp-flymake-byte-compile
+                                               elisp-flymake-checkdoc))))
+                            flymake-diagnostic-functions)))
+  
+  ;; Apply to programming modes that typically use LSP
+  (dolist (hook '(python-mode-hook 
+                  c-mode-hook 
+                  c++-mode-hook
+                  rust-mode-hook
+                  rust-ts-mode-hook
+                  js-mode-hook
+                  typescript-mode-hook
+                  typescript-ts-mode-hook
+                  go-mode-hook
+                  go-ts-mode-hook))
+    (add-hook hook #'flymake-disable-traditional-checkers))
+  
   :bind (:map flymake-mode-map
               ("C-c ! n" . flymake-goto-next-error)
               ("C-c ! p" . flymake-goto-prev-error)

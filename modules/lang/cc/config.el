@@ -71,13 +71,8 @@
          (include-dir (expand-file-name "include" project-root))
          (src-dir (expand-file-name "src" project-root)))
     
-    ;; Set flycheck include paths (if using)
-    (when (boundp 'flycheck-gcc-include-path)
-      (setq-local flycheck-gcc-include-path 
-                  (list project-root include-dir src-dir)))
-    (when (boundp 'flycheck-clang-include-path)
-      (setq-local flycheck-clang-include-path 
-                  (list project-root include-dir src-dir)))))
+    ;; Store include paths for potential use by other tools
+    (setq-local c-cpp-include-paths (list project-root include-dir src-dir))))
 
 ;; C/C++ utility functions
 (defun c-cpp-compile ()

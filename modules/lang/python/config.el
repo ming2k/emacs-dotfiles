@@ -190,16 +190,6 @@
     (save-buffer)
     (compile (format "python3 -m py_compile %s" buffer-file-name))))
 
-;; Python-specific flymake setup
-(defun python-setup-flymake ()
-  "Setup flymake for Python with multiple backends."
-  (when (and (bound-and-true-p flymake-mode)
-             (not (bound-and-true-p eglot--managed-mode)))
-    ;; Only use built-in Python flymake if eglot is not running
-    (add-hook 'flymake-diagnostic-functions #'python-flymake nil t)))
-
-;; Add flymake setup to Python mode
-(add-hook 'python-mode-hook #'python-setup-flymake)
 
 ;; Improved Python shell setup
 (defun python-setup-shell ()
