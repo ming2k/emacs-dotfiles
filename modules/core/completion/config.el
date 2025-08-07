@@ -36,12 +36,12 @@
                                        (eglot (styles orderless))
                                        (eglot-capf (styles orderless))))
   
-  ;; Orderless configuration for better matching
+  ;; Orderless configuration for literal matching (no wildcards)
   (setq orderless-matching-styles '(orderless-literal
                                    orderless-prefixes
                                    orderless-initialism
-                                   orderless-regexp
-                                   orderless-flex)))
+                                   orderless-flex)
+        orderless-component-separator " +"))
 
 ;; Vertico for enhanced minibuffer completion
 (use-package vertico
