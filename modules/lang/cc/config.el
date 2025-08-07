@@ -17,13 +17,9 @@
          ("\\.hpp\\'" . c++-mode)
          ("\\.hxx\\'" . c++-mode)
          ("\\.hh\\'" . c++-mode))
-  :hook ((c-mode . c-cpp-setup-corfu)
-         (c-mode . c-cpp-setup-minor-modes)
-         (c-mode . c-cpp-setup-lsp)
+  :hook ((c-mode . c-cpp-setup-minor-modes)
          (c-mode . c-cpp-setup-keybindings)
-         (c++-mode . c-cpp-setup-corfu)
          (c++-mode . c-cpp-setup-minor-modes)
-         (c++-mode . c-cpp-setup-lsp)
          (c++-mode . c-cpp-setup-keybindings))
   :config
   (setq c-default-style "linux"
@@ -31,17 +27,6 @@
         tab-width 4
         indent-tabs-mode nil))
 
-;; Enhanced C/C++ completion setup
-(defun c-cpp-setup-corfu ()
-  "Setup corfu completion for C/C++ with LSP priority."
-  (setq-local corfu-auto-delay 0.0
-              corfu-auto-prefix 1
-              completion-at-point-functions
-              (list (cape-capf-super
-                     #'eglot-completion-at-point
-                     #'cape-dabbrev
-                     #'cape-file
-                     #'cape-keyword))))
 
 ;; C/C++ minor modes setup
 (defun c-cpp-setup-minor-modes ()
@@ -50,19 +35,10 @@
   (subword-mode 1)
   (hs-minor-mode 1)
   (flyspell-prog-mode)
-  ;; Disable problematic flymake backends
-  (when (boundp 'flymake-diagnostic-functions)
-    (setq-local flymake-diagnostic-functions
-                (remq 'flymake-cc flymake-diagnostic-functions)))
+  (c-cpp-setup-include-paths)
   (setq-local tab-width 4
               indent-tabs-mode nil))
 
-;; Simple C/C++ LSP setup with basic header resolution
-(defun c-cpp-setup-lsp ()
-  "Setup LSP for C/C++ if available."
-  (when (executable-find "clangd")
-    (c-cpp-setup-include-paths)
-    (eglot-ensure)))
 
 ;; C/C++ keybindings setup
 (defun c-cpp-setup-keybindings ()
@@ -155,6 +131,8 @@
   "Format buffer with clang-format if available."
   (interactive)
   (cond
+   ((and (fboundp 'eglot-current-server) (eglot-current-server))
+    (eglot-format-buffer))
    ((executable-find "clang-format")
     (let ((original-point (point)))
       (shell-command-on-region
@@ -162,8 +140,6 @@
        "clang-format"
        (current-buffer) t)
       (goto-char original-point)))
-   ((fboundp 'eglot-format-buffer)
-    (eglot-format-buffer))
    (t (message "No C/C++ formatter found. Install clang-format"))))
 
 (defun c-cpp-switch-header-source ()

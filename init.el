@@ -57,14 +57,18 @@
 (when (treesit-available-p)
   (setq treesit-font-lock-level 4))
 
-;; Flycheck for syntax checking
-(use-package flycheck
-  :ensure t
-  :defer t
-  :init
-  (add-hook 'after-init-hook #'global-flycheck-mode)
+;; Flymake for syntax checking (built-in)
+(use-package flymake
+  :ensure nil
+  :hook (prog-mode . flymake-mode)
   :config
-  (setq flycheck-indication-mode 'right-fringe))
+  (setq flymake-mode-line-counter-format '("" flymake-mode-line-exception-counter flymake-mode-line-counters)
+        flymake-mode-line-format '(" " flymake-mode-line-counter-format))
+  :bind (:map flymake-mode-map
+              ("C-c ! n" . flymake-goto-next-error)
+              ("C-c ! p" . flymake-goto-prev-error)
+              ("C-c ! l" . flymake-show-buffer-diagnostics)
+              ("C-c ! L" . flymake-show-project-diagnostics)))
 
 ;;; Editing Enhancements
 ;; Multiple cursors

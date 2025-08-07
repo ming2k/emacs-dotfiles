@@ -11,9 +11,7 @@
   :mode (("\\.js\\'" . js-mode)
          ("\\.jsx\\'" . js-mode)
          ("\\.mjs\\'" . js-mode))
-  :hook ((js-mode . js-setup-corfu)
-         (js-mode . js-setup-minor-modes)
-         (js-mode . js-setup-lsp))
+  :hook ((js-mode . js-setup-minor-modes))
   :bind (:map js-mode-map
               ("C-c C-r" . js-run-node)
               ("C-c C-t" . js-run-npm-test)
@@ -30,12 +28,8 @@
   :mode (("\\.ts\\'" . typescript-ts-mode)
          ("\\.tsx\\'" . tsx-ts-mode))
   :when (treesit-language-available-p 'typescript)
-  :hook ((typescript-ts-mode . js-setup-corfu)
-         (typescript-ts-mode . js-setup-minor-modes)
-         (typescript-ts-mode . js-setup-lsp)
-         (tsx-ts-mode . js-setup-corfu)
-         (tsx-ts-mode . js-setup-minor-modes)
-         (tsx-ts-mode . js-setup-lsp))
+  :hook ((typescript-ts-mode . js-setup-minor-modes)
+         (tsx-ts-mode . js-setup-minor-modes))
   :bind (:map typescript-ts-mode-map
               ("C-c C-r" . js-run-node)
               ("C-c C-t" . js-run-npm-test)
@@ -51,9 +45,7 @@
   :mode (("\\.ts\\'" . typescript-mode)
          ("\\.tsx\\'" . typescript-mode))
   :unless (treesit-language-available-p 'typescript)
-  :hook ((typescript-mode . js-setup-corfu)
-         (typescript-mode . js-setup-minor-modes)
-         (typescript-mode . js-setup-lsp))
+  :hook ((typescript-mode . js-setup-minor-modes))
   :bind (:map typescript-mode-map
               ("C-c C-r" . js-run-node)
               ("C-c C-t" . js-run-npm-test)
@@ -63,17 +55,6 @@
   :config
   (setq typescript-indent-level 2))
 
-;; Enhanced JavaScript/TypeScript completion setup
-(defun js-setup-corfu ()
-  "Setup corfu completion for JavaScript/TypeScript with LSP priority."
-  (setq-local corfu-auto-delay 0.0
-              corfu-auto-prefix 1
-              completion-at-point-functions
-              (list (cape-capf-super
-                     #'eglot-completion-at-point
-                     #'cape-dabbrev
-                     #'cape-file
-                     #'cape-keyword))))
 
 ;; JavaScript/TypeScript minor modes setup
 (defun js-setup-minor-modes ()
@@ -86,12 +67,6 @@
               tab-width 2
               indent-tabs-mode nil))
 
-;; JavaScript/TypeScript LSP setup
-(defun js-setup-lsp ()
-  "Setup LSP for JavaScript/TypeScript if available."
-  (when (or (executable-find "typescript-language-server")
-            (executable-find "deno"))
-    (eglot-ensure)))
 
 ;; Configure JavaScript/TypeScript LSP server
 (with-eval-after-load 'eglot
@@ -160,6 +135,8 @@
   "Format buffer with available formatter."
   (interactive)
   (cond
+   ((and (fboundp 'eglot-current-server) (eglot-current-server))
+    (eglot-format-buffer))
    ((executable-find "prettier")
     (let ((original-point (point))
           (file-ext (file-name-extension (buffer-file-name))))
@@ -168,8 +145,6 @@
        (format "prettier --stdin-filepath tmp.%s" (or file-ext "js"))
        (current-buffer) t)
       (goto-char original-point)))
-   ((fboundp 'eglot-format-buffer)
-    (eglot-format-buffer))
    (t (message "No JavaScript formatter found. Install prettier with: npm install -g prettier"))))
 
 ;; File mode associations

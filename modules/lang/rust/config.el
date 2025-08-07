@@ -9,9 +9,7 @@
   :ensure nil
   :mode "\\.rs\\'"
   :when (treesit-language-available-p 'rust)
-  :hook ((rust-ts-mode . rust-setup-corfu)
-         (rust-ts-mode . rust-setup-minor-modes)
-         (rust-ts-mode . rust-setup-lsp))
+  :hook ((rust-ts-mode . rust-setup-minor-modes))
   :bind (:map rust-ts-mode-map
               ("C-c C-b" . rust-compile)
               ("C-c C-r" . rust-run)
@@ -28,9 +26,7 @@
   :ensure t
   :mode "\\.rs\\'"
   :unless (treesit-language-available-p 'rust)
-  :hook ((rust-mode . rust-setup-corfu)
-         (rust-mode . rust-setup-minor-modes)
-         (rust-mode . rust-setup-lsp))
+  :hook ((rust-mode . rust-setup-minor-modes))
   :bind (:map rust-mode-map
               ("C-c C-b" . rust-compile)
               ("C-c C-r" . rust-run)
@@ -43,17 +39,6 @@
   (setq rust-indent-offset 4
         rust-format-on-save nil))
 
-;; Enhanced Rust completion setup
-(defun rust-setup-corfu ()
-  "Setup corfu completion for Rust with LSP priority."
-  (setq-local corfu-auto-delay 0.0
-              corfu-auto-prefix 1
-              completion-at-point-functions
-              (list (cape-capf-super
-                     #'eglot-completion-at-point
-                     #'cape-dabbrev
-                     #'cape-file
-                     #'cape-keyword))))
 
 ;; Rust minor modes setup
 (defun rust-setup-minor-modes ()
@@ -65,11 +50,6 @@
   (setq tab-width 4
         indent-tabs-mode nil))
 
-;; Rust LSP setup
-(defun rust-setup-lsp ()
-  "Setup LSP for Rust if available."
-  (when (executable-find "rust-analyzer")
-    (eglot-ensure)))
 
 ;; Configure Rust LSP server
 (with-eval-after-load 'eglot
@@ -77,12 +57,19 @@
                '((rust-mode rust-ts-mode) . ("rust-analyzer")))
   
   ;; Rust-specific LSP settings
-  (add-to-list 'eglot-workspace-configuration
-               '(rust-analyzer
-                 (cargo (buildScripts (enable . t)))
-                 (procMacro (enable . t))
-                 (diagnostics (enable . t))
-                 (completion (addCallParentheses . t)))))
+  (defun rust-eglot-workspace-config ()
+    "Return Rust workspace configuration for rust-analyzer."
+    '(:rust-analyzer
+      (:cargo (:buildScripts (:enable t))
+       :procMacro (:enable t)
+       :diagnostics (:enable t)
+       :completion (:addCallParentheses t))))
+  
+  (add-hook 'eglot-managed-mode-hook
+            (lambda ()
+              (when (derived-mode-p 'rust-mode 'rust-ts-mode)
+                (setq-local eglot-workspace-configuration
+                           (rust-eglot-workspace-config))))))
 
 ;; Rust utility functions
 (defun rust-compile ()
@@ -123,14 +110,19 @@
     (message "Not in a Rust project (no Cargo.toml found)")))
 
 (defun rust-format-buffer ()
-  "Format current buffer with rustfmt."
+  "Format current buffer with rustfmt or eglot."
   (interactive)
-  (if (executable-find "rustfmt")
-      (progn
-        (save-buffer)
-        (shell-command (format "rustfmt %s" (buffer-file-name)))
-        (revert-buffer t t t))
-    (message "rustfmt not found. Install with: rustup component add rustfmt")))
+  (cond
+   ((and (fboundp 'eglot-current-server) (eglot-current-server))
+    (eglot-format-buffer))
+   ((executable-find "rustfmt")
+    (let ((original-point (point)))
+      (shell-command-on-region
+       (point-min) (point-max)
+       "rustfmt --emit stdout"
+       (current-buffer) t)
+      (goto-char original-point)))
+   (t (message "No Rust formatter found. Install rustfmt with: rustup component add rustfmt"))))
 
 (defun rust-doc-std ()
   "Open Rust standard library documentation."

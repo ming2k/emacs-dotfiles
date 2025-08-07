@@ -18,9 +18,7 @@
   :ensure nil
   :mode "\\.go\\'"
   :when (treesit-language-available-p 'go)
-  :hook ((go-ts-mode . go-setup-corfu)
-         (go-ts-mode . go-setup-minor-modes)
-         (go-ts-mode . go-setup-lsp))
+  :hook ((go-ts-mode . go-setup-minor-modes))
   :bind (:map go-ts-mode-map
               ("C-c C-r" . go-run-buffer)
               ("C-c C-t" . go-test-current-package)
@@ -39,9 +37,7 @@
   :ensure t
   :mode "\\.go\\'"
   :unless (treesit-language-available-p 'go)
-  :hook ((go-mode . go-setup-corfu)
-         (go-mode . go-setup-minor-modes)
-         (go-mode . go-setup-lsp))
+  :hook ((go-mode . go-setup-minor-modes))
   :bind (:map go-mode-map
               ("C-c C-r" . go-run-buffer)
               ("C-c C-t" . go-test-current-package)
@@ -57,17 +53,6 @@
         gofmt-args '("-s")
         go-fontify-function-calls t))
 
-;; Enhanced Go completion setup
-(defun go-setup-corfu ()
-  "Setup corfu completion for Go with LSP priority."
-  (setq-local corfu-auto-delay 0.0
-              corfu-auto-prefix 1
-              completion-at-point-functions
-              (list (cape-capf-super
-                     #'eglot-completion-at-point
-                     #'cape-dabbrev
-                     #'cape-file
-                     #'cape-keyword))))
 
 ;; Go minor modes setup
 (defun go-setup-minor-modes ()
@@ -80,11 +65,6 @@
   (setq-local tab-width 4
               indent-tabs-mode t))
 
-;; Go LSP setup
-(defun go-setup-lsp ()
-  "Setup LSP for Go if available."
-  (when (executable-find "gopls")
-    (eglot-ensure)))
 
 ;; Configure Go LSP server
 (with-eval-after-load 'eglot
@@ -92,12 +72,19 @@
                '((go-mode go-ts-mode) . ("gopls")))
   
   ;; Go-specific LSP settings
-  (add-to-list 'eglot-workspace-configuration
-               '(gopls
-                 (gofumpt . t)
-                 (staticcheck . t)
-                 (analyses (unusedparams . t)
-                          (shadow . t)))))
+  (defun go-eglot-workspace-config ()
+    "Return Go workspace configuration for gopls."
+    '(:gopls
+      (:gofumpt t
+       :staticcheck t
+       :analyses (:unusedparams t
+                  :shadow t))))
+  
+  (add-hook 'eglot-managed-mode-hook
+            (lambda ()
+              (when (derived-mode-p 'go-mode 'go-ts-mode)
+                (setq-local eglot-workspace-configuration
+                           (go-eglot-workspace-config))))))
 
 ;; Go utility functions
 (defun go-run-buffer ()
@@ -144,6 +131,8 @@
   "Format current buffer with gofmt or LSP."
   (interactive)
   (cond
+   ((and (fboundp 'eglot-current-server) (eglot-current-server))
+    (eglot-format-buffer))
    ((executable-find "gofmt")
     (let ((original-point (point)))
       (shell-command-on-region
@@ -151,8 +140,6 @@
        "gofmt"
        (current-buffer) t)
       (goto-char original-point)))
-   ((fboundp 'eglot-format-buffer)
-    (eglot-format-buffer))
    (t (message "No Go formatter found. Install Go toolchain"))))
 
 (defun go-format-imports ()

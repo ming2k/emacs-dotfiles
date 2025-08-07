@@ -1,6 +1,6 @@
 ;;; modules/lang/python/config.el -*- lexical-binding: t; -*-
 ;;; Commentary:
-;; Comprehensive Python language support
+;; Modern Python development with eglot, corfu, and flymake
 ;;; Code:
 
 ;; Python settings
@@ -19,25 +19,14 @@
          ("\\.pyw\\'" . python-mode))
   :interpreter (("python" . python-mode)
                 ("python3" . python-mode))
-  :hook ((python-mode . python-setup-completion)
-         (python-mode . python-setup-minor-modes)
-         (python-mode . python-setup-lsp)
-         (python-mode . python-setup-keybindings))
+  :hook ((python-mode . python-setup-minor-modes)
+         (python-mode . python-setup-keybindings)
+         (python-mode . python-activate-venv))
   :config
   (setq python-indent-offset 4
         python-indent-guess-indent-offset nil
         python-shell-interpreter "python3"
         python-shell-completion-native-enable nil))
-
-;; Python completion setup
-(defun python-setup-completion ()
-  "Setup built-in completion for Python with LSP priority."
-  (setq-local completion-at-point-functions
-              (list (cape-capf-super
-                     #'eglot-completion-at-point
-                     #'cape-dabbrev
-                     #'cape-file
-                     #'cape-keyword))))
 
 ;; Python minor modes setup
 (defun python-setup-minor-modes ()
@@ -45,22 +34,11 @@
   (subword-mode 1)
   (hs-minor-mode 1)
   (flyspell-prog-mode)
-  ;; Disable problematic flymake backends
-  (when (boundp 'flymake-diagnostic-functions)
-    (setq-local flymake-diagnostic-functions
-                (remq 'python-flymake flymake-diagnostic-functions)))
   (setq-local tab-width 4
               indent-tabs-mode nil
               fill-column 88
-              tab-always-indent t
-              electric-indent-inhibit nil)
-  (local-set-key (kbd "TAB") 'indent-for-tab-command))
-
-;; Python LSP setup
-(defun python-setup-lsp ()
-  "Setup Pyright LSP for Python."
-  (when (executable-find "pyright-langserver")
-    (eglot-ensure)))
+              tab-always-indent 'complete
+              electric-indent-inhibit nil))
 
 ;; Python keybindings setup
 (defun python-setup-keybindings ()
@@ -70,11 +48,15 @@
   (local-set-key (kbd "C-c C-l") 'python-shell-send-file)
   (local-set-key (kbd "C-c C-z") 'python-shell-switch-to-shell)
   (local-set-key (kbd "C-c C-f") 'python-format-buffer)
-  (local-set-key (kbd "C-c C-d") 'eglot-find-declaration)
-  (local-set-key (kbd "C-c C-i") 'eglot-find-implementation)
-  (local-set-key (kbd "C-c C-x") 'python-execute-file))
+  (local-set-key (kbd "C-c C-x") 'python-execute-file)
+  (local-set-key (kbd "C-c C-t") 'python-run-pytest)
+  (local-set-key (kbd "C-c C-T") 'python-run-pytest-current)
+  (local-set-key (kbd "C-c C-u") 'python-run-unittest)
+  (local-set-key (kbd "C-c C-v") 'python-activate-venv)
+  (local-set-key (kbd "C-c C-b") 'python-toggle-breakpoint)
+  (local-set-key (kbd "C-c C-s") 'python-check-syntax))
 
-;; Python LSP server configuration
+;; Python LSP server configuration for eglot
 (with-eval-after-load 'eglot
   (add-to-list 'eglot-server-programs
                '(python-mode . ("pyright-langserver" "--stdio")))
@@ -87,38 +69,51 @@
         :autoImportCompletions t
         :autoSearchPaths t
         :useLibraryCodeForTypes t
-        :diagnosticMode "workspace"))))
+        :diagnosticMode "workspace"
+        :diagnosticSeverityOverrides
+        (:reportMissingImports "error"
+         :reportMissingTypeStubs "information"
+         :reportUnusedImport "information"
+         :reportUnusedVariable "information")))))
   
   (add-hook 'eglot-managed-mode-hook
             (lambda ()
               (when (derived-mode-p 'python-mode)
                 (setq-local eglot-workspace-configuration
-                           (python-eglot-workspace-config))
-                (setq-local eglot-ignored-server-capabilities 
-                           '(:documentHighlightProvider))))))
+                           (python-eglot-workspace-config))))))
 
 ;; Python utility functions
 (defun python-format-buffer ()
   "Format Python buffer with available formatter."
   (interactive)
   (cond
+   ((and (fboundp 'eglot-current-server) (eglot-current-server))
+    (eglot-format-buffer))
    ((executable-find "black")
     (let ((original-point (point)))
-      (shell-command-on-region
-       (point-min) (point-max)
-       "black --quiet -"
-       (current-buffer) t)
+      (if (use-region-p)
+          (shell-command-on-region
+           (region-beginning) (region-end)
+           "black --quiet -"
+           (current-buffer) t)
+        (shell-command-on-region
+         (point-min) (point-max)
+         "black --quiet -"
+         (current-buffer) t))
       (goto-char original-point)))
    ((executable-find "autopep8")
     (let ((original-point (point)))
-      (shell-command-on-region
-       (point-min) (point-max)
-       "autopep8 -"
-       (current-buffer) t)
+      (if (use-region-p)
+          (shell-command-on-region
+           (region-beginning) (region-end)
+           "autopep8 -"
+           (current-buffer) t)
+        (shell-command-on-region
+         (point-min) (point-max)
+         "autopep8 -"
+         (current-buffer) t))
       (goto-char original-point)))
-   ((fboundp 'eglot-format-buffer)
-    (eglot-format-buffer))
-   (t (message "No Python formatter found. Install black or autopep8"))))
+   (t (message "No Python formatter found. Install black, autopep8, or use eglot"))))
 
 (defun python-execute-file ()
   "Execute current Python file."
@@ -195,17 +190,45 @@
     (save-buffer)
     (compile (format "python3 -m py_compile %s" buffer-file-name))))
 
-;; Auto-activate venv when opening Python files
-(add-hook 'python-mode-hook 'python-activate-venv)
+;; Python-specific flymake setup
+(defun python-setup-flymake ()
+  "Setup flymake for Python with multiple backends."
+  (when (and (bound-and-true-p flymake-mode)
+             (not (bound-and-true-p eglot--managed-mode)))
+    ;; Only use built-in Python flymake if eglot is not running
+    (add-hook 'flymake-diagnostic-functions #'python-flymake nil t)))
 
-;; Additional keybindings
+;; Add flymake setup to Python mode
+(add-hook 'python-mode-hook #'python-setup-flymake)
+
+;; Improved Python shell setup
+(defun python-setup-shell ()
+  "Setup Python shell with better defaults."
+  (setq-local python-shell-buffer-name "Python"
+              python-shell-enable-font-lock t
+              python-shell-completion-native-enable nil))
+
+(add-hook 'python-mode-hook #'python-setup-shell)
+
+;; Python import sorting (if available)
+(defun python-sort-imports ()
+  "Sort Python imports using isort if available."
+  (interactive)
+  (cond
+   ((and (fboundp 'eglot-current-server) (eglot-current-server))
+    (eglot-code-action-organize-imports))
+   ((executable-find "isort")
+    (let ((original-point (point)))
+      (shell-command-on-region
+       (point-min) (point-max)
+       "isort --stdout -"
+       (current-buffer) t)
+      (goto-char original-point)))
+   (t (message "No import sorter found. Install isort or use eglot"))))
+
+;; Add import sorting keybinding
 (with-eval-after-load 'python
-  (define-key python-mode-map (kbd "C-c C-t") 'python-run-pytest)
-  (define-key python-mode-map (kbd "C-c C-T") 'python-run-pytest-current)
-  (define-key python-mode-map (kbd "C-c C-u") 'python-run-unittest)
-  (define-key python-mode-map (kbd "C-c C-v") 'python-activate-venv)
-  (define-key python-mode-map (kbd "C-c C-b") 'python-toggle-breakpoint)
-  (define-key python-mode-map (kbd "C-c C-s") 'python-check-syntax))
+  (define-key python-mode-map (kbd "C-c C-i") 'python-sort-imports))
 
 (provide 'python-config)
 ;;; modules/lang/python/config.el ends here

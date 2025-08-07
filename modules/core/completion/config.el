@@ -1,8 +1,11 @@
-;;; modules/ui/completion/config.el -*- lexical-binding: t; -*-
+;;; modules/core/completion/config.el -*- lexical-binding: t; -*-
+;;; Commentary:
+;; Modern completion system using corfu, orderless, vertico, and eglot
+;;; Code:
 
 ;; Built-in completion settings
 (setq completion-cycle-threshold 3
-      tab-always-indent t
+      tab-always-indent 'complete
       completion-ignore-case t
       read-extended-command-predicate #'command-completion-default-include-p
       enable-recursive-minibuffers t
@@ -11,8 +14,8 @@
       completion-pcm-complete-word-inserts-delimiters t
       completion-pcm-word-delimiters "-_./:| ")
 
-;; Enhanced completion-in-region settings
-(setq completion-in-region-function #'completion--in-region
+;; Enhanced completion-in-region settings for corfu
+(setq completion-in-region-function nil
       completion-auto-help t
       completion-auto-select nil
       completion-show-help t
@@ -24,14 +27,19 @@
   :config
   (setq completion-styles '(orderless basic)
         completion-category-defaults nil
-        completion-category-overrides '((file (styles orderless))
+        completion-category-overrides '((file (styles basic partial-completion orderless))
+                                       (buffer (styles basic partial-completion orderless))
                                        (project-file (styles orderless))
                                        (command (styles orderless))
                                        (variable (styles orderless))
-                                       (symbol (styles orderless))))
+                                       (symbol (styles orderless))
+                                       (eglot (styles orderless))
+                                       (eglot-capf (styles orderless))))
   
   ;; Orderless configuration for better matching
   (setq orderless-matching-styles '(orderless-literal
+                                   orderless-prefixes
+                                   orderless-initialism
                                    orderless-regexp
                                    orderless-flex)))
 
@@ -76,11 +84,40 @@
   :bind (:map minibuffer-local-map
               ("M-A" . marginalia-cycle)))
 
+;; Corfu for in-buffer completion popup
+(use-package corfu
+  :ensure t
+  :custom
+  (corfu-cycle t)
+  (corfu-auto t)
+  (corfu-auto-delay 0.1)
+  (corfu-auto-prefix 1)
+  (corfu-separator ?\\ )
+  (corfu-quit-at-boundary nil)
+  (corfu-quit-no-match 'separator)
+  (corfu-preview-current 'insert)
+  (corfu-preselect 'prompt)
+  (corfu-on-exact-match nil)
+  (corfu-scroll-margin 5)
+  :bind
+  (:map corfu-map
+        ("TAB" . corfu-next)
+        ([tab] . corfu-next)
+        ("S-TAB" . corfu-previous)
+        ([backtab] . corfu-previous)
+        ("S-<return>" . corfu-insert)
+        ("RET" . nil))
+  :init
+  (global-corfu-mode)
+  (corfu-popupinfo-mode)
+  :config
+  (setq corfu-popupinfo-delay '(0.5 . 0.2)))
+
 ;; Cape for additional completion backends
 (use-package cape
   :ensure t
   :config
-  ;; Add completion functions to completion-at-point-functions
+  ;; Add useful completion functions
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-elisp-block)
@@ -88,30 +125,33 @@
   ;; Programming mode enhancements
   (add-hook 'prog-mode-hook
             (lambda ()
-              (add-to-list 'completion-at-point-functions #'cape-keyword t)
-              (add-to-list 'completion-at-point-functions #'cape-symbol t)))
+              (add-to-list 'completion-at-point-functions #'cape-keyword t)))
   
-  ;; Enhanced completion setup for better integration
-  (defun cape-capf-setup-builtin ()
-    "Setup cape completion functions for built-in completion."
+  ;; Enhanced completion setup
+  (defun cape-setup-capf ()
+    "Setup cape completion at point functions."
     (setq-local completion-at-point-functions
-                (list (cape-capf-super
-                       #'cape-dabbrev
-                       #'cape-file
-                       #'cape-keyword))))
+                (list (cape-capf-super #'cape-dabbrev #'cape-file))))
   
-  (add-hook 'text-mode-hook #'cape-capf-setup-builtin))
+  (add-hook 'text-mode-hook #'cape-setup-capf))
 
 ;; Global eglot configuration for all programming languages
 (use-package eglot
   :ensure nil
+  :hook ((python-mode . eglot-ensure)
+         (rust-mode . eglot-ensure)
+         (js-mode . eglot-ensure)
+         (typescript-mode . eglot-ensure)
+         (go-mode . eglot-ensure)
+         (c-mode . eglot-ensure)
+         (c++-mode . eglot-ensure))
   :config
   ;; Global eglot settings
   (setq eglot-sync-connect nil
         eglot-autoshutdown t
         eglot-extend-to-xref t
         eglot-events-buffer-size 0
-        eglot-send-changes-idle-time 0.5
+        eglot-send-changes-idle-time 0.3
         eglot-ignored-server-capabilities '(:hoverProvider :documentHighlightProvider))
   
   ;; Better eglot keybindings
@@ -125,17 +165,17 @@
               ("M-?" . eglot-find-references)
               ("C-M-." . eglot-find-implementation)))
 
-;; Programming-specific completion enhancements
+;; Programming-specific completion enhancements with corfu
 (with-eval-after-load 'eglot
   (add-hook 'eglot-managed-mode-hook
             (lambda ()
-              ;; Prioritize eglot completion
+              ;; Prioritize eglot completion for corfu
               (setq-local completion-at-point-functions
-                          (list (cape-capf-super
+                          (list (cape-capf-properties
                                  #'eglot-completion-at-point
-                                 #'cape-dabbrev
-                                 #'cape-file
-                                 #'cape-keyword))))))
+                                 :exclusive 'no)
+                                #'cape-dabbrev
+                                #'cape-file)))))
 
 ;; Better minibuffer history
 (use-package savehist
@@ -154,41 +194,26 @@
   :config
   (setq dabbrev-ignored-buffer-regexps '("\\.\\(?:pdf\\|jpe?g\\|png\\)\\'")))
 
-;; Built-in completion enhancements
-(defun setup-builtin-completion ()
-  "Setup built-in completion for programming modes."
-  ;; Enhanced completion settings for programming
+;; Completion enhancements for different modes
+(defun setup-prog-mode-completion ()
+  "Setup completion for programming modes."
   (setq-local completion-at-point-functions
-              (append completion-at-point-functions
-                      '(cape-dabbrev cape-file cape-keyword))))
+              (list #'cape-dabbrev #'cape-file #'cape-keyword)))
 
-;; Org-mode specific completion setup
+;; Org-mode specific completion setup  
 (defun setup-org-mode-completion ()
-  "Setup completion for org-mode with built-in completion."
-  ;; Custom function to check if we should complete in org-mode
+  "Setup completion for org-mode."
   (setq-local completion-at-point-functions
-              (list (lambda ()
-                      ;; Don't complete in org headers/keywords
-                      (when (not (org-in-keyword-p))
-                        (funcall (cape-capf-super
-                                 #'cape-dabbrev
-                                 #'cape-file)))))))
+              (list #'cape-dabbrev #'cape-file)))
 
-(defun org-in-keyword-p ()
-  "Check if point is in an org keyword line (#+TITLE, #+AUTHOR, etc.)."
-  (save-excursion
-    (beginning-of-line)
-    (looking-at "^[ \t]*#\\+")))
-
-;; Apply built-in completion to programming modes
-(add-hook 'prog-mode-hook #'setup-builtin-completion)
-;; Use selective completion for org-mode
+;; Apply completion setups
+(add-hook 'prog-mode-hook #'setup-prog-mode-completion)
 (add-hook 'org-mode-hook #'setup-org-mode-completion)
-;; Apply built-in completion to other text modes (excluding org-mode)
 (add-hook 'text-mode-hook 
           (lambda ()
             (unless (derived-mode-p 'org-mode)
-              (setup-builtin-completion))))
+              (setq-local completion-at-point-functions
+                          (list #'cape-dabbrev #'cape-file)))))
 
 ;; Enhanced marginalia integration helper functions
 (defun marginalia-toggle-annotations ()
@@ -202,20 +227,19 @@
 ;; Manual completion shortcuts
 (global-set-key (kbd "C-c m t") 'marginalia-toggle-annotations)
 (global-set-key (kbd "C-c TAB") 'completion-at-point)
-(global-set-key (kbd "C-c SPC") 'completion-at-point)
 (global-set-key (kbd "C-M-i") 'completion-at-point)
 (global-set-key (kbd "C-M-/") 'dabbrev-completion)
 
-;; Manual completion triggers
+;; Manual completion triggers that work with corfu
 (defun manual-completion ()
   "Manually trigger completion."
   (interactive)
-  (completion-at-point))
+  (if (and (bound-and-true-p corfu-mode) (not completion-in-region-mode))
+      (corfu-complete)
+    (completion-at-point)))
 
 (global-set-key (kbd "C-c c") 'manual-completion)
 (global-set-key (kbd "M-/") 'manual-completion)
-
-;; Built-in search and navigation commands
 
 ;; Enable recentf for recent files
 (use-package recentf
@@ -232,14 +256,10 @@
       lazy-highlight-cleanup nil
       lazy-highlight-initial-delay 0)
 
-
 ;; Completion enhancements
 (setq completion-show-help t
       completion-auto-help t
       completion-auto-select nil)
 
-;; Normal TAB behavior (indent only)
-(setq tab-always-indent t)
-
 (provide 'completion-config)
-;;; modules/ui/completion/config.el ends here
+;;; modules/core/completion/config.el ends here
