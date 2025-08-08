@@ -3,9 +3,6 @@
 ;; Shell scripting support with bash-language-server
 ;;; Code:
 
-;; Disable sh-shellcheck-flymake in favor of LSP diagnostics
-(with-eval-after-load 'sh-script
-  (remove-hook 'flymake-diagnostic-functions 'sh-shellcheck-flymake))
 
 ;; Eglot configuration for shell scripting
 (use-package eglot

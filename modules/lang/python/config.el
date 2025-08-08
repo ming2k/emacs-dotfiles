@@ -1,6 +1,6 @@
 ;;; modules/lang/python/config.el -*- lexical-binding: t; -*-
 ;;; Commentary:
-;; Modern Python development with eglot, corfu, and flymake
+;; Modern Python development with eglot and corfu
 ;;; Code:
 
 ;; Python settings

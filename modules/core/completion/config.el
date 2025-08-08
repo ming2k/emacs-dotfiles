@@ -176,10 +176,7 @@
                                  :exclusive 'no)
                                 #'cape-dabbrev
                                 #'cape-file))
-              ;; Disable traditional flymake checkers when eglot is active
-              (when (bound-and-true-p flymake-mode)
-                (setq-local flymake-diagnostic-functions
-                           (list #'eglot-flymake-backend))))))
+)))
 
 ;; Better minibuffer history
 (use-package savehist

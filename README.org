@@ -72,7 +72,7 @@ The main configuration file contains:
 
 - *Core Settings*: UTF-8, defaults, backup configuration
 - *Session Management*: saveplace, recentf, savehist
-- *Programming Basics*: tree-sitter, flymake, eglot setup
+- *Programming Basics*: tree-sitter, eglot setup
 - *Editing Enhancements*: multiple-cursors, avy, smartparens, yasnippet
 - *Module Loading*: Simple function to load specialized modules
 

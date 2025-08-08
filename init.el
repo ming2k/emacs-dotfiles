@@ -1,12 +1,9 @@
 ;;; init.el --- Modern Emacs configuration -*- lexical-binding: t; -*-
+
 ;;; Commentary:
 ;; A clean, modern Emacs configuration
+
 ;;; Code:
-
-;; Package system is initialized in early-init.el
-(require 'package)
-
-;;; Core Settings
 
 ;; UTF-8 everywhere
 (set-language-environment "UTF-8")
@@ -53,90 +50,15 @@
 ;;; Session Management
 ;; Session management moved to modules/core/session/config.el
 
-;;; Programming
-;; Tree-sitter (built-in in Emacs 29+)
-(when (treesit-available-p)
-  (setq treesit-font-lock-level 4))
-
-;; Flymake for syntax checking (built-in)
-(use-package flymake
-  :ensure nil
-  :hook (prog-mode . flymake-mode)
-  :config
-  (setq flymake-mode-line-counter-format '("" flymake-mode-line-exception-counter flymake-mode-line-counters)
-        flymake-mode-line-format '(" " flymake-mode-line-counter-format))
-  
-  ;; Function to disable traditional flymake checkers for LSP languages
-  (defun flymake-disable-traditional-checkers ()
-    "Disable built-in flymake checkers that conflict with LSP."
-    (setq-local flymake-diagnostic-functions
-                (seq-filter (lambda (func)
-                              ;; Remove traditional checkers that LSP replaces
-                              (not (memq func '(python-flymake 
-                                               flymake-cc
-                                               elisp-flymake-byte-compile
-                                               elisp-flymake-checkdoc))))
-                            flymake-diagnostic-functions)))
-  
-  ;; Apply to programming modes that typically use LSP
-  (dolist (hook '(python-mode-hook 
-                  c-mode-hook 
-                  c++-mode-hook
-                  rust-mode-hook
-                  rust-ts-mode-hook
-                  js-mode-hook
-                  typescript-mode-hook
-                  typescript-ts-mode-hook
-                  go-mode-hook
-                  go-ts-mode-hook))
-    (add-hook hook #'flymake-disable-traditional-checkers))
-  
-  :bind (:map flymake-mode-map
-              ("C-c ! n" . flymake-goto-next-error)
-              ("C-c ! p" . flymake-goto-prev-error)
-              ("C-c ! l" . flymake-show-buffer-diagnostics)
-              ("C-c ! L" . flymake-show-project-diagnostics)))
-
-;;; Editing Enhancements
-;; Multiple cursors
-(use-package multiple-cursors
-  :ensure t
-  :bind (("C-S-c C-S-c" . mc/edit-lines)
-         ("C->" . mc/mark-next-like-this)
-         ("C-<" . mc/mark-previous-like-this)
-         ("C-c C-<" . mc/mark-all-like-this)))
-
-;; Expand region
-(use-package expand-region
-  :ensure t
-  :bind ("C-=" . er/expand-region))
-
-
-;; Better movement
-(use-package avy
-  :ensure t
-  :bind (("C-:" . avy-goto-char)
-         ("C-'" . avy-goto-char-2)
-         ("M-g f" . avy-goto-line)
-         ("M-g w" . avy-goto-word-1)))
-
-;; YASnippet
-(use-package yasnippet
-  :ensure t
-  :hook (prog-mode . yas-minor-mode)
-  :config
-  (yas-global-mode 1))
-
-(use-package yasnippet-snippets
-  :ensure t
-  :after yasnippet)
+;(setq trusted-content :all)
+;(setq trusted-content '("~/.emacs.d/init.el"))
 
 ;; Simple keybindings
 (global-set-key (kbd "C-c s") 'yas-insert-snippet)
 
 ;;; Load Modules
 (defun load-config-module (category module)
-  "Load a configuration module."
+  "Load a configuration MODULE of CATEGORY."
   (let ((config-file (expand-file-name
                       (format "modules/%s/%s/config.el" category module)
                       user-emacs-directory)))
@@ -152,13 +74,13 @@
 ;; Load UI modules
 (load-config-module "ui" "themes")
 
-;; Load tool modules  
+;; Load tool modules
 (load-config-module "tools" "magit")
 (load-config-module "tools" "org")
 
 ;; Load language modules
 (load-config-module "lang" "cc")
-(load-config-module "lang" "python") 
+(load-config-module "lang" "python")
 (load-config-module "lang" "rust")
 (load-config-module "lang" "javascript")
 (load-config-module "lang" "svelte")
