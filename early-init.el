@@ -6,18 +6,14 @@
 
 ;;; Code:
 
-;; Frame settings
+;; Clear emacs start
+(setq inhibit-startup-screen t)
+(setq inhibit-splash-screen t)
+(setq inhibit-startup-message t)
+(setq inhibit-startup-echo-area-message t)
+
 ;; Set all new frames to be created without decorations by default
 (add-to-list 'default-frame-alist '(undecorated . t))
-;; Remove margins and borders
-(add-to-list 'default-frame-alist '(internal-border-width . 0))
-(add-to-list 'default-frame-alist '(border-width . 0))
-(setq-default left-margin-width 0)
-(setq-default right-margin-width 0)
-(set-window-fringes nil 0 0)
-
-;; Add config/system to load path for system-specific configurations
-(add-to-list 'load-path (expand-file-name "config/system" user-emacs-directory))
 
 ;; Disable auto save feature
 (setq auto-save-default nil)
@@ -81,7 +77,7 @@
 (setq read-process-output-max (* 1024 1024)) ; 1MB for LSP
 (setq process-adaptive-read-buffering nil)
 
-(set-face-attribute 'default nil :family "Monospace" :height 120)
+(set-face-attribute 'default nil :family "JetBrainsMono Nerd Font" :height 120)
 
 ;; Restore garbage collection settings after startup
 (add-hook 'emacs-startup-hook

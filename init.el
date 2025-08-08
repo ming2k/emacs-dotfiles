@@ -7,6 +7,7 @@
 (require 'package)
 
 ;;; Core Settings
+
 ;; UTF-8 everywhere
 (set-language-environment "UTF-8")
 (set-default-coding-systems 'utf-8)
