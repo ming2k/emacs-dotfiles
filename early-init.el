@@ -6,25 +6,42 @@
 
 ;;; Code:
 
-;; Clear emacs start
+;; -----------------------------------------------------------------------------
+;; Basic UI Framework and Style
+;; -----------------------------------------------------------------------------
+
+(set-face-attribute 'default nil :family "JetBrainsMono Nerd Font" :height 120)
+
+;; Get straight to a clean editor when starting Emacs
 (setq inhibit-startup-screen t)
 (setq inhibit-splash-screen t)
 (setq inhibit-startup-message t)
 (setq inhibit-startup-echo-area-message t)
 
+(add-to-list 'default-frame-alist '(width . 120))
+(add-to-list 'default-frame-alist '(height . 35))
+
 ;; Set all new frames to be created without decorations by default
 (add-to-list 'default-frame-alist '(undecorated . t))
+;; Set first frame color
+(add-to-list 'default-frame-alist '(background-color . "#1e1e1e"))
+(add-to-list 'default-frame-alist '(foreground-color . "#d4d4d4"))
+
+;; Disable UI elements early to avoid flashing
+(when (fboundp 'menu-bar-mode)
+  (menu-bar-mode -1))
+(when (fboundp 'tool-bar-mode)
+  (tool-bar-mode -1))
+(when (fboundp 'scroll-bar-mode)
+  (scroll-bar-mode -1))
 
 ;; Disable auto save feature
 (setq auto-save-default nil)
 (setq make-backup-files nil)
 
-;; Increase garbage collection threshold during startup
-(setq gc-cons-threshold most-positive-fixnum)
-(setq gc-cons-percentage 0.6)
-
-;; Package system initialization
-(require 'package)
+;; -----------------------------------------------------------------------------
+;; Builtin Pacakge Manager
+;; -----------------------------------------------------------------------------
 
 ;; Add package archives
 (setq package-archives
@@ -35,49 +52,17 @@
 ;; Initialize package system
 (package-initialize)
 
-;; Refresh package contents if needed
-(unless package-archive-contents
-  (package-refresh-contents))
-
-;; Install use-package if not already installed
-(unless (package-installed-p 'use-package)
-  (package-install 'use-package))
-
-;; Configure use-package
-(eval-when-compile
-  (require 'use-package))
-
-;; Also require use-package at runtime
-(require 'use-package)
-
-;; Make use-package verbose during startup (optional)
-(setq use-package-verbose t)
-(setq use-package-always-ensure t) ; Automatically install packages
-
-;; Disable UI elements early to avoid flashing
-(when (fboundp 'menu-bar-mode)
-  (menu-bar-mode -1))
-(when (fboundp 'tool-bar-mode)
-  (tool-bar-mode -1))
-(when (fboundp 'scroll-bar-mode)
-  (scroll-bar-mode -1))
-
-;; Disable startup screen
-(setq inhibit-startup-screen t)
-(setq inhibit-startup-message t)
-(setq initial-scratch-message "")
-
-;; Disable file dialog boxes
-(setq use-dialog-box nil)
-
-;; Disable ring bell
-(setq ring-bell-function 'ignore)
+;; -----------------------------------------------------------------------------
+;; Perfermance
+;; -----------------------------------------------------------------------------
 
 ;; Performance optimizations
 (setq read-process-output-max (* 1024 1024)) ; 1MB for LSP
 (setq process-adaptive-read-buffering nil)
 
-(set-face-attribute 'default nil :family "JetBrainsMono Nerd Font" :height 120)
+;; Increase garbage collection threshold during startup
+(setq gc-cons-threshold most-positive-fixnum)
+(setq gc-cons-percentage 0.6)
 
 ;; Restore garbage collection settings after startup
 (add-hook 'emacs-startup-hook

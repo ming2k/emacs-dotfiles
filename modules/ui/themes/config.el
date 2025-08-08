@@ -1,14 +1,7 @@
 ;;; modules/ui/themes/config.el -*- lexical-binding: t; -*-
 
-;; Doom themes
-(use-package doom-themes
-  :ensure t
-  :config
-  (setq doom-themes-enable-bold t
-        doom-themes-enable-italic t)
-  (load-theme 'doom-one t)
-  (doom-themes-visual-bell-config)
-  (doom-themes-org-config))
+;; Built-in dark theme
+(load-theme 'modus-vivendi t)
 
 ;; Doom modeline
 (use-package doom-modeline

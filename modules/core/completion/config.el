@@ -101,8 +101,10 @@
   (corfu-scroll-margin 5)
   :bind
   (:map corfu-map
-        ("TAB" . corfu-next)
-        ([tab] . corfu-next)
+        ("TAB" . corfu-complete)
+        ([tab] . corfu-complete)
+        ("C-n" . corfu-next)
+        ("C-p" . corfu-previous)
         ("S-TAB" . corfu-previous)
         ([backtab] . corfu-previous)
         ("S-<return>" . corfu-insert)
