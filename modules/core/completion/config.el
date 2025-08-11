@@ -230,5 +230,58 @@
       completion-auto-help t
       completion-auto-select nil)
 
+;; Flymake configuration - LSP-only backend
+(use-package flymake
+  :ensure nil
+  :hook (prog-mode . flymake-mode)
+  :config
+  ;; Disable all non-LSP backends
+  (setq flymake-no-changes-timeout nil
+        flymake-start-on-flymake-mode t
+        flymake-start-on-save-buffer t
+        flymake-proc-compilation-prevents-syntax-check nil)
+  
+  ;; Clear all diagnostic functions to only use LSP
+  (setq-default flymake-diagnostic-functions nil)
+  
+  ;; Keybindings for flymake navigation
+  :bind (:map flymake-mode-map
+              ("C-c ! n" . flymake-goto-next-error)
+              ("C-c ! p" . flymake-goto-prev-error)
+              ("C-c ! l" . flymake-show-buffer-diagnostics)
+              ("C-c ! L" . flymake-show-project-diagnostics)
+              ("C-c ! c" . flymake-start)))
+
+;; Configure flymake to work only with eglot
+(with-eval-after-load 'eglot
+  ;; Ensure eglot adds itself to flymake when starting
+  (add-hook 'eglot-managed-mode-hook
+            (lambda ()
+              ;; Clear any existing diagnostic functions
+              (setq-local flymake-diagnostic-functions nil)
+              ;; Only enable eglot's diagnostics
+              (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend nil t)
+              ;; Start flymake if not already active
+              (unless flymake-mode
+                (flymake-mode 1)))))
+
+;; Remove other flymake backends globally
+(defun remove-flymake-backends ()
+  "Remove all non-LSP flymake backends."
+  ;; Remove common non-LSP backends that might be added by other packages
+  (when (boundp 'flymake-diagnostic-functions)
+    (setq-local flymake-diagnostic-functions
+                (seq-filter (lambda (fn)
+                              (eq fn #'eglot-flymake-backend))
+                            flymake-diagnostic-functions))))
+
+;; Apply backend removal to all programming modes
+(add-hook 'prog-mode-hook #'remove-flymake-backends)
+
+;; Disable flymake's built-in syntax checkers
+(with-eval-after-load 'flymake
+  ;; Remove the legacy flymake-proc backend
+  (remove-hook 'flymake-diagnostic-functions #'flymake-proc-legacy-flymake))
+
 (provide 'completion-config)
 ;;; modules/core/completion/config.el ends here
