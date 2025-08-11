@@ -1,176 +1,120 @@
 ;;; modules/tools/org/config.el -*- lexical-binding: t; -*-
 
-;;; Simple and Standard Org Mode Configuration
-
 (use-package org
   :ensure nil
   :mode ("\\.org\\'" . org-mode)
   :bind (("C-c a" . org-agenda)
          ("C-c c" . org-capture)
          ("C-c l" . org-store-link))
-  
   :custom
-  ;; Core settings
   (org-directory "~/org/")
-  (org-default-notes-file (concat org-directory "tmp.org"))
-  
-  ;; Basic appearance
+  (org-default-notes-file (concat org-directory "notes.org"))
   (org-startup-folded 'content)
-  (org-hide-emphasis-markers nil)
   (org-pretty-entities t)
-  
-  ;; TODO and logging
-  (org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "DOING(g)" "WAITING(w)" "|" "DONE(d!)" "CANCELLED(c!)")))
+  (org-hide-leading-stars t)
+  (org-odd-levels-only t)
+  (org-todo-keywords '((sequence "TODO(t)" "DOING(g)" "|" "DONE(d!)" "CANCELLED(c!)")))
   (org-log-done 'time)
-  
-  ;; Agenda
   (org-agenda-window-setup 'current-window)
-  (org-agenda-restore-windows-after-quit t)
   (org-agenda-skip-scheduled-if-done t)
   (org-agenda-skip-deadline-if-done t)
-  
-  ;; Refiling
   (org-refile-use-outline-path 'file)
   (org-outline-path-complete-in-steps nil)
-  (org-refile-targets '((nil :maxlevel . 3)
-                        (org-agenda-files :maxlevel . 3)))
-  
-  ;; Archive
   (org-archive-location "archive/%s::datetree/")
-  
-  ;; Simple capture templates
   (org-capture-templates
-   '(("t" "Quick Task" entry (file (lambda () (expand-file-name (format-time-string "tasks/%Y/%Y-%m.org") org-directory)))
+   '(("t" "Task" entry (file+headline org-default-notes-file "Tasks")
       "* TODO %?\n  %U")
-     ("T" "Task" entry (file (lambda () (expand-file-name (format-time-string "tasks/%Y/%Y-%m.org") org-directory)))
-      "* TODO %?\n  SCHEDULED: %t\n  %U\n  %a\n  %i"
-      :empty-lines 1)
-     ("j" "Journal" entry (file (lambda () (expand-file-name (format-time-string "journals/%Y/%Y-%m.org") org-directory)))
-      "* %?\n  %U\n  %i\n  %a")))
-  
+     ("j" "Journal" entry (file+datetree org-default-notes-file)
+      "* %?\n  %U")))
   :config
-  ;; Ensure org directory exists
   (unless (file-directory-p org-directory)
     (make-directory org-directory t))
-  ;; Ensure journals and tasks directories exist
-  (unless (file-directory-p (concat org-directory "journals/"))
-    (make-directory (concat org-directory "journals/") t))
-  (unless (file-directory-p (concat org-directory "tasks/"))
-    (make-directory (concat org-directory "tasks/") t))
-
-  ;; Set agenda files to all org files in tasks directory
-  (let ((tasks-dir (expand-file-name "tasks/" org-directory)))
-    (when (file-directory-p tasks-dir)
-      (setq org-agenda-files (directory-files-recursively tasks-dir "\\.org$"))))
   
-  ;; Ensure agenda files are set when agenda is accessed
-  (add-hook 'org-agenda-mode-hook 
-            (lambda ()
-              (unless org-agenda-files
-                (let ((tasks-dir (expand-file-name "tasks/" org-directory)))
-                  (when (file-directory-p tasks-dir)
-                    (setq org-agenda-files (directory-files-recursively tasks-dir "\\.org$")))))))
-  
-  ;; Enable babel languages
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
      (shell . t)
-     (python . t))))
-
-;; Completely disable dabbrev in org and org-roam modes
-(defun disable-dabbrev-in-org ()
-  "Completely disable dabbrev completion in org-related modes."
-  ;; Remove all dabbrev-related completion functions
-  (setq-local completion-at-point-functions
-              (list #'org-pcomplete-completion-at-point
-                    #'comint-filename-completion))
+     (python . t)))
   
-  ;; Disable dabbrev key bindings
-  (local-set-key (kbd "M-/") nil)
-  (local-set-key (kbd "C-M-/") nil)
-  
-  ;; Disable hippie-expand if it's enabled
-  (when (fboundp 'hippie-expand)
-    (local-set-key (kbd "M-/") nil))
-  
-  ;; Remove dabbrev from completion functions completely
-  (setq-local completion-at-point-functions
-              (delq #'dabbrev-completion completion-at-point-functions))
-  
-  ;; Disable auto-completion if it tries to use dabbrev
-  (when (bound-and-true-p corfu-mode)
-    (setq-local corfu-auto nil)))
-
-;; Apply to org-mode with higher priority
-(add-hook 'org-mode-hook #'disable-dabbrev-in-org 90)
-
-;; Also apply when entering any org-related mode
-(add-hook 'org-capture-mode-hook #'disable-dabbrev-in-org 90)
-(add-hook 'org-agenda-mode-hook #'disable-dabbrev-in-org 90)
-
-;; Modern bullet points (built-in alternative)
-(use-package org
-  :ensure nil
-  :config
-  ;; Use built-in org-superstar-like functionality
-  (setq org-hide-leading-stars t
-        org-odd-levels-only t)
-  ;; Custom bullet characters
+  ;; Custom bullet points
   (font-lock-add-keywords 'org-mode
     '(("^\\*\\{1\\} " (0 (prog1 () (compose-region (match-beginning 0) (match-end 0) "•"))))
       ("^\\*\\{2\\} " (0 (prog1 () (compose-region (match-beginning 0) (match-end 0) "  ◦"))))
       ("^\\*\\{3\\} " (0 (prog1 () (compose-region (match-beginning 0) (match-end 0) "    ▪")))))))
 
-;; Org-roam configuration
-(use-package org-roam
-  :ensure t
-  :bind (("C-c n l" . org-roam-buffer-toggle)
-         ("C-c n f" . org-roam-node-find)
-         ("C-c n i" . org-roam-node-insert)
-         ("C-c n c" . org-roam-capture)
-         ("C-c n j" . org-roam-dailies-capture-today))
-  :custom
-  (org-roam-directory "~/org/roam/")
-  (org-roam-db-location "~/org/roam/org-roam.db")
-  (org-roam-completion-everywhere t)
-  (org-roam-capture-templates
-   '(("d" "default" plain "%?" :target
-      (file+head "%<%Y>/%<%s>.org" "#+title: ${title}\n")
-      :unnarrowed t)))
-  :config
-  ;; Ensure roam directory exists
-  (unless (file-directory-p org-roam-directory)
-    (make-directory org-roam-directory t))
-  ;; Ensure the org-roam database is created
-  (org-roam-db-autosync-mode)
+;; Disable all completion in org-mode and org-roam
+(defun org-disable-all-completion ()
+  "Completely disable all completion in org-mode and org-roam."
+  ;; Force disable global corfu mode locally
+  (when (bound-and-true-p corfu-mode)
+    (corfu-mode -1))
   
-  ;; Disable dabbrev in all org-roam contexts
-  (add-hook 'org-roam-mode-hook #'disable-dabbrev-in-org 90)
-  (add-hook 'org-roam-capture-mode-hook #'disable-dabbrev-in-org 90)
+  ;; Completely clear all completion functions
+  (setq-local completion-at-point-functions nil)
   
-  ;; Also disable dabbrev when visiting org-roam files
-  (defun org-roam-file-setup ()
-    "Setup for org-roam files to disable dabbrev."
-    (when (and buffer-file-name
-               (file-in-directory-p buffer-file-name org-roam-directory))
-      (disable-dabbrev-in-org)))
+  ;; Disable all corfu settings
+  (setq-local corfu-auto nil)
+  (setq-local corfu-auto-delay 999999)
+  (setq-local corfu-auto-prefix 999999)
   
-  (add-hook 'find-file-hook #'org-roam-file-setup))
+  ;; Disable all completion mechanisms
+  (setq-local completion-in-region-function nil)
+  (setq-local completion-auto-help nil)
+  (setq-local tab-always-indent t)
+  
+  ;; Disable dabbrev completely
+  (setq-local dabbrev-case-replace nil)
+  (setq-local dabbrev-case-fold-search nil)
+  (setq-local dabbrev-abbrev-char-regexp nil)
+  
+  ;; Disable hippie-expand
+  (setq-local hippie-expand-try-functions-list nil)
+  
+  ;; Remove all potential completion hooks
+  (remove-hook 'completion-at-point-functions #'dabbrev-completion t)
+  (remove-hook 'completion-at-point-functions #'org-roam-completion-at-point t)
+  (remove-hook 'completion-at-point-functions #'org-pcomplete-completion-at-point t)
+  (remove-hook 'completion-at-point-functions #'pcomplete-completions-at-point t)
+  (remove-hook 'completion-at-point-functions #'eglot-completion-at-point t)
+  
+  ;; Disable org-roam specific completion
+  (when (boundp 'org-roam-completion-functions)
+    (setq-local org-roam-completion-functions nil)))
 
-;; Global advice to prevent dabbrev functions in org-mode buffers
-(defun prevent-dabbrev-in-org (orig-fun &rest args)
-  "Prevent dabbrev functions from running in org-mode and org-roam buffers."
-  (unless (or (derived-mode-p 'org-mode)
-              (and buffer-file-name
-                   (string-match-p "\\.org$" buffer-file-name))
-              (and (bound-and-true-p org-roam-directory)
-                   buffer-file-name
-                   (file-in-directory-p buffer-file-name org-roam-directory)))
+(add-hook 'org-mode-hook #'org-disable-all-completion)
+
+;; Aggressively disable completion functions in org-mode
+(defun org-disable-completion-advice (orig-fun &rest args)
+  "Advice to disable completion functions in org-mode buffers."
+  (unless (derived-mode-p 'org-mode)
     (apply orig-fun args)))
 
-;; Apply advice to dabbrev functions
-(advice-add 'dabbrev-expand :around #'prevent-dabbrev-in-org)
-(advice-add 'dabbrev-completion :around #'prevent-dabbrev-in-org)
+;; Add advice to prevent completion functions from running in org-mode
+(advice-add 'dabbrev-completion :around #'org-disable-completion-advice)
+(advice-add 'completion-at-point :around #'org-disable-completion-advice)
+(advice-add 'corfu--auto-complete :around #'org-disable-completion-advice)
+(advice-add 'corfu-complete :around #'org-disable-completion-advice)
+
+;; Org-roam (optional)
+(use-package org-roam
+  :ensure t
+  :bind (("C-c n f" . org-roam-node-find)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n c" . org-roam-capture))
+  :custom
+  (org-roam-directory "~/org/roam/")
+  (org-roam-completion-everywhere nil)
+  (org-roam-completion-ignore-case t)
+  (org-roam-completion-system 'default)
+  :config
+  (unless (file-directory-p org-roam-directory)
+    (make-directory org-roam-directory t))
+  (org-roam-db-autosync-mode)
+  (add-hook 'org-roam-mode-hook #'org-disable-all-completion)
+  
+  ;; Aggressively disable org-roam completion after loading
+  (advice-add 'org-roam--register-completion-functions-h :override #'ignore)
+  (advice-add 'org-roam-completion-at-point :override #'ignore))
 
 (provide 'org-config)
+;;; modules/tools/org/config.el ends here
