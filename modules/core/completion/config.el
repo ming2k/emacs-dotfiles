@@ -115,27 +115,13 @@
   :config
   (setq corfu-popupinfo-delay '(0.5 . 0.2)))
 
-;; Cape for additional completion backends
-(use-package cape
-  :ensure t
-  :config
-  ;; Add useful completion functions
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-  (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-elisp-block)
-  
-  ;; Programming mode enhancements
-  (add-hook 'prog-mode-hook
-            (lambda ()
-              (add-to-list 'completion-at-point-functions #'cape-keyword t)))
-  
-  ;; Enhanced completion setup
-  (defun cape-setup-capf ()
-    "Setup cape completion at point functions."
-    (setq-local completion-at-point-functions
-                (list (cape-capf-super #'cape-dabbrev #'cape-file))))
-  
-  (add-hook 'text-mode-hook #'cape-setup-capf))
+;; Built-in completion backends
+(defun setup-text-mode-completion ()
+  "Setup completion for text modes using built-in functions."
+  (setq-local completion-at-point-functions
+              (list #'dabbrev-completion #'comint-filename-completion)))
+
+(add-hook 'text-mode-hook #'setup-text-mode-completion)
 
 ;; Global eglot configuration for all programming languages
 (use-package eglot
@@ -173,11 +159,9 @@
             (lambda ()
               ;; Prioritize eglot completion for corfu
               (setq-local completion-at-point-functions
-                          (list (cape-capf-properties
-                                 #'eglot-completion-at-point
-                                 :exclusive 'no)
-                                #'cape-dabbrev
-                                #'cape-file))
+                          (list #'eglot-completion-at-point
+                                #'dabbrev-completion
+                                #'comint-filename-completion))
 )))
 
 ;; Better minibuffer history
@@ -201,7 +185,7 @@
 (defun setup-prog-mode-completion ()
   "Setup completion for programming modes."
   (setq-local completion-at-point-functions
-              (list #'cape-dabbrev #'cape-file #'cape-keyword)))
+              (list #'dabbrev-completion #'comint-filename-completion)))
 
 ;; Apply completion setups
 (add-hook 'prog-mode-hook #'setup-prog-mode-completion)

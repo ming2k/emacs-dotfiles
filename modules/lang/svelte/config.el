@@ -53,12 +53,11 @@
 ;; Optimized completion setup
 (defun svelte-setup-completion ()
   "Setup completion for Svelte files."
-  (when (and (fboundp 'cape-capf-super) (fboundp 'eglot-completion-at-point))
+  (when (fboundp 'eglot-completion-at-point)
     (setq-local completion-at-point-functions
-                (list (cape-capf-super
-                       #'eglot-completion-at-point
-                       #'cape-dabbrev
-                       #'cape-file)))))
+                (list #'eglot-completion-at-point
+                      #'dabbrev-completion
+                      #'comint-filename-completion))))
 
 ;; Minimal minor modes setup
 (defun svelte-setup-minor-modes ()

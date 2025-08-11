@@ -78,17 +78,36 @@
      (shell . t)
      (python . t))))
 
-;; Disable dabbrev in org and org-roam modes
+;; Completely disable dabbrev in org and org-roam modes
 (defun disable-dabbrev-in-org ()
-  "Disable dabbrev completion in org-related modes."
-  ;; Override completion functions without dabbrev
+  "Completely disable dabbrev completion in org-related modes."
+  ;; Remove all dabbrev-related completion functions
   (setq-local completion-at-point-functions
-              (list #'cape-file))
-  ;; Disable dabbrev key binding
-  (local-set-key (kbd "M-/") nil))
+              (list #'org-pcomplete-completion-at-point
+                    #'comint-filename-completion))
+  
+  ;; Disable dabbrev key bindings
+  (local-set-key (kbd "M-/") nil)
+  (local-set-key (kbd "C-M-/") nil)
+  
+  ;; Disable hippie-expand if it's enabled
+  (when (fboundp 'hippie-expand)
+    (local-set-key (kbd "M-/") nil))
+  
+  ;; Remove dabbrev from completion functions completely
+  (setq-local completion-at-point-functions
+              (delq #'dabbrev-completion completion-at-point-functions))
+  
+  ;; Disable auto-completion if it tries to use dabbrev
+  (when (bound-and-true-p corfu-mode)
+    (setq-local corfu-auto nil)))
 
 ;; Apply to org-mode with higher priority
 (add-hook 'org-mode-hook #'disable-dabbrev-in-org 90)
+
+;; Also apply when entering any org-related mode
+(add-hook 'org-capture-mode-hook #'disable-dabbrev-in-org 90)
+(add-hook 'org-agenda-mode-hook #'disable-dabbrev-in-org 90)
 
 ;; Modern bullet points (built-in alternative)
 (use-package org
@@ -125,7 +144,33 @@
     (make-directory org-roam-directory t))
   ;; Ensure the org-roam database is created
   (org-roam-db-autosync-mode)
-  ;; Disable dabbrev in org-roam contexts
-  (add-hook 'org-roam-mode-hook #'disable-dabbrev-in-org 90))
+  
+  ;; Disable dabbrev in all org-roam contexts
+  (add-hook 'org-roam-mode-hook #'disable-dabbrev-in-org 90)
+  (add-hook 'org-roam-capture-mode-hook #'disable-dabbrev-in-org 90)
+  
+  ;; Also disable dabbrev when visiting org-roam files
+  (defun org-roam-file-setup ()
+    "Setup for org-roam files to disable dabbrev."
+    (when (and buffer-file-name
+               (file-in-directory-p buffer-file-name org-roam-directory))
+      (disable-dabbrev-in-org)))
+  
+  (add-hook 'find-file-hook #'org-roam-file-setup))
+
+;; Global advice to prevent dabbrev functions in org-mode buffers
+(defun prevent-dabbrev-in-org (orig-fun &rest args)
+  "Prevent dabbrev functions from running in org-mode and org-roam buffers."
+  (unless (or (derived-mode-p 'org-mode)
+              (and buffer-file-name
+                   (string-match-p "\\.org$" buffer-file-name))
+              (and (bound-and-true-p org-roam-directory)
+                   buffer-file-name
+                   (file-in-directory-p buffer-file-name org-roam-directory)))
+    (apply orig-fun args)))
+
+;; Apply advice to dabbrev functions
+(advice-add 'dabbrev-expand :around #'prevent-dabbrev-in-org)
+(advice-add 'dabbrev-completion :around #'prevent-dabbrev-in-org)
 
 (provide 'org-config)
