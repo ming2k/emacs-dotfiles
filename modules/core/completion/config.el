@@ -227,12 +227,6 @@
     (marginalia-mode 1))
   (message "Marginalia annotations %s" (if marginalia-mode "enabled" "disabled")))
 
-;; Manual completion shortcuts
-(global-set-key (kbd "C-c m t") 'marginalia-toggle-annotations)
-(global-set-key (kbd "C-c TAB") 'completion-at-point)
-(global-set-key (kbd "C-M-i") 'completion-at-point)
-(global-set-key (kbd "C-M-/") 'dabbrev-completion)
-
 ;; Manual completion triggers that work with corfu
 (defun manual-completion ()
   "Manually trigger completion."

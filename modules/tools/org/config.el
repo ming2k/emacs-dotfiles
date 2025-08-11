@@ -100,16 +100,6 @@
       ("^\\*\\{2\\} " (0 (prog1 () (compose-region (match-beginning 0) (match-end 0) "  ◦"))))
       ("^\\*\\{3\\} " (0 (prog1 () (compose-region (match-beginning 0) (match-end 0) "    ▪")))))))
 
-;; Template expansion
-(use-package org-tempo
-  :ensure nil
-  :after org
-  :config
-  ;; Add structure templates after org-tempo is loaded
-  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-  (add-to-list 'org-structure-template-alist '("py" . "src python")))
-
 ;; Org-roam configuration
 (use-package org-roam
   :ensure t
