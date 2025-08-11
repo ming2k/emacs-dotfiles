@@ -38,7 +38,6 @@ body { box-sizing: border-box; max-width: 740px; width: 100%; margin: 40px auto;
   ;; Auto-fill in markdown
   (add-hook 'markdown-mode-hook 'auto-fill-mode)
   (add-hook 'markdown-mode-hook 'flyspell-mode)
-  (add-hook 'markdown-mode-hook 'markdown-setup-completion)
   (add-hook 'markdown-mode-hook 'markdown-setup-keybindings))
 
 ;; GitHub Flavored Markdown mode
@@ -49,12 +48,6 @@ body { box-sizing: border-box; max-width: 740px; width: 100%; margin: 40px auto;
   :config
   (setq markdown-command "grip --export -"))
 
-;; Markdown completion setup
-(defun markdown-setup-completion ()
-  "Setup completion for markdown mode."
-  (setq-local completion-at-point-functions
-              (list #'dabbrev-capf
-                    #'comint-filename-completion)))
 
 ;; Markdown keybindings
 (defun markdown-setup-keybindings ()

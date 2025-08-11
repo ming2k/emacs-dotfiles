@@ -125,7 +125,7 @@
                    (string-prefix-p (expand-file-name org-roam-directory)
                                     (expand-file-name (buffer-file-name)))))
     (setq-local completion-at-point-functions
-                (list #'dabbrev-capf #'comint-filename-completion))))
+                (list #'safe-dabbrev-capf #'comint-filename-completion))))
 
 (add-hook 'text-mode-hook #'setup-text-mode-completion)
 
@@ -166,7 +166,7 @@
               ;; Prioritize eglot completion for corfu
               (setq-local completion-at-point-functions
                           (list #'eglot-completion-at-point
-                                #'dabbrev-capf
+                                #'safe-dabbrev-capf
                                 #'comint-filename-completion))
 )))
 
@@ -187,11 +187,28 @@
   :config
   (setq dabbrev-ignored-buffer-regexps '("\\.\\(?:pdf\\|jpe?g\\|png\\)\\'")))
 
+;; Add completion directory to load path
+(add-to-list 'load-path (expand-file-name "modules/core/completion" user-emacs-directory))
+
+;; Load mode-specific completion configurations
+(require 'org-completion)
+(require 'org-roam-completion)
+(require 'markdown-completion)
+
+;; Safe wrapper for dabbrev-capf that handles nil return values
+(defun safe-dabbrev-capf ()
+  "Safe wrapper for dabbrev-capf that handles nil abbrev cases."
+  (condition-case nil
+    (when-let ((abbrev (dabbrev--abbrev-at-point)))
+      (when (stringp abbrev)
+        (dabbrev-capf)))
+    (error nil)))
+
 ;; Completion enhancements for different modes
 (defun setup-prog-mode-completion ()
   "Setup completion for programming modes."
   (setq-local completion-at-point-functions
-              (list #'dabbrev-capf #'comint-filename-completion)))
+              (list #'safe-dabbrev-capf #'comint-filename-completion)))
 
 ;; Apply completion setups
 (add-hook 'prog-mode-hook #'setup-prog-mode-completion)

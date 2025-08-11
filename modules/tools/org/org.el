@@ -65,23 +65,6 @@
         org-src-fontify-natively t       ; Syntax highlighting in source blocks
         org-src-tab-acts-natively t      ; Tab acts normally in source blocks
         org-edit-src-content-indentation 0) ; No extra indentation in source blocks
-  
-  ;; Manual file path completion function for org-mode
-  (defun org-manual-path-completion ()
-    "Manual file path completion for org-mode."
-    (interactive)
-    (let ((completion-at-point-functions '(comint-filename-completion)))
-      (completion-at-point)))
-  
-  ;; Disable automatic completion and dabbrev in org-mode to prevent interference
-  (defun org-disable-completion ()
-    "Disable automatic completion and dabbrev in org-mode."
-    ;; Disable corfu auto-completion
-    (setq-local corfu-auto nil)
-    ;; Completely clear completion functions to avoid dabbrev errors
-    (setq-local completion-at-point-functions nil))
-  
-  (add-hook 'org-mode-hook #'org-disable-completion)
   )
 
 (provide 'org-core-config)
