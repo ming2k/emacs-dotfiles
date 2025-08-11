@@ -118,8 +118,10 @@
 ;; Built-in completion backends
 (defun setup-text-mode-completion ()
   "Setup completion for text modes using built-in functions."
-  (setq-local completion-at-point-functions
-              (list #'dabbrev-completion #'comint-filename-completion)))
+  ;; Skip org-mode as it has its own completion setup
+  (unless (derived-mode-p 'org-mode)
+    (setq-local completion-at-point-functions
+                (list #'dabbrev-completion #'comint-filename-completion))))
 
 (add-hook 'text-mode-hook #'setup-text-mode-completion)
 

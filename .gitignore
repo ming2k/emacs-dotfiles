@@ -105,6 +105,7 @@ snippets/personal/
 # Org clock data
 .org-id-locations
 org-clock-save.el
+org-roam.db
 
 # Debug files
 *-debug.log
@@ -144,7 +145,6 @@ packages.el
 # Claude
 CLAUDE.md
 .claude/
-
 
 # Essential configuration files
 !init.el
