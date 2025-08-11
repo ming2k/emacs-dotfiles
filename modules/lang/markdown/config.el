@@ -53,7 +53,7 @@ body { box-sizing: border-box; max-width: 740px; width: 100%; margin: 40px auto;
 (defun markdown-setup-completion ()
   "Setup completion for markdown mode."
   (setq-local completion-at-point-functions
-              (list #'dabbrev-completion
+              (list #'dabbrev-capf
                     #'comint-filename-completion)))
 
 ;; Markdown keybindings

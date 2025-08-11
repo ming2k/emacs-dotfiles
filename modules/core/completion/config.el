@@ -125,7 +125,7 @@
                    (string-prefix-p (expand-file-name org-roam-directory)
                                     (expand-file-name (buffer-file-name)))))
     (setq-local completion-at-point-functions
-                (list #'dabbrev-completion #'comint-filename-completion))))
+                (list #'dabbrev-capf #'comint-filename-completion))))
 
 (add-hook 'text-mode-hook #'setup-text-mode-completion)
 
@@ -166,7 +166,7 @@
               ;; Prioritize eglot completion for corfu
               (setq-local completion-at-point-functions
                           (list #'eglot-completion-at-point
-                                #'dabbrev-completion
+                                #'dabbrev-capf
                                 #'comint-filename-completion))
 )))
 
@@ -191,7 +191,7 @@
 (defun setup-prog-mode-completion ()
   "Setup completion for programming modes."
   (setq-local completion-at-point-functions
-              (list #'dabbrev-completion #'comint-filename-completion)))
+              (list #'dabbrev-capf #'comint-filename-completion)))
 
 ;; Apply completion setups
 (add-hook 'prog-mode-hook #'setup-prog-mode-completion)
