@@ -1,33 +1,31 @@
-;;; modules/core/completion/markdown.el -*- lexical-binding: t; -*-
+;;; modules/core/completion/markdown-completion.el -*- lexical-binding: t; -*-
 ;;; Commentary:
-;; Markdown specific completion configuration
+;; Markdown specific completion configuration - follows org-mode pattern
 ;;; Code:
 
-;; Safe wrapper for dabbrev-capf that handles nil return values
-(defun safe-dabbrev-capf ()
-  "Safe wrapper for dabbrev-capf that handles nil abbrev cases."
-  (condition-case nil
-    (when-let ((abbrev (dabbrev--abbrev-at-point)))
-      (when (stringp abbrev)
-        (dabbrev-capf)))
-    (error nil)))
+(defun markdown-manual-path-completion ()
+  "Manual file path completion for markdown mode."
+  (interactive)
+  (let ((completion-at-point-functions '(comint-filename-completion)))
+    (completion-at-point)))
 
-;; Markdown completion setup
-(defun markdown-setup-completion ()
-  "Setup completion for markdown mode."
-  (setq-local completion-at-point-functions
-              (list #'safe-dabbrev-capf
-                    #'comint-filename-completion)))
+;; Disable automatic completion and dabbrev in markdown mode to prevent interference
+(defun markdown-disable-completion ()
+  "Disable automatic completion and dabbrev in markdown mode."
+  ;; Disable corfu auto-completion
+  (setq-local corfu-auto nil)
+  ;; Completely clear completion functions to avoid dabbrev errors
+  (setq-local completion-at-point-functions nil))
 
 ;; Setup function to be called when markdown-mode is loaded
 (defun setup-markdown-completion ()
   "Setup markdown completion behavior."
-  (add-hook 'markdown-mode-hook #'markdown-setup-completion)
-  (add-hook 'gfm-mode-hook #'markdown-setup-completion))
+  (add-hook 'markdown-mode-hook #'markdown-disable-completion)
+  (add-hook 'gfm-mode-hook #'markdown-disable-completion))
 
 ;; Only setup when markdown-mode is actually loaded
 (with-eval-after-load 'markdown-mode
   (setup-markdown-completion))
 
 (provide 'markdown-completion)
-;;; modules/core/completion/markdown.el ends here
+;;; modules/core/completion/markdown-completion.el ends here
