@@ -118,8 +118,12 @@
 ;; Built-in completion backends
 (defun setup-text-mode-completion ()
   "Setup completion for text modes using built-in functions."
-  ;; Skip org-mode as it has its own completion setup
-  (unless (derived-mode-p 'org-mode)
+  ;; Skip org-mode and org-roam as they have their own completion setup
+  (unless (or (derived-mode-p 'org-mode)
+              (and (boundp 'org-roam-directory)
+                   (buffer-file-name)
+                   (string-prefix-p (expand-file-name org-roam-directory)
+                                    (expand-file-name (buffer-file-name)))))
     (setq-local completion-at-point-functions
                 (list #'dabbrev-completion #'comint-filename-completion))))
 

@@ -42,6 +42,17 @@
   
   ;; Enable automatic database sync
   (org-roam-db-autosync-mode)
+  
+  ;; Disable automatic completion and dabbrev in org-roam files
+  (defun org-roam-disable-completion ()
+    "Disable automatic completion and dabbrev in org-roam buffers."
+    ;; Disable corfu auto-completion
+    (setq-local corfu-auto nil)
+    ;; Completely clear completion functions to avoid dabbrev errors
+    (setq-local completion-at-point-functions nil))
+  
+  ;; Apply completion disabling to org-roam files
+  (add-hook 'org-roam-find-file-hook #'org-roam-disable-completion)
 )  
 
 (provide 'org-roam-config)
