@@ -203,20 +203,8 @@
   (setq-local completion-at-point-functions
               (list #'cape-dabbrev #'cape-file #'cape-keyword)))
 
-;; Org-mode specific completion setup  
-(defun setup-org-mode-completion ()
-  "Setup completion for org-mode."
-  (setq-local completion-at-point-functions
-              (list #'cape-dabbrev #'cape-file)))
-
 ;; Apply completion setups
 (add-hook 'prog-mode-hook #'setup-prog-mode-completion)
-(add-hook 'org-mode-hook #'setup-org-mode-completion)
-(add-hook 'text-mode-hook 
-          (lambda ()
-            (unless (derived-mode-p 'org-mode)
-              (setq-local completion-at-point-functions
-                          (list #'cape-dabbrev #'cape-file)))))
 
 ;; Enhanced marginalia integration helper functions
 (defun marginalia-toggle-annotations ()

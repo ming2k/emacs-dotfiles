@@ -78,14 +78,17 @@
      (shell . t)
      (python . t))))
 
-;; Disable dabbrev in org mode
-(add-hook 'org-mode-hook
-          (lambda ()
-            ;; Remove dabbrev from completion functions
-            (setq-local completion-at-point-functions
-                        (remove #'cape-dabbrev completion-at-point-functions))
-            ;; Disable dabbrev key binding
-            (define-key org-mode-map (kbd "M-/") nil)))
+;; Disable dabbrev in org and org-roam modes
+(defun disable-dabbrev-in-org ()
+  "Disable dabbrev completion in org-related modes."
+  ;; Override completion functions without dabbrev
+  (setq-local completion-at-point-functions
+              (list #'cape-file))
+  ;; Disable dabbrev key binding
+  (local-set-key (kbd "M-/") nil))
+
+;; Apply to org-mode with higher priority
+(add-hook 'org-mode-hook #'disable-dabbrev-in-org 90)
 
 ;; Modern bullet points (built-in alternative)
 (use-package org
@@ -121,6 +124,8 @@
   (unless (file-directory-p org-roam-directory)
     (make-directory org-roam-directory t))
   ;; Ensure the org-roam database is created
-  (org-roam-db-autosync-mode))
+  (org-roam-db-autosync-mode)
+  ;; Disable dabbrev in org-roam contexts
+  (add-hook 'org-roam-mode-hook #'disable-dabbrev-in-org 90))
 
 (provide 'org-config)
