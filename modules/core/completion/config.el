@@ -129,16 +129,9 @@
 
 (add-hook 'text-mode-hook #'setup-text-mode-completion)
 
-;; Global eglot configuration for all programming languages
+;; Eglot configuration - no auto-start hooks (opt-in per language module)
 (use-package eglot
   :ensure nil
-  :hook ((python-mode . eglot-ensure)
-         (rust-mode . eglot-ensure)
-         (js-mode . eglot-ensure)
-         (typescript-mode . eglot-ensure)
-         (go-mode . eglot-ensure)
-         (c-mode . eglot-ensure)
-         (c++-mode . eglot-ensure))
   :config
   ;; Global eglot settings
   (setq eglot-sync-connect nil
@@ -163,7 +156,7 @@
 (with-eval-after-load 'eglot
   (add-hook 'eglot-managed-mode-hook
             (lambda ()
-              ;; Prioritize eglot completion for corfu
+              ;; Prioritize eglot completion for corfu when eglot is managing the buffer
               (setq-local completion-at-point-functions
                           (list #'eglot-completion-at-point
                                 #'safe-dabbrev-capf
@@ -253,10 +246,9 @@
       completion-auto-help t
       completion-auto-select nil)
 
-;; Flymake configuration - LSP-only backend
+;; Flymake configuration - LSP-only backend (enabled per language module)
 (use-package flymake
   :ensure nil
-  :hook (prog-mode . flymake-mode)
   :config
   ;; Disable all non-LSP backends
   (setq flymake-no-changes-timeout nil

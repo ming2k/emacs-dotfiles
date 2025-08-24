@@ -19,6 +19,7 @@
          )
   :custom
   (org-roam-directory "~/org/roam/")
+  (org-roam-db-location "~/org/roam/org-roam.db")
   (org-roam-completion-everywhere nil)
   (org-roam-completion-ignore-case nil)
   (org-roam-completion-system nil)

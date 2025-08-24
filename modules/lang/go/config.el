@@ -18,7 +18,9 @@
   :ensure nil
   :mode "\\.go\\'"
   :when (treesit-language-available-p 'go)
-  :hook ((go-ts-mode . go-setup-minor-modes))
+  :hook ((go-ts-mode . go-setup-minor-modes)
+         (go-ts-mode . eglot-ensure)
+         (go-ts-mode . flymake-mode))
   :bind (:map go-ts-mode-map
               ("C-c C-r" . go-run-buffer)
               ("C-c C-t" . go-test-current-package)
@@ -37,7 +39,9 @@
   :ensure t
   :mode "\\.go\\'"
   :unless (treesit-language-available-p 'go)
-  :hook ((go-mode . go-setup-minor-modes))
+  :hook ((go-mode . go-setup-minor-modes)
+         (go-mode . eglot-ensure)
+         (go-mode . flymake-mode))
   :bind (:map go-mode-map
               ("C-c C-r" . go-run-buffer)
               ("C-c C-t" . go-test-current-package)

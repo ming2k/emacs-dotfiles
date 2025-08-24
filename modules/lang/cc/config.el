@@ -19,8 +19,12 @@
          ("\\.hh\\'" . c++-mode))
   :hook ((c-mode . c-cpp-setup-minor-modes)
          (c-mode . c-cpp-setup-keybindings)
+         (c-mode . eglot-ensure)
+         (c-mode . flymake-mode)
          (c++-mode . c-cpp-setup-minor-modes)
-         (c++-mode . c-cpp-setup-keybindings))
+         (c++-mode . c-cpp-setup-keybindings)
+         (c++-mode . eglot-ensure)
+         (c++-mode . flymake-mode))
   :config
   (setq c-default-style "linux"
         c-basic-offset 4

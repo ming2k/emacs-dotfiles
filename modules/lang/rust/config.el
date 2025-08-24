@@ -9,7 +9,9 @@
   :ensure nil
   :mode "\\.rs\\'"
   :when (treesit-language-available-p 'rust)
-  :hook ((rust-ts-mode . rust-setup-minor-modes))
+  :hook ((rust-ts-mode . rust-setup-minor-modes)
+         (rust-ts-mode . eglot-ensure)
+         (rust-ts-mode . flymake-mode))
   :bind (:map rust-ts-mode-map
               ("C-c C-b" . rust-compile)
               ("C-c C-r" . rust-run)
@@ -26,7 +28,9 @@
   :ensure t
   :mode "\\.rs\\'"
   :unless (treesit-language-available-p 'rust)
-  :hook ((rust-mode . rust-setup-minor-modes))
+  :hook ((rust-mode . rust-setup-minor-modes)
+         (rust-mode . eglot-ensure)
+         (rust-mode . flymake-mode))
   :bind (:map rust-mode-map
               ("C-c C-b" . rust-compile)
               ("C-c C-r" . rust-run)

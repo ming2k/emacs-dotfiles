@@ -21,7 +21,9 @@
                 ("python3" . python-mode))
   :hook ((python-mode . python-setup-minor-modes)
          (python-mode . python-setup-keybindings)
-         (python-mode . python-activate-venv))
+         (python-mode . python-activate-venv)
+         (python-mode . eglot-ensure)
+         (python-mode . flymake-mode))
   :config
   (setq python-indent-offset 4
         python-indent-guess-indent-offset nil

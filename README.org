@@ -52,9 +52,10 @@ This is a modern, clean Emacs configuration that prioritizes simplicity, perform
 │   ├── tools/         # External tool integrations
 │   │   ├── magit/     # Git integration
 │   │   └── org/       # Org-mode configuration
-│   ├── ui/            # User interface configurations
-│   │   ├── themes/    # Themes and visual elements
-│   │   └── completion/ # Completion system (vertico, corfu, etc.)
+│   ├── ui/            # User interface configurations  
+│   │   └── themes/    # Themes and visual elements
+│   ├── core/          # Core system configurations
+│   │   └── completion/ # Modular completion system (vertico, corfu, etc.)
 │   └── system/        # OS-specific configurations
 │       ├── linux.el
 │       ├── macos.el
@@ -96,6 +97,7 @@ Specialized configurations are organized by category:
 - *Languages*: Each language has its own module with LSP, formatting, and keybindings
 - *Tools*: External tool integrations (git, org-mode, etc.)
 - *UI*: Visual and interaction components
+- *Core*: Core system configurations (completion, editing, etc.)
 - *System*: OS-specific settings
 
 * Adding New Configurations
@@ -347,9 +349,13 @@ modules/
   - Directory names match tool names: ~magit~, ~org~, ~docker~
   - Each contains tool-specific configuration and keybindings
   
-- *~ui/~*: User interface and interaction components
-  - Directory names describe UI aspects: ~themes~, ~completion~, ~modeline~
-  - Each contains related visual and interaction settings
+- *~ui/~*: User interface and visual components  
+  - Directory names describe UI aspects: ~themes~, ~modeline~
+  - Each contains related visual settings
+
+- *~core/~*: Core system configurations
+  - Directory names describe core systems: ~completion~, ~editing~, ~session~
+  - Each contains fundamental system behavior
   
 - *~system/~*: Operating system specific configurations
   - Files named by OS: ~linux.el~, ~macos.el~, ~windows.el~
@@ -408,7 +414,7 @@ Modules are loaded via the ~load-config-module~ function in ~init.el~:
 ;; Usage pattern
 (load-config-module "lang" "python")     ; loads modules/lang/python/config.el
 (load-config-module "tools" "magit")     ; loads modules/tools/magit/config.el
-(load-config-module "ui" "completion")   ; loads modules/ui/completion/config.el
+(load-config-module "core" "completion") ; loads modules/core/completion/config.el
 #+END_SRC
 
 *** Module Development Guidelines
