@@ -23,27 +23,32 @@
   (org-roam-completion-ignore-case nil)
   (org-roam-completion-system nil)
   
-  ;; Optional: Customize org-roam capture templates
-  ;; Uncomment and modify as needed:
-  ;; (org-roam-capture-templates
-  ;;  '(("d" "default" plain "%?"
-  ;;     :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-  ;;                        "#+title: ${title}\n")
-  ;;     :unnarrowed t)
-  ;;    ("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
-  ;;     :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-  ;;                        "#+title: ${title}\n#+filetags: Project\n")
-  ;;     :unnarrowed t)))
+  ;; Simple default capture template
+  (org-roam-capture-templates
+   '(("d" "default" plain "%?"
+      :target (file+head "%<%Y/%m/%d>/%<%Y%m%d%H%M%S>.org"
+                         "#+title: ${title}\n#+created: %U\n")
+      :unnarrowed t)))
   
   :config
   ;; Ensure roam directory exists
   (unless (file-directory-p org-roam-directory)
     (make-directory org-roam-directory t))
   
-  ;; Enable automatic database sync
-  (org-roam-db-autosync-mode)
+  ;; Hook to create date directories automatically
+  (advice-add 'org-roam-capture- :before #'org-roam-ensure-date-directory)
   
-)  
+  ;; Enable automatic database sync
+  (org-roam-db-autosync-mode))
+
+;; Function to ensure date directories exist before capture
+(defun org-roam-ensure-date-directory (&rest _)
+  "Ensure the current date directory structure exists in org-roam directory."
+  (when org-roam-directory
+    (let* ((today (format-time-string "%Y/%m/%d"))
+           (date-dir (expand-file-name today org-roam-directory)))
+      (unless (file-directory-p date-dir)
+        (make-directory date-dir t)))))  
 
 (provide 'org-roam-config)
 ;;; modules/tools/org/org-roam.el ends here
