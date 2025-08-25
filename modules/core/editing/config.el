@@ -1,7 +1,10 @@
 ;;; modules/core/editing/config.el -*- lexical-binding: t; -*-
 ;;; Commentary:
-;; Core editing features including desktop session management
+;; Core editing features including desktop session management and fill-column settings
 ;;; Code:
+
+;; Load fill-column configuration
+(load (expand-file-name "fill-column.el" (file-name-directory load-file-name)))
 
 (use-package desktop
   :ensure nil
