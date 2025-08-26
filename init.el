@@ -79,6 +79,8 @@
 (load-config-module "lang" "python")
 (load-config-module "lang" "rust")
 (load-config-module "lang" "javascript")
+(load-config-module "lang" "typescript")
+(load-config-module "lang" "json")
 (load-config-module "lang" "svelte")
 (load-config-module "lang" "go")
 (load-config-module "lang" "lisp")

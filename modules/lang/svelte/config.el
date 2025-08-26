@@ -63,6 +63,7 @@
 (defun svelte-setup-minor-modes ()
   "Enable essential minor modes for Svelte development."
   (subword-mode 1)
+  (flyspell-prog-mode)
   (setq-local tab-width 2
               indent-tabs-mode nil))
 

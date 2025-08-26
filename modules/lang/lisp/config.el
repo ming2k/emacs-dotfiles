@@ -12,6 +12,9 @@
     (setq-local indent-tabs-mode nil)
     (setq-local tab-width 2)
     
+    ;; Spell checking for comments and strings
+    (flyspell-prog-mode)
+    
     ;; Completion settings - using built-in system
     (setq-local completion-at-point-functions
                 '(elisp-completion-at-point))

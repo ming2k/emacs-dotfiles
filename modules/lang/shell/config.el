@@ -45,6 +45,7 @@
 ;; Key bindings for shell development
 (defun shell-mode-setup ()
   "Setup shell mode with custom keybindings."
+  (flyspell-prog-mode)
   (local-set-key (kbd "C-c C-c") 'executable-interpret)
   (local-set-key (kbd "C-c C-x") 'executable-set-magic))
 
