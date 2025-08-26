@@ -62,6 +62,7 @@
 
 ;; Load core modules
 (load-config-module "core" "completion")
+(load-config-module "core" "diagnostics")
 (load-config-module "core" "project")
 (load-config-module "core" "editing")
 (load-config-module "core" "session")

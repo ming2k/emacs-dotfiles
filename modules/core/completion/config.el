@@ -115,20 +115,6 @@
   :config
   (setq corfu-popupinfo-delay '(0.5 . 0.2)))
 
-;; Built-in completion backends
-(defun setup-text-mode-completion ()
-  "Setup completion for text modes using built-in functions."
-  ;; Skip org-mode and org-roam as they have their own completion setup
-  (unless (or (derived-mode-p 'org-mode)
-              (and (boundp 'org-roam-directory)
-                   (buffer-file-name)
-                   (string-prefix-p (expand-file-name org-roam-directory)
-                                    (expand-file-name (buffer-file-name)))))
-    (setq-local completion-at-point-functions
-                (list #'safe-dabbrev-capf #'comint-filename-completion))))
-
-(add-hook 'text-mode-hook #'setup-text-mode-completion)
-
 ;; Eglot configuration - no auto-start hooks (opt-in per language module)
 (use-package eglot
   :ensure nil
@@ -163,17 +149,6 @@
                                 #'comint-filename-completion))
 )))
 
-;; Better minibuffer history
-(use-package savehist
-  :ensure nil
-  :init
-  (savehist-mode 1)
-  :config
-  (setq savehist-length 1000
-        savehist-additional-variables '(search-ring regexp-search-ring
-                                       extended-command-history
-                                       kill-ring)))
-
 ;; Enhanced dabbrev for better word completion
 (use-package dabbrev
   :ensure nil
@@ -197,34 +172,16 @@
         (dabbrev-capf)))
     (error nil)))
 
-;; Completion enhancements for different modes
-(defun setup-prog-mode-completion ()
-  "Setup completion for programming modes."
-  (setq-local completion-at-point-functions
-              (list #'safe-dabbrev-capf #'comint-filename-completion)))
+;; Programming mode completion setup
+(add-hook 'prog-mode-hook
+          (lambda ()
+            (setq-local completion-at-point-functions
+                        (list #'safe-dabbrev-capf #'comint-filename-completion))))
 
-;; Apply completion setups
-(add-hook 'prog-mode-hook #'setup-prog-mode-completion)
 
-;; Enhanced marginalia integration helper functions
-(defun marginalia-toggle-annotations ()
-  "Toggle marginalia annotations on/off."
-  (interactive)
-  (if marginalia-mode
-      (marginalia-mode -1)
-    (marginalia-mode 1))
-  (message "Marginalia annotations %s" (if marginalia-mode "enabled" "disabled")))
-
-;; Manual completion triggers that work with corfu
-(defun manual-completion ()
-  "Manually trigger completion."
-  (interactive)
-  (if (and (bound-and-true-p corfu-mode) (not completion-in-region-mode))
-      (corfu-complete)
-    (completion-at-point)))
-
-(global-set-key (kbd "C-c c") 'manual-completion)
-(global-set-key (kbd "M-/") 'manual-completion)
+;; Manual completion triggers
+(global-set-key (kbd "C-c c") 'completion-at-point)
+(global-set-key (kbd "M-/") 'completion-at-point)
 
 ;; Enable recentf for recent files
 (use-package recentf
@@ -246,57 +203,6 @@
       completion-auto-help t
       completion-auto-select nil)
 
-;; Flymake configuration - LSP-only backend (enabled per language module)
-(use-package flymake
-  :ensure nil
-  :config
-  ;; Disable all non-LSP backends
-  (setq flymake-no-changes-timeout nil
-        flymake-start-on-flymake-mode t
-        flymake-start-on-save-buffer t
-        flymake-proc-compilation-prevents-syntax-check nil)
-  
-  ;; Clear all diagnostic functions to only use LSP
-  (setq-default flymake-diagnostic-functions nil)
-  
-  ;; Keybindings for flymake navigation
-  :bind (:map flymake-mode-map
-              ("C-c ! n" . flymake-goto-next-error)
-              ("C-c ! p" . flymake-goto-prev-error)
-              ("C-c ! l" . flymake-show-buffer-diagnostics)
-              ("C-c ! L" . flymake-show-project-diagnostics)
-              ("C-c ! c" . flymake-start)))
-
-;; Configure flymake to work only with eglot
-(with-eval-after-load 'eglot
-  ;; Ensure eglot adds itself to flymake when starting
-  (add-hook 'eglot-managed-mode-hook
-            (lambda ()
-              ;; Clear any existing diagnostic functions
-              (setq-local flymake-diagnostic-functions nil)
-              ;; Only enable eglot's diagnostics
-              (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend nil t)
-              ;; Start flymake if not already active
-              (unless flymake-mode
-                (flymake-mode 1)))))
-
-;; Remove other flymake backends globally
-(defun remove-flymake-backends ()
-  "Remove all non-LSP flymake backends."
-  ;; Remove common non-LSP backends that might be added by other packages
-  (when (boundp 'flymake-diagnostic-functions)
-    (setq-local flymake-diagnostic-functions
-                (seq-filter (lambda (fn)
-                              (eq fn #'eglot-flymake-backend))
-                            flymake-diagnostic-functions))))
-
-;; Apply backend removal to all programming modes
-(add-hook 'prog-mode-hook #'remove-flymake-backends)
-
-;; Disable flymake's built-in syntax checkers
-(with-eval-after-load 'flymake
-  ;; Remove the legacy flymake-proc backend
-  (remove-hook 'flymake-diagnostic-functions #'flymake-proc-legacy-flymake))
 
 (provide 'completion-config)
 ;;; modules/core/completion/config.el ends here
