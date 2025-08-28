@@ -69,6 +69,8 @@
 
 ;; Load UI modules
 (load-config-module "ui" "themes")
+(load-config-module "ui" "appearance")
+(load-config-module "ui" "help")
 
 ;; Load tool modules
 (load-config-module "tools" "magit")
