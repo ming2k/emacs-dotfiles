@@ -52,19 +52,14 @@
 ;; Initialize package system
 (package-initialize)
 
-;; Add all module directories to load-path early for require/provide system
-(let ((modules-dir (expand-file-name "modules" user-emacs-directory)))
-  (when (file-directory-p modules-dir)
-    ;; Add the main modules directory
-    (add-to-list 'load-path modules-dir)
-    ;; Add category directories (like modules/lang for lang-config.el)
-    (dolist (category (directory-files modules-dir t "^[^.]"))
-      (when (file-directory-p category)
-        (add-to-list 'load-path category)
-        ;; Add all individual module subdirectories
-        (dolist (module (directory-files category t "^[^.]"))
-          (when (file-directory-p module)
-            (add-to-list 'load-path module)))))))
+;; Add config directories to load-path early for require/provide system
+(let ((config-dir (expand-file-name "config" user-emacs-directory)))
+  (when (file-directory-p config-dir)
+    ;; Add all config category directories to load-path for flat structure
+    (dolist (category '("core" "ui" "tools" "lang" "frameworks" "platform"))
+      (let ((category-dir (expand-file-name category config-dir)))
+        (when (file-directory-p category-dir)
+          (add-to-list 'load-path category-dir))))))
 
 ;; -----------------------------------------------------------------------------
 ;; Perfermance

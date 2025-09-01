@@ -157,8 +157,6 @@ CLAUDE.md
 !lisp/*.el
 !config/
 !config/*.el
-!modules/
-!modules/*.el
 
 # Straight.el version locks (important for reproducibility)
 !straight/versions/

@@ -43,7 +43,7 @@
   (global-set-key [mouse-5] 'scroll-up-line))
 
 ;;; Session Management
-;; Session management moved to modules/core/session/session-config.el
+;; Session management moved to config/core/session/session-config.el
 
 ;(setq trusted-content :all)
 ;(setq trusted-content '("~/.emacs.d/init.el"))
@@ -51,37 +51,33 @@
 ;; Simple keybindings
 (global-set-key (kbd "C-c s") 'yas-insert-snippet)
 
-;;; Load Modules
+;;; Load Config Modules
 
-;; Add module directories to load-path
-(let ((modules-dir (expand-file-name "modules" user-emacs-directory)))
-  ;; Add the core modules directory itself for standalone files like lsp.el
-  (add-to-list 'load-path (expand-file-name "core" modules-dir))
-  (dolist (category '("core" "ui" "tools" "lang"))
-    (let ((category-dir (expand-file-name category modules-dir)))
+;; Add config directories to load-path
+(let ((config-dir (expand-file-name "config" user-emacs-directory)))
+  ;; Add all config subdirectories to load-path for flat structure
+  (dolist (category '("core" "ui" "tools" "lang" "frameworks" "platform"))
+    (let ((category-dir (expand-file-name category config-dir)))
       (when (file-directory-p category-dir)
-        (dolist (module-dir (directory-files category-dir t "^[^.]"))
-          (when (file-directory-p module-dir)
-            (add-to-list 'load-path module-dir)))))))
+        (add-to-list 'load-path category-dir)))))
 
-;; Load core modules
-(require 'completion-config)
-(require 'diagnostics-config)
-(require 'project-config)
-(require 'editing-config)
-(require 'session-config)
+;; Load core config
+(require 'completion-frontend)
+(require 'diagnostics)
+(require 'editing)
+(require 'desktop-config)
 
-;; Load UI modules
-(require 'themes-config)
-(require 'appearance-config)
-(require 'help-config)
+;; Load UI config
+(require 'themes)
+(require 'appearance)
 
-;; Load tool modules
-(require 'magit-config)
+;; Load tool config
+(require 'magit)
+(require 'which-key-config)
 (require 'org-config)
+(require 'org-roam-config)
 
-;; Load language modules on-demand
-(require 'lang)
+;; Language config modules are loaded on-demand by their respective major modes
 
 ;; Platform-specific configurations
 (require 'platform)
@@ -95,11 +91,6 @@
 (setq highlight-nonselected-windows nil)
 (setq fast-but-imprecise-scrolling t)
 (setq inhibit-compacting-font-caches t)
-
-;; Keep custom settings separate from configuration
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(when (file-exists-p custom-file)
-  (load custom-file))
 
 (provide 'init)
 ;;; init.el ends here
