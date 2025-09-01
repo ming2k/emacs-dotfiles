@@ -1,4 +1,4 @@
-;;; init.el --- Modern Emacs configuration -*- lexical-binding: t; -*-
+;;; init.el --- Emacs configuration -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 ;; A clean, modern Emacs configuration
@@ -45,18 +45,12 @@
 ;;; Session Management
 ;; Session management moved to config/core/session/session-config.el
 
-;(setq trusted-content :all)
-;(setq trusted-content '("~/.emacs.d/init.el"))
-
-;; Simple keybindings
-(global-set-key (kbd "C-c s") 'yas-insert-snippet)
-
 ;;; Load Config Modules
 
 ;; Add config directories to load-path
 (let ((config-dir (expand-file-name "config" user-emacs-directory)))
   ;; Add all config subdirectories to load-path for flat structure
-  (dolist (category '("core" "ui" "tools" "lang" "frameworks" "platform"))
+  (dolist (category '("core" "tools" "lang" "frameworks" "platform"))
     (let ((category-dir (expand-file-name category config-dir)))
       (when (file-directory-p category-dir)
         (add-to-list 'load-path category-dir)))))
@@ -66,9 +60,6 @@
 (require 'diagnostics)
 (require 'editing)
 (require 'desktop-config)
-
-;; Load UI config
-(require 'themes)
 (require 'appearance)
 
 ;; Load tool config
@@ -77,10 +68,13 @@
 (require 'org-config)
 (require 'org-roam-config)
 
-;; Language config modules are loaded on-demand by their respective major modes
-
 ;; Platform-specific configurations
 (require 'platform)
+
+;; Add a specific directory for themes to custom-theme-load-path
+(add-to-list 'custom-theme-load-path (expand-file-name "themes" user-emacs-directory))
+;; Load the theme using the standard function
+(load-theme 'gruvbox-dark t)
 
 ;; Essential settings
 (setq select-enable-clipboard t
