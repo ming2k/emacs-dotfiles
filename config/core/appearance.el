@@ -3,6 +3,9 @@
 ;; Visual appearance enhancements including line numbers, highlighting, and colors
 ;;; Code:
 
+;; Enable syntax highlighting globally
+(global-font-lock-mode 1)
+
 ;; Line numbers
 (use-package display-line-numbers
   :ensure nil

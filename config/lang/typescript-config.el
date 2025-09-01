@@ -101,6 +101,6 @@
       (goto-char original-point)))
    (t (message "No TypeScript formatter found. Install prettier with: npm install -g prettier"))))
 
-(provide 'typescript)
+(provide 'typescript-config)
 
 ;;; config/lang/typescript.el ends here

@@ -1,4 +1,4 @@
-;;; config/core/lsp.el -*- lexical-binding: t; -*-
+;;; config/core/lsp-config.el -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;; LSP (Language Server Protocol) configuration using eglot
 ;;; Code:
@@ -45,5 +45,5 @@
                                 #'safe-dabbrev-capf
                                 #'comint-filename-completion)))))
 
-(provide 'lsp)
-;;; config/core/lsp.el ends here
+(provide 'lsp-config)
+;;; config/core/lsp-config.el ends here

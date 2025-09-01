@@ -192,6 +192,6 @@
 ;; Uncomment to enable format on save
 ;; (add-hook 'before-save-hook 'go-format-on-save)
 
-(provide 'go)
+(provide 'go-config)
 
 ;;; config/lang/go.el ends here

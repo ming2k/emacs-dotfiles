@@ -120,7 +120,7 @@
   (setq corfu-popupinfo-delay '(0.5 . 0.2)))
 
 ;; Load LSP module
-(require 'lsp)
+(require 'lsp-config)
 
 ;; Enhanced dabbrev for better word completion
 (use-package dabbrev

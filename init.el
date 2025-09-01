@@ -32,6 +32,7 @@
 (show-paren-mode 1)
 (global-auto-revert-mode 1)
 (delete-selection-mode 1)
+(global-font-lock-mode 1)
 
 ;; Window navigation with Shift+arrow keys
 (windmove-default-keybindings)
@@ -61,12 +62,26 @@
 (require 'editing)
 (require 'desktop-config)
 (require 'appearance)
+(require 'lsp-config)
 
 ;; Load tool config
 (require 'magit)
 (require 'which-key-config)
 (require 'org-config)
 (require 'org-roam-config)
+
+;; Load language configurations
+(require 'cc-config)
+(require 'python-config)
+(require 'rust-config)
+(require 'javascript-config)
+(require 'typescript-config)
+(require 'go-config)
+(require 'shell-config)
+(require 'lisp-config)
+(require 'json-config)
+(require 'markdown-config)
+(require 'zig-config)
 
 ;; Platform-specific configurations
 (require 'platform)

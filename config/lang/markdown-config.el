@@ -29,6 +29,8 @@
   :mode (("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode)
          ("README\\.md\\'" . gfm-mode))
+  :hook ((markdown-mode . eglot-ensure)
+         (gfm-mode . eglot-ensure))
   :config
   ;; Basic markdown settings
   (setq markdown-command "pandoc"
@@ -37,5 +39,10 @@
   ;; Setup completion behavior
   (setup-markdown-completion))
 
-(provide 'markdown)
+;; Configure Markdown LSP server
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '((markdown-mode gfm-mode) . ("marksman"))))
+
+(provide 'markdown-config)
 ;;; config/lang/markdown.el ends here

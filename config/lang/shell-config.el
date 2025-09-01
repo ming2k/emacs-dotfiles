@@ -51,6 +51,6 @@
 
 (add-hook 'sh-mode-hook 'shell-mode-setup)
 
-(provide 'shell)
+(provide 'shell-config)
 
 ;;; config/lang/shell.el ends here

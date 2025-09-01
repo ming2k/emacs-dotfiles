@@ -4,6 +4,7 @@
 ;;; Code:
 
 ;; Python settings
+(require 'eglot)
 (setq python-indent-offset 4
       python-indent-guess-indent-offset nil
       python-shell-interpreter "python3"
@@ -17,6 +18,8 @@
   :ensure nil
   :mode (("\\.py\\'" . python-mode)
          ("\\.pyw\\'" . python-mode))
+  :custom
+  (python-shell-interpreter "python3")
   :interpreter (("python" . python-mode)
                 ("python3" . python-mode))
   :hook ((python-mode . python-setup-minor-modes)
@@ -33,6 +36,7 @@
 ;; Python minor modes setup
 (defun python-setup-minor-modes ()
   "Enable helpful minor modes for Python."
+  (font-lock-mode 1)
   (subword-mode 1)
   (hs-minor-mode 1)
   (flyspell-prog-mode)
@@ -61,26 +65,52 @@
 ;; Python LSP server configuration for eglot
 (with-eval-after-load 'eglot
   (add-to-list 'eglot-server-programs
-               '(python-mode . ("pyright-langserver" "--stdio")))
+               '((python-mode python-ts-mode) . 
+                 (lambda (interactive)
+                   (cond
+                    ((executable-find "pyright-langserver")
+                     '("pyright-langserver" "--stdio"))
+                    ((executable-find "pylsp")
+                     '("pylsp"))
+                    ((executable-find "jedi-language-server")  
+                     '("jedi-language-server"))
+                    (t (user-error "No Python LSP server found. Install pyright, pylsp, or jedi-language-server"))))))
   
   (defun python-eglot-workspace-config ()
-    "Return comprehensive workspace configuration for Pyright."
-    '(:python 
-      (:analysis 
-       (:typeCheckingMode "basic"
-        :autoImportCompletions t
-        :autoSearchPaths t
-        :useLibraryCodeForTypes t
-        :diagnosticMode "workspace"
-        :diagnosticSeverityOverrides
-        (:reportMissingImports "error"
-         :reportMissingTypeStubs "information"
-         :reportUnusedImport "information"
-         :reportUnusedVariable "information")))))
+    "Return workspace configuration for Python LSP servers."
+    (let ((server-name (when (eglot-current-server)
+                        (car (process-command (jsonrpc--process (eglot-current-server)))))))
+      (cond
+       ((or (string-match-p "pyright" (or server-name ""))
+            (string-match-p "pylance" (or server-name "")))
+        '(:python 
+          (:analysis 
+           (:typeCheckingMode "basic"
+            :autoImportCompletions t
+            :autoSearchPaths t  
+            :useLibraryCodeForTypes t
+            :diagnosticMode "workspace"
+            :diagnosticSeverityOverrides
+            (:reportMissingImports "error"
+             :reportMissingTypeStubs "information"  
+             :reportUnusedImport "information"
+             :reportUnusedVariable "information")))))
+       ((string-match-p "pylsp" (or server-name ""))
+        '(:pylsp
+          (:plugins
+           (:pycodestyle (:enabled t :maxLineLength 88)
+            :flake8 (:enabled nil)
+            :autopep8 (:enabled t)
+            :yapf (:enabled nil)
+            :mccabe (:enabled t)
+            :pyflakes (:enabled t)
+            :pylint (:enabled nil)))))
+       (t '()))))
   
   (add-hook 'eglot-managed-mode-hook
             (lambda ()
-              (when (derived-mode-p 'python-mode)
+              (when (or (derived-mode-p 'python-mode)
+                       (derived-mode-p 'python-ts-mode))
                 (setq-local eglot-workspace-configuration
                            (python-eglot-workspace-config))))))
 
@@ -226,5 +256,5 @@
 
 (add-hook 'python-mode-hook #'python-setup-import-sorting-keybinding)
 
-(provide 'python)
+(provide 'python-config)
 ;;; config/lang/python.el ends here

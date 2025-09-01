@@ -35,6 +35,6 @@
 (add-hook 'lisp-mode-hook #'setup-lisp-hippie-expand)
 (add-hook 'emacs-lisp-mode-hook #'setup-lisp-hippie-expand)
 
-(provide 'lisp)
+(provide 'lisp-config)
 
 ;;; config/lang/lisp.el ends here

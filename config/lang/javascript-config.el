@@ -13,7 +13,9 @@
   :mode (("\\.js\\'" . js-mode)
          ("\\.jsx\\'" . js-mode)
          ("\\.mjs\\'" . js-mode))
-  :hook (js-mode . js-setup-minor-modes)
+  :hook ((js-mode . js-setup-minor-modes)
+         (js-mode . eglot-ensure)
+         (js-mode . flymake-mode))
   :config
   (setq js-indent-level 2
         js-switch-indent-offset 2))
@@ -29,6 +31,11 @@
               tab-width 2
               indent-tabs-mode nil))
 
-(provide 'javascript)
+;; Configure JavaScript LSP server
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '(js-mode . ("typescript-language-server" "--stdio"))))
+
+(provide 'javascript-config)
 
 ;;; config/lang/javascript.el ends here

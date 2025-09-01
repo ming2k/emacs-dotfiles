@@ -12,7 +12,9 @@
          ("\\.eslintrc\\'" . json-ts-mode)
          ("tsconfig\\.json\\'" . json-ts-mode))
   :when (treesit-language-available-p 'json)
-  :hook (json-ts-mode . json-setup-minor-modes)
+  :hook ((json-ts-mode . json-setup-minor-modes)
+         (json-ts-mode . eglot-ensure)
+         (json-ts-mode . flymake-mode))
   :config
   (setq json-ts-mode-indent-offset 2))
 
@@ -34,6 +36,11 @@
               indent-tabs-mode nil
               js-indent-level 2))
 
-(provide 'json)
+;; Configure JSON LSP server
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '(json-ts-mode . ("vscode-json-languageserver" "--stdio"))))
+
+(provide 'json-config)
 
 ;;; config/lang/json.el ends here
