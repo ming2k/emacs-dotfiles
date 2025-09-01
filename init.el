@@ -43,7 +43,7 @@
   (global-set-key [mouse-5] 'scroll-up-line))
 
 ;;; Session Management
-;; Session management moved to modules/core/session/config.el
+;; Session management moved to modules/core/session/session-config.el
 
 ;(setq trusted-content :all)
 ;(setq trusted-content '("~/.emacs.d/init.el"))
@@ -52,54 +52,39 @@
 (global-set-key (kbd "C-c s") 'yas-insert-snippet)
 
 ;;; Load Modules
-(defun load-config-module (category module)
-  "Load a configuration MODULE of CATEGORY."
-  (let ((config-file (expand-file-name
-                      (format "modules/%s/%s/config.el" category module)
-                      user-emacs-directory)))
-    (when (file-exists-p config-file)
-      (load config-file))))
+
+;; Add module directories to load-path
+(let ((modules-dir (expand-file-name "modules" user-emacs-directory)))
+  ;; Add the core modules directory itself for standalone files like lsp.el
+  (add-to-list 'load-path (expand-file-name "core" modules-dir))
+  (dolist (category '("core" "ui" "tools" "lang"))
+    (let ((category-dir (expand-file-name category modules-dir)))
+      (when (file-directory-p category-dir)
+        (dolist (module-dir (directory-files category-dir t "^[^.]"))
+          (when (file-directory-p module-dir)
+            (add-to-list 'load-path module-dir)))))))
 
 ;; Load core modules
-(load-config-module "core" "completion")
-(load-config-module "core" "diagnostics")
-(load-config-module "core" "project")
-(load-config-module "core" "editing")
-(load-config-module "core" "session")
+(require 'completion-config)
+(require 'diagnostics-config)
+(require 'project-config)
+(require 'editing-config)
+(require 'session-config)
 
 ;; Load UI modules
-(load-config-module "ui" "themes")
-(load-config-module "ui" "appearance")
-(load-config-module "ui" "help")
+(require 'themes-config)
+(require 'appearance-config)
+(require 'help-config)
 
 ;; Load tool modules
-(load-config-module "tools" "magit")
-(load-config-module "tools" "org")
+(require 'magit-config)
+(require 'org-config)
 
-;; Load language modules
-(load-config-module "lang" "cc")
-(load-config-module "lang" "python")
-(load-config-module "lang" "rust")
-(load-config-module "lang" "javascript")
-(load-config-module "lang" "typescript")
-(load-config-module "lang" "json")
-(load-config-module "lang" "svelte")
-(load-config-module "lang" "go")
-(load-config-module "lang" "lisp")
-(load-config-module "lang" "markdown")
-(load-config-module "lang" "shell")
+;; Load language modules on-demand
+(require 'lang)
 
-;; System-specific configurations
-(let ((system-config 
-       (expand-file-name 
-        (format "modules/system/%s.el" 
-                (pcase system-type
-                  ('darwin "macos")
-                  ('gnu/linux "linux")
-                  ('windows-nt "windows")))
-        user-emacs-directory)))
-  (when (file-exists-p system-config)
-    (load system-config)))
+;; Platform-specific configurations
+(require 'platform)
 
 ;; Essential settings
 (setq select-enable-clipboard t
