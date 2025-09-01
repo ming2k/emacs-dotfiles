@@ -7,7 +7,7 @@
 
 * Overview
 
-This is a modern, clean Emacs configuration that prioritizes simplicity, performance, and maintainability. It follows Emacs best practices while providing a modular structure for specialized configurations.
+This is a modern, vanilla Emacs configuration that prioritizes simplicity, performance, and maintainability. It follows Emacs best practices while providing a modular structure.
 
 ** Philosophy
 
@@ -34,36 +34,6 @@ This is a modern, clean Emacs configuration that prioritizes simplicity, perform
 - Contemporary completion UI
 - Git integration with Magit
 
-* Configuration Structure
-
-#+BEGIN_SRC
-~/.emacs.d/
-├── early-init.el       # Early initialization, package setup, UI optimizations
-├── init.el            # Main configuration with core settings
-├── packages.el        # Package management configuration
-├── modules/           # Specialized configurations
-│   ├── lang/          # Language-specific configurations
-│   │   ├── cc/        # C/C++ with clangd
-│   │   ├── python/    # Python with pylsp
-│   │   ├── rust/      # Rust with rust-analyzer
-│   │   ├── javascript/ # JS/TS with typescript-language-server
-│   │   ├── go/        # Go with gopls
-│   │   └── lisp/      # Lisp development
-│   ├── tools/         # External tool integrations
-│   │   ├── magit/     # Git integration
-│   │   └── org/       # Org-mode configuration
-│   ├── ui/            # User interface configurations  
-│   │   └── themes/    # Themes and visual elements
-│   ├── core/          # Core system configurations
-│   │   └── completion/ # Modular completion system (vertico, corfu, etc.)
-│   └── system/        # OS-specific configurations
-│       ├── linux.el
-│       ├── macos.el
-│       └── windows.el
-├── snippets/          # YASnippet templates
-├── templates/         # File templates
-└── themes/           # Custom themes
-#+END_SRC
 
 * Key Components
 
@@ -260,23 +230,6 @@ go install golang.org/x/tools/gopls@latest
 go install golang.org/x/tools/cmd/goimports@latest
 #+END_SRC
 
-** Optional Tools
-
-- *Fonts*: JetBrains Mono Nerd Font (configured in early-init.el)
-- *Git*: For Magit functionality
-- *Ripgrep*: For fast searching (if using consult)
-- *Node.js*: For JavaScript development and some formatters
-
-* Customization
-
-** Themes
-
-The configuration includes Doom themes. To change:
-
-1. Edit ~modules/ui/themes/config.el~
-2. Replace ~doom-one~ with your preferred theme
-3. Or uncomment alternative theme configurations
-
 ** Fonts
 
 Font configuration is in ~early-init.el~:
@@ -385,38 +338,11 @@ All configuration files must include:
 ;;; modules/<category>/<name>/config.el ends here
 #+END_SRC
 
-**** Function Naming
-
-- *Module functions*: Prefix with module name: ~python-setup-lsp~, ~magit-configure-keybindings~
-- *Helper functions*: Use descriptive names with ~--~ for internal functions
-- *Hook functions*: Suffix with ~-hook~ or ~-setup~
-
 **** Variable Naming
 
 - *Module variables*: Prefix with module category/name
 - *File paths*: Use ~-file~, ~-directory~, or ~-path~ suffixes
 - *Toggles*: Use ~-enabled-p~ or ~-mode~ suffixes
-
-*** Loading Convention
-
-Modules are loaded via the ~load-config-module~ function in ~init.el~:
-
-#+BEGIN_SRC emacs-lisp
-;; Function definition (already in init.el)
-(defun load-config-module (category module)
-  "Load a configuration module."
-  (let ((config-file (expand-file-name
-                      (format "modules/%s/%s/config.el" category module)
-                      user-emacs-directory)))
-    (when (file-exists-p config-file)
-      (load config-file))))
-
-;; Usage pattern
-(load-config-module "lang" "python")     ; loads modules/lang/python/config.el
-(load-config-module "tools" "magit")     ; loads modules/tools/magit/config.el
-(load-config-module "core" "completion") ; loads modules/core/completion/config.el
-#+END_SRC
-
 *** Module Development Guidelines
 
 **** Creating a New Language Module
@@ -463,9 +389,3 @@ Modules are loaded via the ~load-config-module~ function in ~init.el~:
 - Use ~setq-default~ for global defaults, ~setq~ for local settings
 - Keep line length under 80 characters where practical
 
-** Git Workflow
-
-- *Commit atomically*: One logical change per commit
-- *Test before pushing*: Ensure Emacs starts without errors
-- *Update README*: For user-visible changes
-- *Document dependencies*: Note any new external requirements

@@ -35,7 +35,7 @@
    ;; Basic faces
    `(default ((t (:background ,gruvbox-dark-bg :foreground ,gruvbox-dark-fg))))
    `(cursor ((t (:background ,gruvbox-dark-orange))))
-   `(region ((t (:background ,gruvbox-dark-bg-soft))))
+   `(region ((t (:background ,gruvbox-dark-aqua))))
    `(highlight ((t (:background ,gruvbox-dark-bg-soft))))
    `(hl-line ((t (:background ,gruvbox-dark-bg-soft))))
    `(fringe ((t (:background ,gruvbox-dark-bg))))
