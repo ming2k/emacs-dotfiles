@@ -34,149 +34,6 @@ This is a modern, vanilla Emacs configuration that prioritizes simplicity, perfo
 - Contemporary completion UI
 - Git integration with Magit
 
-
-* Key Components
-
-** Core Configuration (~init.el~)
-
-The main configuration file contains:
-
-- *Core Settings*: UTF-8, defaults, backup configuration
-- *Session Management*: saveplace, recentf, savehist
-- *Programming Basics*: tree-sitter, eglot setup
-- *Editing Enhancements*: multiple-cursors, avy, smartparens, yasnippet
-- *Module Loading*: Simple function to load specialized modules
-
-** Package Management (~packages.el~)
-
-- Minimal package configuration
-- ~use-package~ setup with performance optimizations
-- No package declarations (handled by modules)
-
-** Early Initialization (~early-init.el~)
-
-- Package repository setup
-- Performance optimizations (GC tuning)
-- UI element disabling (menu-bar, tool-bar, etc.)
-- Font configuration
-
-** Modular System (~modules/~)
-
-Specialized configurations are organized by category:
-
-- *Languages*: Each language has its own module with LSP, formatting, and keybindings
-- *Tools*: External tool integrations (git, org-mode, etc.)
-- *UI*: Visual and interaction components
-- *Core*: Core system configurations (completion, editing, etc.)
-- *System*: OS-specific settings
-
-* Adding New Configurations
-
-** For Core Features
-
-Add directly to ~init.el~ if the configuration is:
-- Essential for basic Emacs operation
-- Used across multiple modes/contexts
-- Simple and doesn't require extensive setup
-
-#+BEGIN_SRC emacs-lisp
-;; Example: Adding a global setting
-(setq-default cursor-type 'bar)
-
-;; Example: Adding a simple package
-(use-package which-key
-  :ensure t
-  :config
-  (which-key-mode 1))
-#+END_SRC
-
-** For Specialized Features
-
-Create a new module under ~modules/~ if the configuration:
-- Is specific to a language, tool, or domain
-- Requires extensive setup or many packages
-- Benefits from being isolated from core config
-
-*** Adding a New Language
-
-1. Create directory: ~modules/lang/mylang/~
-2. Create ~config.el~ with language-specific setup
-3. Add module loading to ~init.el~:
-
-#+BEGIN_SRC emacs-lisp
-;; In init.el, add to language modules section
-(load-config-module "lang" "mylang")
-#+END_SRC
-
-*** Adding a New Tool
-
-1. Create directory: ~modules/tools/mytool/~
-2. Create ~config.el~ with tool configuration
-3. Add module loading to ~init.el~:
-
-#+BEGIN_SRC emacs-lisp
-;; In init.el, add to tool modules section  
-(load-config-module "tools" "mytool")
-#+END_SRC
-
-** Module Template
-
-Each module should follow this structure:
-
-#+BEGIN_SRC emacs-lisp
-;;; modules/category/name/config.el -*- lexical-binding: t; -*-
-
-;; Brief description of what this module provides
-
-;; Package configuration
-(use-package my-package
-  :ensure t
-  :mode "\\.ext\\'"
-  :hook (my-mode . my-setup-function)
-  :bind (:map my-mode-map
-              ("C-c C-c" . my-command))
-  :config
-  (setq my-setting value))
-
-;; Helper functions
-(defun my-setup-function ()
-  "Setup function for my-mode."
-  ;; Mode-specific setup
-  )
-
-;; Additional configuration...
-#+END_SRC
-
-* Best Practices
-
-** Code Organization
-
-- *Logical Grouping*: Group related settings together
-- *Clear Comments*: Use section headers and explain complex configurations  
-- *Consistent Style*: Follow existing patterns and naming conventions
-- *Documentation*: Include docstrings for custom functions
-
-** Performance Considerations
-
-- *Lazy Loading*: Use ~:hook~, ~:defer~, and ~:after~ in ~use-package~
-- *Minimal Dependencies*: Prefer built-in packages and avoid heavy packages
-- *Startup Optimization*: Keep ~init.el~ focused on essential configurations
-- *Garbage Collection*: Early init handles GC tuning
-
-** Package Management
-
-- *Always use ~:ensure t~* for external packages
-- *Prefer built-in packages* when available
-- *Pin package versions* for stability if needed
-- *Document package purposes* with comments
-
-** Keybinding Conventions
-
-- *~C-c <letter>~*: Global commands (C-c g for git, C-c p for project)
-- *~C-c C-<letter>~*: Mode-specific commands
-- *~C-c l~*: LSP commands prefix
-- *Follow Emacs conventions* and avoid conflicting with built-in bindings
-
 * Language Support
 
 Each language module provides:
@@ -230,36 +87,26 @@ go install golang.org/x/tools/gopls@latest
 go install golang.org/x/tools/cmd/goimports@latest
 #+END_SRC
 
-** Fonts
-
-Font configuration is in ~early-init.el~:
-
-#+BEGIN_SRC emacs-lisp
-;; Adjust font family and size
-(when (member "JetBrains Mono" (font-family-list))
-  (set-face-attribute 'default nil :font "JetBrains Mono-12"))
-#+END_SRC
-
-** Keybindings
-
-- *Global keybindings*: Add to ~init.el~
-- *Mode-specific*: Add to respective language/tool modules
-- *Follow conventions*: Use ~C-c~ prefix for custom bindings
-
 * Troubleshooting
 
 ** Common Issues
 
 - *LSP not starting*: Check if language server is installed and in PATH
 - *Packages not installing*: Check network connection and package archives
-- *Slow startup*: Review package configurations for performance issues
 - *Keybinding conflicts*: Use ~C-h k~ to check existing bindings
 
+** Configuration Changes Not Work
+
+- *Manual reload required*:  Hot reloading is not supported.
+- *Restart Buffer*: Buffers contain loaded local variables, restart buffer to flush them.
+  Use ~M-x revert-buffer~ to restart buffers, or kill and reopen buffers
+- *Feature name unique*: Make the feature named by ~provide~ is unique.
+  Use ~M-x describe-variable RET features RET~ to check all features.
+  
 ** Debugging
 
 - *Check ~*Messages*~ buffer* for error messages
 - *Use ~emacs --debug-init~* for startup issues
-- *Profile startup* with ~esup~ package if needed
 - *Check LSP status* with ~M-x eglot-events-buffer~
 
 ** Getting Help
@@ -270,113 +117,6 @@ Font configuration is in ~early-init.el~:
 - *Variable help*: ~C-h v <variable-name>~
 
 * Contributing
-
-When modifying this configuration:
-
-1. *Test thoroughly* before committing changes
-2. *Document new features* and configuration options
-3. *Follow existing patterns* and conventions
-4. *Update this README* for significant changes
-5. *Consider performance impact* of new packages/configurations
-
-** Directory and Naming Conventions
-
-*** Module Organization
-
-The ~modules/~ directory follows a strict hierarchical structure:
-
-#+BEGIN_SRC
-modules/
-├── <category>/     # Top-level category (lang, tools, ui, system)
-│   └── <name>/     # Specific module name
-│       └── config.el  # Main configuration file
-#+END_SRC
-
-**** Categories
-
-- *~lang/~*: Programming language support
-  - Directory names match language names: ~python~, ~rust~, ~javascript~, ~cc~ (for C/C++)
-  - Each contains LSP setup, formatting, and language-specific tooling
-  
-- *~tools/~*: External tool integrations
-  - Directory names match tool names: ~magit~, ~org~, ~docker~
-  - Each contains tool-specific configuration and keybindings
-  
-- *~ui/~*: User interface and visual components  
-  - Directory names describe UI aspects: ~themes~, ~modeline~
-  - Each contains related visual settings
-
-- *~core/~*: Core system configurations
-  - Directory names describe core systems: ~completion~, ~editing~, ~session~
-  - Each contains fundamental system behavior
-  
-- *~system/~*: Operating system specific configurations
-  - Files named by OS: ~linux.el~, ~macos.el~, ~windows.el~
-  - Contains platform-specific settings and optimizations
-
-**** File Naming Rules
-
-- *Main config*: Always ~config.el~ within module directory
-- *Module directories*: Use lowercase, hyphen-separated names
-- *Categories*: Single word, plural form where applicable
-- *Language modules*: Use common short names (~cc~ not ~cplusplus~, ~js~ not ~javascript~)
-
-*** Code File Conventions
-
-**** File Headers
-
-All configuration files must include:
-
-#+BEGIN_SRC emacs-lisp
-;;; modules/<category>/<name>/config.el -*- lexical-binding: t; -*-
-;;; Commentary:
-;; Brief description of module purpose
-;;; Code:
-
-;; Configuration content here
-
-;;; modules/<category>/<name>/config.el ends here
-#+END_SRC
-
-**** Variable Naming
-
-- *Module variables*: Prefix with module category/name
-- *File paths*: Use ~-file~, ~-directory~, or ~-path~ suffixes
-- *Toggles*: Use ~-enabled-p~ or ~-mode~ suffixes
-*** Module Development Guidelines
-
-**** Creating a New Language Module
-
-1. Create directory: ~modules/lang/<language>/~
-2. Create ~config.el~ with standard header
-3. Include these sections (if applicable):
-   - LSP server configuration
-   - Tree-sitter setup
-   - Formatting tool configuration
-   - Build/run commands
-   - Language-specific keybindings
-4. Add loading call to ~init.el~
-5. Test thoroughly with sample projects
-
-**** Creating a New Tool Module
-
-1. Create directory: ~modules/tools/<tool>/~
-2. Create ~config.el~ with tool integration
-3. Include these sections:
-   - Package declaration with ~use-package~
-   - Tool-specific configuration
-   - Keybinding setup (following ~C-c <letter>~ convention)
-   - Integration with existing workflow
-4. Add loading call to ~init.el~
-5. Document any external dependencies
-
-**** Modifying Existing Modules
-
-- *Test changes* in isolation before committing
-- *Maintain backward compatibility* when possible
-- *Update documentation* if behavior changes
-- *Follow existing patterns* within the module
-- *Consider performance implications* of changes
 
 ** Code Style
 
