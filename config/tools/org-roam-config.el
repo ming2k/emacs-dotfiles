@@ -19,7 +19,7 @@
          )
   :config
   ;; Set org-roam directory and database location first
-  (setq org-roam-directory (expand-file-name "~/org/roam/"))
+  (setq org-roam-directory (expand-file-name "~/org-roam/"))
   (setq org-roam-db-location (expand-file-name "org-roam.db" org-roam-directory))
   (setq org-roam-completion-everywhere nil)
   (setq org-roam-completion-ignore-case nil)

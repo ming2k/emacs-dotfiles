@@ -60,6 +60,9 @@
       (when (file-directory-p category-dir)
         (add-to-list 'load-path category-dir)))))
 
+;; Load package management first
+(require 'package-config)
+
 ;; Load core config
 (require 'completion-frontend)
 (require 'diagnostics)
@@ -69,7 +72,7 @@
 (require 'lsp-config)
 
 ;; Load tool config
-(require 'magit)
+(require 'magit-config)
 (require 'which-key-config)
 (require 'org-config)
 (require 'org-roam-config)
