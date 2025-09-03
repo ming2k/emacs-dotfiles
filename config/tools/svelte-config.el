@@ -1,4 +1,4 @@
-;;; config/lang/svelte.el -*- lexical-binding: t; -*-
+;;; config/tools/svelte-config.el -*- lexical-binding: t; -*-
 
 ;; Svelte mode configuration - use web-mode for optimal support
 (use-package web-mode
@@ -152,6 +152,6 @@
 (add-to-list 'auto-mode-alist '("svelte\\.config\\.[jt]s\\'" . javascript-mode))
 (add-to-list 'auto-mode-alist '("vite\\.config\\.[jt]s\\'" . javascript-mode))
 
-(provide 'svelte)
+(provide 'svelte-config)
 
-;;; config/lang/svelte.el ends here
+;;; config/tools/svelte-config.el ends here

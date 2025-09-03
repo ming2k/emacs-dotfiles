@@ -32,7 +32,8 @@
   ;; Simple default capture template
   (setq org-roam-capture-templates
         '(("d" "default" plain "%?"
-           :target (file+head "%<%Y/%m/%d>/%<%Y%m%d%H%M%S>.org"
+           ;; :target (file+head "%<%Y/%m/%d>/%<%Y%m%d%H%M%S>.org"
+           :target (file+head "<%Y>/%<%Y%m%dT%H%M%S%z>.org" ; Following ISO 8601 format "20250903T143052+0800"
                               "#+title: ${title}\n#+created: %U\n")
            :unnarrowed t)))
   
@@ -44,7 +45,7 @@
   (defun org-roam-ensure-date-directory (&rest _)
     "Ensure the current date directory structure exists in org-roam directory."
     (when org-roam-directory
-      (let* ((today (format-time-string "%Y/%m/%d"))
+      (let* ((today (format-time-string "%Y"))
              (date-dir (expand-file-name today org-roam-directory)))
         (unless (file-directory-p date-dir)
           (make-directory date-dir t)))))

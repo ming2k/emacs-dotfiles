@@ -35,6 +35,9 @@
 (delete-selection-mode 1)
 (global-font-lock-mode 1)
 
+;; Disable flyspell-mode by default
+(setq-default flyspell-mode nil)
+
 ;; Window navigation with Shift+arrow keys
 (windmove-default-keybindings)
 
@@ -52,7 +55,7 @@
 ;; Add config directories to load-path
 (let ((config-dir (expand-file-name "config" user-emacs-directory)))
   ;; Add all config subdirectories to load-path for flat structure
-  (dolist (category '("core" "tools" "lang" "frameworks" "platform"))
+  (dolist (category '("core" "tools" "lang" "platform"))
     (let ((category-dir (expand-file-name category config-dir)))
       (when (file-directory-p category-dir)
         (add-to-list 'load-path category-dir)))))
@@ -70,6 +73,7 @@
 (require 'which-key-config)
 (require 'org-config)
 (require 'org-roam-config)
+(require 'svelte-config)
 
 ;; Load language configurations
 (require 'cc-config)
@@ -104,3 +108,15 @@
 
 (provide 'init)
 ;;; init.el ends here
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages nil))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

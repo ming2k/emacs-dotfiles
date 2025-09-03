@@ -19,7 +19,7 @@
 (setq inhibit-startup-echo-area-message t)
 
 (add-to-list 'default-frame-alist '(width . 120))
-(add-to-list 'default-frame-alist '(height . 35))
+(add-to-list 'default-frame-alist '(height . 40))
 
 ;; Set all new frames to be created without decorations by default
 (add-to-list 'default-frame-alist '(undecorated . t))
