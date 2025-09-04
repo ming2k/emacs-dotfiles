@@ -1,7 +1,37 @@
-;;; config/ui/help.el -*- lexical-binding: t; -*-
+;;; config/core/ui.el -*- lexical-binding: t; -*-
 ;;; Commentary:
-;; Help and documentation systems configuration
+;; Visual appearance enhancements including line numbers, highlighting, and colors
 ;;; Code:
+
+;; Enable syntax highlighting globally
+(global-font-lock-mode 1)
+
+;; Line numbers
+(use-package display-line-numbers
+  :ensure nil
+  :hook ((prog-mode text-mode conf-mode) . display-line-numbers-mode)
+  :config
+  (setq display-line-numbers-width-start t))
+
+;; Highlight current line
+(use-package hl-line
+  :ensure nil
+  :hook ((prog-mode text-mode conf-mode) . hl-line-mode))
+
+;; Rainbow delimiters
+(use-package rainbow-delimiters
+  :ensure t
+  :hook (prog-mode . rainbow-delimiters-mode))
+
+;; Rainbow mode for color visualization
+(use-package rainbow-mode
+  :ensure t
+  :hook ((css-mode . rainbow-mode)
+         (web-mode . rainbow-mode)
+         (html-mode . rainbow-mode)
+         (scss-mode . rainbow-mode)
+         (sass-mode . rainbow-mode)
+         (org-mode . rainbow-mode)))
 
 ;; Which-key - displays available keybindings in popup
 (use-package which-key
@@ -38,5 +68,5 @@
   :bind (("C-h K" . which-key-show-top-level)
          ("C-h M" . which-key-show-major-mode)))
 
-(provide 'which-key-config)
-;;; config/ui/help.el ends here
+(provide 'ming-ui)
+;;; config/core/ui.el ends here

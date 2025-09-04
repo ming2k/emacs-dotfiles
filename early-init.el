@@ -20,7 +20,6 @@
 
 (add-to-list 'default-frame-alist '(width . 120))
 (add-to-list 'default-frame-alist '(height . 40))
-
 ;; Set all new frames to be created without decorations by default
 (add-to-list 'default-frame-alist '(undecorated . t))
 ;; Set first frame color
@@ -66,7 +65,7 @@
 ;; -----------------------------------------------------------------------------
 
 ;; Performance optimizations
-(setq read-process-output-max (* 1024 1024)) ; 1MB for LSP
+(setq read-process-output-max (* 1024 1024 2)) ; 2MB for LSP
 (setq process-adaptive-read-buffering nil)
 
 ;; Increase garbage collection threshold during startup

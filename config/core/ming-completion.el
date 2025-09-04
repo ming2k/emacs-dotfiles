@@ -1,4 +1,4 @@
-;;; config/core/completion-ui.el -*- lexical-binding: t; -*-
+;;; config/core/ming-completion.el -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;; Modern completion system using corfu, orderless, and vertico
 ;;; Code:
@@ -138,14 +138,6 @@
 (global-set-key (kbd "C-c c") 'completion-at-point)
 (global-set-key (kbd "M-/") 'completion-at-point)
 
-;; Enable recentf for recent files
-(use-package recentf
-  :ensure nil
-  :init
-  (recentf-mode 1)
-  :config
-  (setq recentf-max-saved-items 50
-        recentf-max-menu-items 15))
 
 ;; Enhanced isearch
 (setq isearch-allow-scroll t
@@ -158,5 +150,5 @@
       completion-auto-help t
       completion-auto-select nil)
 
-(provide 'completion-frontend)
-;;; config/core/completion-ui.el ends here
+(provide 'ming-completion)
+;;; config/core/ming-completion.el ends here

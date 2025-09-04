@@ -63,20 +63,21 @@
 ;; Load package management first
 (require 'package-config)
 
+;;;; Make sure the file name and "provide" name are consistent
+
 ;; Load core config
-(require 'completion-frontend)
+(require 'ming-completion)
 (require 'diagnostics)
-(require 'editing)
-(require 'desktop-config)
-(require 'appearance)
+(require 'ming-editing)
+(require 'ming-session)
+(require 'ming-ui)
 (require 'lsp-config)
 
 ;; Load tool config
 (require 'magit-config)
-(require 'which-key-config)
 (require 'org-config)
 (require 'org-roam-config)
-(require 'svelte-config)
+(require 'web-dev)
 
 ;; Load language configurations
 (require 'cc-config)
