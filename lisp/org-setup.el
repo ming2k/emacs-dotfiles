@@ -17,10 +17,11 @@
   (org-default-notes-file "~/org/inbox.org")
   
   ;; Display settings
-  (org-startup-folded 'content)
-  (org-pretty-entities t)
-  (org-hide-leading-stars t)
-  (org-odd-levels-only t)
+  (org-startup-folded nil)
+  
+  ;; Remember fold status
+  (org-cycle-global-at-bob t)
+  (org-startup-with-inline-images t)
   
   ;; TODO Keywords, GTD style
   (org-todo-keywords
@@ -141,6 +142,21 @@
   
   ;; Hook to create date directories automatically
   (advice-add 'org-roam-capture- :before #'org-roam-ensure-date-directory))
+
+;;; Smart Tab Configuration for Org Mode
+(with-eval-after-load 'org
+  (defun org-smart-tab ()
+    "Smart TAB function for org-mode.
+    First try yasnippet expansion, then org-cycle."
+    (interactive)
+    (if (and (bound-and-true-p yas-minor-mode)
+             (yas-expand))
+        nil ; yasnippet handled it
+      (org-cycle))) ; fallback to org-cycle
+  
+  ;; Bind smart tab function to TAB in org-mode
+  (define-key org-mode-map (kbd "TAB") 'org-smart-tab)
+  (define-key org-mode-map (kbd "<tab>") 'org-smart-tab))
 
 ;;; Org-Babel Configuration
 (use-package ob

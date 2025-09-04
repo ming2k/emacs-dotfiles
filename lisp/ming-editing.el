@@ -131,6 +131,9 @@
             (setq-local completion-at-point-functions
                         (list #'dabbrev-capf #'comint-filename-completion))))
 
+;; Enable hideshow minor mode for code folding
+(add-hook 'prog-mode-hook 'hs-minor-mode)
+
 ;;; YASnippet - Template system
 (use-package yasnippet
   :ensure t
