@@ -155,8 +155,6 @@ CLAUDE.md
 # Custom Lisp directories
 !lisp/
 !lisp/*.el
-!config/
-!config/*.el
 
 # Straight.el version locks (important for reproducibility)
 !straight/versions/

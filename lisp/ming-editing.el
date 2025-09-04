@@ -214,6 +214,9 @@
   ;; Remove the legacy flymake-proc backend
   (remove-hook 'flymake-diagnostic-functions #'flymake-proc-legacy-flymake))
 
+;; Disable flyspell-mode by default
+(setq-default flyspell-mode nil)
+
 ;;; LSP Configuration
 ;; Eglot configuration - no auto-start hooks (opt-in per language module)
 (use-package eglot

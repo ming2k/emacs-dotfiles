@@ -13,31 +13,6 @@
 (prefer-coding-system 'utf-8)
 (global-visual-line-mode 1)
 
-;; Better defaults
-(setq-default
- x-super-keysym nil
- indent-tabs-mode nil
- tab-width 4
- require-final-newline t
- sentence-end-double-space nil)
-
-;; Auto-save and backup settings
-(setq backup-by-copying t
-      delete-old-versions t
-      kept-new-versions 3
-      kept-old-versions 2
-      version-control t)
-
-;; Enable useful features
-(electric-pair-mode -1)
-(show-paren-mode 1)
-(global-auto-revert-mode 1)
-(delete-selection-mode 1)
-(global-font-lock-mode 1)
-
-;; Disable flyspell-mode by default
-(setq-default flyspell-mode nil)
-
 ;; Window navigation with Shift+arrow keys
 (windmove-default-keybindings)
 
@@ -46,9 +21,6 @@
   (xterm-mouse-mode 1)
   (global-set-key [mouse-4] 'scroll-down-line)
   (global-set-key [mouse-5] 'scroll-up-line))
-
-;;; Session Management
-;; Session management moved to config/core/session/session-config.el
 
 ;;; Load Config Modules
 
@@ -91,7 +63,6 @@
 (require 'markdown-setup)
 (require 'zig-setup)
 
-
 ;; Add a specific directory for themes to custom-theme-load-path
 (add-to-list 'custom-theme-load-path (expand-file-name "themes" user-emacs-directory))
 ;; Load the theme using the standard function
@@ -109,15 +80,3 @@
 
 (provide 'init)
 ;;; init.el ends here
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages nil))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
