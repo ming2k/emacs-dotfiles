@@ -10,7 +10,8 @@
   (add-hook 'go-ts-mode-hook (lambda ()
                                ;; Go uses tabs by convention
                                (setq-local tab-width 4
-                                          indent-tabs-mode t))))
+                                          indent-tabs-mode t
+                                          fill-column 100))))
 
 ;; Fallback Go mode for older Emacs
 (unless (treesit-language-available-p 'go)
@@ -23,7 +24,8 @@
     (add-hook 'go-mode-hook (lambda ()
                               ;; Go uses tabs by convention
                               (setq-local tab-width 4
-                                         indent-tabs-mode t)))))
+                                         indent-tabs-mode t
+                                         fill-column 100)))))
 
 ;; Configure gopls LSP server
 (with-eval-after-load 'eglot

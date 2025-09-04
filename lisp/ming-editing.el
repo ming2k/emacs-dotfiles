@@ -7,24 +7,6 @@
 ;; Set default fill column
 (setq-default fill-column 80)
 
-;; Fill column indicator and auto-fill mode are NOT enabled globally
-;; Let modes decide for themselves based on their needs
-
-;; Custom fill column settings for specific modes
-(defun set-fill-column-for-mode (mode column)
-  "Set fill-column for a specific MODE to COLUMN value."
-  (add-hook (intern (concat (symbol-name mode) "-hook"))
-            `(lambda () (setq-local fill-column ,column))))
-
-;; Mode-specific fill column settings
-(set-fill-column-for-mode 'emacs-lisp-mode 80)
-(set-fill-column-for-mode 'lisp-mode 80)
-(set-fill-column-for-mode 'python-mode 88)  ; Black formatter standard
-(set-fill-column-for-mode 'rust-mode 100)   ; Rust standard
-(set-fill-column-for-mode 'go-mode 100)     ; Go standard
-
-;; Individual modes can enable fill-column-indicator and auto-fill-mode as needed
-
 ;;; Completion System
 ;; Built-in completion settings
 (setq completion-cycle-threshold 3
@@ -85,8 +67,6 @@
   :bind (:map vertico-map
               ("C-n" . vertico-next)
               ("C-p" . vertico-previous)
-              ("C-j" . vertico-next)
-              ("C-k" . vertico-previous)
               ("RET" . vertico-directory-enter)
               ("M-RET" . vertico-exit)
               ("DEL" . vertico-directory-delete-char)
@@ -128,13 +108,10 @@
   (corfu-scroll-margin 5)
   :bind
   (:map corfu-map
-        ("TAB" . corfu-complete)
-        ([tab] . corfu-complete)
         ("C-n" . corfu-next)
         ("C-p" . corfu-previous)
-        ("S-TAB" . corfu-previous)
-        ([backtab] . corfu-previous)
-        ("S-<return>" . corfu-insert)
+        ("C-g" . corfu-quit)        
+        ("TAB" . corfu-insert)
         ("RET" . nil))
   :init
   (global-corfu-mode)
@@ -154,9 +131,24 @@
             (setq-local completion-at-point-functions
                         (list #'dabbrev-capf #'comint-filename-completion))))
 
-;; Manual completion triggers
-(global-set-key (kbd "C-c c") 'completion-at-point)
-(global-set-key (kbd "M-/") 'completion-at-point)
+;;; YASnippet - Template system
+(use-package yasnippet
+  :ensure t
+  :config
+  (yas-global-mode 1)
+  ;; Include both custom and official snippets
+  (setq yas-snippet-dirs (list (expand-file-name "snippets" user-emacs-directory)))
+  ;; Set TAB as the default expand key
+  (setq yas-trigger-key "TAB")
+  :bind
+  (:map yas-minor-mode-map
+        ("TAB" . yas-expand)
+        ("C-c y" . yas-insert-snippet)))
+
+;; YASnippet official snippets collection
+(use-package yasnippet-snippets
+  :ensure t
+  :after yasnippet)
 
 ;; Enhanced isearch
 (setq isearch-allow-scroll t
@@ -213,6 +205,12 @@
 (with-eval-after-load 'flymake
   ;; Remove the legacy flymake-proc backend
   (remove-hook 'flymake-diagnostic-functions #'flymake-proc-legacy-flymake))
+
+;; Configure hunspell as spell-checking backend
+(setq ispell-program-name "hunspell"
+      ispell-local-dictionary "en_US"
+      ispell-local-dictionary-alist
+      '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
 
 ;; Disable flyspell-mode by default
 (setq-default flyspell-mode nil)

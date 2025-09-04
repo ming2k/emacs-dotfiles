@@ -7,6 +7,9 @@
   :config
   (defun lisp-setup ()
     "Basic setup for Common Lisp mode."
+    ;; Fill column settings
+    (setq-local fill-column 80)
+    
     ;; Indentation settings
     (setq-local indent-tabs-mode nil)
     (setq-local tab-width 2)

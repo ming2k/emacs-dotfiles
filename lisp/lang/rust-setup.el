@@ -52,7 +52,8 @@
   (hs-minor-mode 1)
   (flyspell-prog-mode)
   (setq tab-width 4
-        indent-tabs-mode nil))
+        indent-tabs-mode nil
+        fill-column 100))
 
 
 ;; Configure Rust LSP server

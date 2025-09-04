@@ -142,5 +142,18 @@
   ;; Hook to create date directories automatically
   (advice-add 'org-roam-capture- :before #'org-roam-ensure-date-directory))
 
+;;; Org-Babel Configuration
+(use-package ob
+  :ensure nil
+  :after org
+  :config
+  ;; Load basic languages
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (shell . t)
+     (python . t))))
+
+
 (provide 'org-setup)
 ;;; org-setup.el ends here

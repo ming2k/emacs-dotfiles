@@ -11,12 +11,9 @@
   (desktop-save-mode 1)
   :config
   ;; Performance optimizations for faster startup
-  (setq desktop-restore-frames nil          ; Don't restore frame configuration
-        desktop-restore-in-current-display t ; Use current display
+  (setq desktop-restore-frames t
+        desktop-restore-in-current-display nil
         desktop-restore-reuses-frames t     ; Reuse existing frames
-        desktop-lazy-verbose nil            ; Reduce verbosity
-        desktop-lazy-idle-delay 1           ; Delay before lazy loading
-        desktop-auto-save-timeout 30        ; Auto-save every 30 seconds
         desktop-restore-eager 5)           ; Only restore first x buffers eagerly
   
   ;; Limit number of buffers to restore for faster startup
@@ -26,7 +23,7 @@
                 "COMMIT_EDITMSG\\|"          ; Git commit messages
                 "\\)"))
   
-  ;; Files to exclude from desktop restoration
+   ;; Files to exclude from desktop restoration
   (setq desktop-files-not-to-save
         "\\(^/[^/:]*:\\|(ftp)$\\|^/tmp/\\|\\.gpg$\\)")
   
@@ -45,8 +42,7 @@
   :config
   (setq recentf-max-saved-items 50
         recentf-max-menu-items 15
-        recentf-exclude '("^/var/folders\\.*"
-                         "COMMIT_EDITMSG\\'"
+        recentf-exclude '("COMMIT_EDITMSG\\'"
                          ".*-autoloads\\.el\\'"
                          "[/\\\\]\\.elpa/")))
 
