@@ -36,6 +36,6 @@
   (add-to-list 'eglot-server-programs
                '(js-mode . ("typescript-language-server" "--stdio"))))
 
-(provide 'javascript-config)
+(provide 'javascript-setup)
 
 ;;; config/lang/javascript.el ends here

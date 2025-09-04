@@ -52,49 +52,45 @@
 
 ;;; Load Config Modules
 
-;; Add config directories to load-path
-(let ((config-dir (expand-file-name "config" user-emacs-directory)))
-  ;; Add all config subdirectories to load-path for flat structure
-  (dolist (category '("core" "tools" "lang" "platform"))
-    (let ((category-dir (expand-file-name category config-dir)))
-      (when (file-directory-p category-dir)
-        (add-to-list 'load-path category-dir)))))
+;; Add lisp directory to load-path
+(let ((lisp-dir (expand-file-name "lisp" user-emacs-directory)))
+  (when (file-directory-p lisp-dir)
+    (add-to-list 'load-path lisp-dir)
+    (dolist (category '("lang"))
+      (let ((category-dir (expand-file-name category lisp-dir)))
+        (when (file-directory-p category-dir)
+          (add-to-list 'load-path category-dir))))))
 
-;; Load package management first
-(require 'package-config)
+;; Package management setup
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 
 ;;;; Make sure the file name and "provide" name are consistent
 
 ;; Load core config
-(require 'ming-completion)
-(require 'diagnostics)
 (require 'ming-editing)
 (require 'ming-session)
 (require 'ming-ui)
-(require 'lsp-config)
 
 ;; Load tool config
-(require 'magit-config)
-(require 'org-config)
-(require 'org-roam-config)
+(require 'magit-setup)
+(require 'org-setup)
 (require 'web-dev)
 
 ;; Load language configurations
-(require 'cc-config)
-(require 'python-config)
-(require 'rust-config)
-(require 'javascript-config)
-(require 'typescript-config)
-(require 'go-config)
-(require 'shell-config)
-(require 'common-lisp-config)
-(require 'emacs-lisp-config)
-(require 'json-config)
-(require 'markdown-config)
-(require 'zig-config)
+(require 'cc-setup)
+(require 'python-setup)
+(require 'rust-setup)
+(require 'javascript-setup)
+(require 'typescript-setup)
+(require 'go-setup)
+(require 'shell-setup)
+(require 'lisp-setup)
+(require 'emacs-lisp-setup)
+(require 'json-setup)
+(require 'markdown-setup)
+(require 'zig-setup)
 
-;; Platform-specific configurations
-(require 'platform)
 
 ;; Add a specific directory for themes to custom-theme-load-path
 (add-to-list 'custom-theme-load-path (expand-file-name "themes" user-emacs-directory))

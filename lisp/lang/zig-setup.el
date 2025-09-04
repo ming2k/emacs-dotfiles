@@ -134,6 +134,6 @@
         (compile "zig init"))
     (message "Zig not found. Install Zig from https://ziglang.org/")))
 
-(provide 'zig-config)
+(provide 'zig-setup)
 
 ;;; config/lang/zig.el ends here

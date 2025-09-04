@@ -14,6 +14,6 @@
 (add-hook 'c-mode-hook #'eglot-ensure)
 (add-hook 'c++-mode-hook #'eglot-ensure)
 
-(provide 'cc-config)
+(provide 'cc-setup)
 
 ;;; config/lang/cc-config.el ends here

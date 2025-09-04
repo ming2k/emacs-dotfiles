@@ -1,8 +1,31 @@
-;;; config/core/ming-completion.el -*- lexical-binding: t; -*-
+;;; ming-editing.el -*- lexical-binding: t; -*-
 ;;; Commentary:
-;; Modern completion system using corfu, orderless, and vertico
+;; Core editing features including completion, diagnostics, and fill-column settings
 ;;; Code:
 
+;;; Fill Column Settings
+;; Set default fill column
+(setq-default fill-column 80)
+
+;; Fill column indicator and auto-fill mode are NOT enabled globally
+;; Let modes decide for themselves based on their needs
+
+;; Custom fill column settings for specific modes
+(defun set-fill-column-for-mode (mode column)
+  "Set fill-column for a specific MODE to COLUMN value."
+  (add-hook (intern (concat (symbol-name mode) "-hook"))
+            `(lambda () (setq-local fill-column ,column))))
+
+;; Mode-specific fill column settings
+(set-fill-column-for-mode 'emacs-lisp-mode 80)
+(set-fill-column-for-mode 'lisp-mode 80)
+(set-fill-column-for-mode 'python-mode 88)  ; Black formatter standard
+(set-fill-column-for-mode 'rust-mode 100)   ; Rust standard
+(set-fill-column-for-mode 'go-mode 100)     ; Go standard
+
+;; Individual modes can enable fill-column-indicator and auto-fill-mode as needed
+
+;;; Completion System
 ;; Built-in completion settings
 (setq completion-cycle-threshold 3
       tab-always-indent 'complete
@@ -119,9 +142,6 @@
   :config
   (setq corfu-popupinfo-delay '(0.5 . 0.2)))
 
-;; Load LSP module
-(require 'lsp-config)
-
 ;; Enhanced dabbrev for better word completion
 (use-package dabbrev
   :ensure nil
@@ -132,12 +152,11 @@
 (add-hook 'prog-mode-hook
           (lambda ()
             (setq-local completion-at-point-functions
-                        (list #'safe-dabbrev-capf #'comint-filename-completion))))
+                        (list #'dabbrev-capf #'comint-filename-completion))))
 
 ;; Manual completion triggers
 (global-set-key (kbd "C-c c") 'completion-at-point)
 (global-set-key (kbd "M-/") 'completion-at-point)
-
 
 ;; Enhanced isearch
 (setq isearch-allow-scroll t
@@ -150,5 +169,84 @@
       completion-auto-help t
       completion-auto-select nil)
 
-(provide 'ming-completion)
-;;; config/core/ming-completion.el ends here
+;;; Diagnostics (Error Checking)
+;; Flymake configuration - LSP-only backend (enabled per language module)
+(use-package flymake
+  :ensure nil
+  :config
+  ;; Disable all non-LSP backends
+  (setq flymake-no-changes-timeout nil
+        flymake-start-on-flymake-mode t
+        flymake-start-on-save-buffer t
+        flymake-proc-compilation-prevents-syntax-check nil)
+  
+  ;; Clear all diagnostic functions to only use LSP
+  (setq-default flymake-diagnostic-functions nil)
+  
+  ;; Keybindings for flymake navigation
+  :bind (:map flymake-mode-map
+              ("C-c ! n" . flymake-goto-next-error)
+              ("C-c ! p" . flymake-goto-prev-error)
+              ("C-c ! l" . flymake-show-buffer-diagnostics)
+              ("C-c ! L" . flymake-show-project-diagnostics)
+              ("C-c ! c" . flymake-start)))
+
+;; Configure flymake to work only with eglot
+(with-eval-after-load 'eglot
+  ;; Ensure eglot adds itself to flymake when starting
+  (add-hook 'eglot-managed-mode-hook
+            (lambda ()
+              ;; Clear any existing diagnostic functions
+              (setq-local flymake-diagnostic-functions nil)
+              ;; Only enable eglot's diagnostics
+              (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend nil t)
+              ;; Start flymake if not already active
+              (unless flymake-mode
+                (flymake-mode 1)))))
+
+;; Clear non-LSP flymake backends in programming modes  
+(add-hook 'prog-mode-hook
+          (lambda ()
+            (setq-local flymake-diagnostic-functions nil)))
+
+;; Disable flymake's built-in syntax checkers
+(with-eval-after-load 'flymake
+  ;; Remove the legacy flymake-proc backend
+  (remove-hook 'flymake-diagnostic-functions #'flymake-proc-legacy-flymake))
+
+;;; LSP Configuration
+;; Eglot configuration - no auto-start hooks (opt-in per language module)
+(use-package eglot
+  :ensure nil
+  :config
+  ;; Global eglot settings
+  (setq eglot-sync-connect nil
+        eglot-autoshutdown t
+        eglot-extend-to-xref t
+        eglot-events-buffer-size 0
+        eglot-send-changes-idle-time 0.3
+        eglot-ignored-server-capabilities '(:hoverProvider :documentHighlightProvider))
+  
+  ;; Better eglot keybindings
+  :bind (:map eglot-mode-map
+              ("C-c l r" . eglot-rename)
+              ("C-c l f" . eglot-format-buffer)
+              ("C-c l a" . eglot-code-actions)
+              ("C-c l o" . eglot-code-action-organize-imports)
+              ("C-c l h" . eldoc)
+              ("M-." . eglot-find-declaration)
+              ("M-?" . eglot-find-references)
+              ("C-M-." . eglot-find-implementation)))
+
+;; Programming-specific completion enhancements with eglot
+(with-eval-after-load 'eglot
+  (add-hook 'eglot-managed-mode-hook
+            (lambda ()
+              ;; Prioritize eglot completion when eglot is managing the buffer
+              (setq-local completion-at-point-functions
+                          (list #'eglot-completion-at-point
+                                #'dabbrev-capf
+                                #'comint-filename-completion)))))
+
+(provide 'ming-editing)
+;;; ming-editing.el ends here

@@ -44,5 +44,5 @@
   (add-to-list 'eglot-server-programs
                '((markdown-mode gfm-mode) . ("marksman"))))
 
-(provide 'markdown-config)
+(provide 'markdown-setup)
 ;;; config/lang/markdown.el ends here

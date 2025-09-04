@@ -106,5 +106,5 @@
          ("\\.gitmodules\\'" . gitconfig-mode)
          ("\\.gitignore\\'" . gitignore-mode)))
 
-(provide 'magit-config)
+(provide 'magit-setup)
 ;;; config/tools/magit-config.el ends here

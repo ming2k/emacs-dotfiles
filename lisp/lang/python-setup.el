@@ -256,5 +256,5 @@
 
 (add-hook 'python-mode-hook #'python-setup-import-sorting-keybinding)
 
-(provide 'python-config)
+(provide 'python-setup)
 ;;; config/lang/python.el ends here

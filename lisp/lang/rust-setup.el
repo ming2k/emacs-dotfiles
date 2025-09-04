@@ -142,6 +142,6 @@
         (message "cargo-expand not found. Install with: cargo install cargo-expand"))
     (message "Not in a Rust project (no Cargo.toml found)")))
 
-(provide 'rust-config)
+(provide 'rust-setup)
 
 ;;; config/lang/rust.el ends here

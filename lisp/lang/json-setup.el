@@ -41,6 +41,6 @@
   (add-to-list 'eglot-server-programs
                '(json-ts-mode . ("vscode-json-languageserver" "--stdio"))))
 
-(provide 'json-config)
+(provide 'json-setup)
 
 ;;; config/lang/json.el ends here
