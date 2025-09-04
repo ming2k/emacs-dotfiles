@@ -66,11 +66,20 @@
          ("C-x v r" . git-gutter:revert-hunk)
          ("C-x v s" . git-gutter:stage-hunk))
   :custom
-  (git-gutter:update-interval 0.02)
+  (git-gutter:update-interval 2)
   (git-gutter:modified-sign "~")
   (git-gutter:added-sign "+")
   (git-gutter:deleted-sign "-")
-  (git-gutter:hide-gutter t))
+  (git-gutter:hide-gutter t)
+  :config
+  ;; Add safety check for git-gutter updates
+  (defadvice git-gutter:live-update (around safe-update activate)
+    "Safely update git-gutter to avoid array errors."
+    (when (and (buffer-file-name)
+               (vc-backend (buffer-file-name)))
+      (condition-case nil
+          ad-do-it
+        (error nil)))))
 
 ;; Git time machine for browsing history
 (use-package git-timemachine
