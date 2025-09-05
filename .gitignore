@@ -102,6 +102,9 @@ abbrev_defs
 # Personal snippets (if using yasnippet)
 snippets/personal/
 
+# savefold.el
+savefold/
+
 # Org clock data
 .org-id-locations
 org-clock-save.el
@@ -139,8 +142,6 @@ Desktop.ini
 
 # Subversion
 .svn/
-
-packages.el
 
 # Claude
 CLAUDE.md

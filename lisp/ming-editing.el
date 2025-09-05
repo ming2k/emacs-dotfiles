@@ -131,8 +131,22 @@
             (setq-local completion-at-point-functions
                         (list #'dabbrev-capf #'comint-filename-completion))))
 
+;;; Folding
+
 ;; Enable hideshow minor mode for code folding
 (add-hook 'prog-mode-hook 'hs-minor-mode)
+
+(use-package ts-fold
+  :ensure t)
+
+;; Fold persistence
+(use-package savefold
+  :ensure t
+  :init
+  (setq savefold-backends '(outline org hideshow))
+  (setq savefold-directory (locate-user-emacs-file "savefold"))  ;; default
+  :config
+  (savefold-mode 1))
 
 ;;; YASnippet - Template system
 (use-package yasnippet
