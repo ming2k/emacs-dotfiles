@@ -161,14 +161,6 @@
 ;;  :ensure t
 ;;  :after yasnippet)
 
-;; Cape for completion extensions
-(use-package cape
-  :ensure t
-  :after (corfu yasnippet)
-  :config
-  ;; Add cape completion functions (cape-yasnippet is built-in)
-  (add-to-list 'completion-at-point-functions #'cape-yasnippet)
-  (add-to-list 'completion-at-point-functions #'cape-file))
 
 ;; Enhanced isearch
 (setq isearch-allow-scroll t
@@ -271,8 +263,6 @@
               ;; Prioritize eglot completion when eglot is managing the buffer
               (setq-local completion-at-point-functions
                           (list #'eglot-completion-at-point
-                                #'cape-yasnippet
-                                #'cape-file
                                 #'comint-filename-completion)))))
 
 (provide 'ming-editing)

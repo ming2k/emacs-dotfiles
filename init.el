@@ -87,7 +87,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(all-the-icons avy cape corfu-terminal dired-subtree doom-modeline doom-themes
+   '(all-the-icons avy corfu-terminal dired-subtree doom-modeline doom-themes
                    expand-region flycheck forge git-gutter git-link git-modes
                    git-timemachine go-mode helm-projectile json-mode magit-delta
                    magit-todos marginalia markdown-preview-mode markdown-toc

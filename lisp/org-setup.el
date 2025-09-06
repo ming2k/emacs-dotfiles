@@ -47,12 +47,12 @@
   ;; Capture templates
   (org-capture-templates
    '(("t" "Todo" entry (file+headline "~/org/inbox.org" "Inbox")
-      "* TODO %?\n  %U")
+      "* TODO %?\n  CREATED: %U\n")
      ("i" "Idea/Thought" entry (file+headline "~/org/inbox.org" "Inbox")
       "* %?\n  %U")
      ("r" "Remember" entry (file+headline "~/org/inbox.org" "Inbox")
       "* %?\n  %U\n  %a")))
-  
+
   :config
   ;; Archive configuration - quarterly archiving
   (defun my/quarterly-archive-location ()
