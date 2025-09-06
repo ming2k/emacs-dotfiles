@@ -147,12 +147,17 @@
 (with-eval-after-load 'org
   (defun org-smart-tab ()
     "Smart TAB function for org-mode.
-    First try yasnippet expansion, then org-cycle."
+    Priority: 1) corfu completion (includes yasnippet via cape) 2) org-cycle"
     (interactive)
-    (if (and (bound-and-true-p yas-minor-mode)
-             (yas-expand))
-        nil ; yasnippet handled it
-      (org-cycle))) ; fallback to org-cycle
+    (cond
+     ;; First priority: corfu completion (includes yasnippet via cape-yasnippet)
+     ((and (bound-and-true-p corfu-mode)
+           (let ((completion-result (completion-at-point)))
+             (and completion-result
+                  (not (eq (car completion-result) (cadr completion-result))))))
+      (completion-at-point))
+     ;; Second priority: org-cycle (folding, indenting, etc.)
+     (t (org-cycle))))
   
   ;; Bind smart tab function to TAB in org-mode
   (define-key org-mode-map (kbd "TAB") 'org-smart-tab)

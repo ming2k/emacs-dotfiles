@@ -117,7 +117,14 @@
   (global-corfu-mode)
   (corfu-popupinfo-mode)
   :config
-  (setq corfu-popupinfo-delay '(0.5 . 0.2)))
+  (setq corfu-popupinfo-delay '(0.5 . 0.2))
+  ;; Disable ispell for corfu completion
+  (setq corfu-excluded-modes '(ispell-minor-mode flyspell-mode))
+  ;; Remove ispell completion functions from completion-at-point-functions
+  (add-hook 'corfu-mode-hook 
+            (lambda ()
+              (setq-local completion-at-point-functions
+                          (remove #'ispell-completion-at-point completion-at-point-functions)))))
 
 ;; Enhanced dabbrev for better word completion
 (use-package dabbrev
@@ -129,15 +136,12 @@
 (add-hook 'prog-mode-hook
           (lambda ()
             (setq-local completion-at-point-functions
-                        (list #'dabbrev-capf #'comint-filename-completion))))
+                        (list #'cape-yasnippet #'cape-file #'comint-filename-completion))))
 
 ;;; Folding
 
 ;; Enable hideshow minor mode for code folding
 (add-hook 'prog-mode-hook 'hs-minor-mode)
-
-(use-package ts-fold
-  :ensure t)
 
 ;; Fold persistence
 (use-package savefold
@@ -166,6 +170,15 @@
 (use-package yasnippet-snippets
   :ensure t
   :after yasnippet)
+
+;; Cape for completion extensions
+(use-package cape
+  :ensure t
+  :after (corfu yasnippet)
+  :config
+  ;; Add cape completion functions (cape-yasnippet is built-in)
+  (add-to-list 'completion-at-point-functions #'cape-yasnippet)
+  (add-to-list 'completion-at-point-functions #'cape-file))
 
 ;; Enhanced isearch
 (setq isearch-allow-scroll t
@@ -226,6 +239,10 @@
 ;; Configure hunspell as spell-checking backend
 (setq ispell-program-name "hunspell"
       ispell-local-dictionary "en_US"
+      ;; Set alternate dictionary to avoid plain word-list errors
+      ispell-alternate-dictionary nil
+      ;; Disable lookup words to avoid the error
+      ispell-lookup-words nil
       ispell-local-dictionary-alist
       '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
 
@@ -263,7 +280,8 @@
               ;; Prioritize eglot completion when eglot is managing the buffer
               (setq-local completion-at-point-functions
                           (list #'eglot-completion-at-point
-                                #'dabbrev-capf
+                                #'cape-yasnippet
+                                #'cape-file
                                 #'comint-filename-completion)))))
 
 (provide 'ming-editing)
