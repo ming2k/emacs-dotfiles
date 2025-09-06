@@ -132,12 +132,6 @@
   :config
   (setq dabbrev-ignored-buffer-regexps '("\\.\\(?:pdf\\|jpe?g\\|png\\)\\'")))
 
-;; Programming mode completion setup
-(add-hook 'prog-mode-hook
-          (lambda ()
-            (setq-local completion-at-point-functions
-                        (list #'cape-yasnippet #'cape-file #'comint-filename-completion))))
-
 ;;; Folding
 
 ;; Enable hideshow minor mode for code folding
@@ -272,6 +266,7 @@
               ("M-." . eglot-find-declaration)
               ("M-?" . eglot-find-references)
               ("C-M-." . eglot-find-implementation)))
+
 
 ;; Programming-specific completion enhancements with eglot
 (with-eval-after-load 'eglot

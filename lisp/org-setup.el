@@ -15,6 +15,9 @@
   ;; Directory structure
   (org-directory "~/org/")
   (org-default-notes-file "~/org/inbox.org")
+
+  ;; Modify the behavior of creating date/datetime to include the time zone
+  ;;(org-time-stamp-formats '("<%Y-%m-%d %a>" . "<%Y-%m-%d %a %H:%M %Z>"))
   
   ;; Display settings
   (org-startup-folded nil)
@@ -23,9 +26,9 @@
   (org-cycle-global-at-bob t)
   (org-startup-with-inline-images t)
   
-  ;; TODO Keywords, GTD style
+  ;; TODO Keywords
   (org-todo-keywords
-   '((sequence "INBOX(i)" "ACTIVE(a)" "|" "DONE(d)" "CANCELLED(c)")))
+   '((sequence "TODO(t)" "IN-PROGRESS(i)" "|" "DONE(d)" "CANCELLED(c)")))
 
   ;; Agenda settings
   (org-agenda-files 
@@ -143,25 +146,10 @@
   ;; Hook to create date directories automatically
   (advice-add 'org-roam-capture- :before #'org-roam-ensure-date-directory))
 
-;;; Smart Tab Configuration for Org Mode
+;;; Disable Corfu in Org Mode
 (with-eval-after-load 'org
-  (defun org-smart-tab ()
-    "Smart TAB function for org-mode.
-    Priority: 1) corfu completion (includes yasnippet via cape) 2) org-cycle"
-    (interactive)
-    (cond
-     ;; First priority: corfu completion (includes yasnippet via cape-yasnippet)
-     ((and (bound-and-true-p corfu-mode)
-           (let ((completion-result (completion-at-point)))
-             (and completion-result
-                  (not (eq (car completion-result) (cadr completion-result))))))
-      (completion-at-point))
-     ;; Second priority: org-cycle (folding, indenting, etc.)
-     (t (org-cycle))))
-  
-  ;; Bind smart tab function to TAB in org-mode
-  (define-key org-mode-map (kbd "TAB") 'org-smart-tab)
-  (define-key org-mode-map (kbd "<tab>") 'org-smart-tab))
+  ;; Disable corfu-mode in org-mode buffers
+  (add-hook 'org-mode-hook (lambda () (corfu-mode -1))))
 
 ;;; Org-Babel Configuration
 (use-package ob

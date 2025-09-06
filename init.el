@@ -86,7 +86,15 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages nil))
+ '(package-selected-packages
+   '(all-the-icons avy cape corfu-terminal dired-subtree doom-modeline doom-themes
+                   expand-region flycheck forge git-gutter git-link git-modes
+                   git-timemachine go-mode helm-projectile json-mode magit-delta
+                   magit-todos marginalia markdown-preview-mode markdown-toc
+                   multiple-cursors orderless org-roam rainbow-delimiters
+                   rainbow-mode rjsx-mode rust-mode savefold svelte-mode
+                   typescript-mode vertico vue-mode web-mode yaml-mode
+                   yasnippet-snippets zig-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
