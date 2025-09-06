@@ -153,17 +153,13 @@
   (yas-global-mode 1)
   ;; Include both custom and official snippets
   (setq yas-snippet-dirs (list (expand-file-name "snippets" user-emacs-directory)))
-  ;; Set TAB as the default expand key
-  (setq yas-trigger-key "TAB")
-  :bind
-  (:map yas-minor-mode-map
-        ("TAB" . yas-expand)
-        ("C-c y" . yas-insert-snippet)))
+  ;; Set C-j as the default expand key
+  (setq yas-trigger-key (kbd "C-j")))
 
-;; YASnippet official snippets collection
-(use-package yasnippet-snippets
-  :ensure t
-  :after yasnippet)
+;; ecommended snippets collection
+;; (use-package yasnippet-snippets
+;;  :ensure t
+;;  :after yasnippet)
 
 ;; Cape for completion extensions
 (use-package cape
