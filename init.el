@@ -13,6 +13,8 @@
 (prefer-coding-system 'utf-8)
 (global-visual-line-mode 1)
 
+;;(set-face-attribute 'default nil :font "Sarasa Mono SC-13")
+
 ;; Window navigation with Shift+arrow keys
 (windmove-default-keybindings)
 

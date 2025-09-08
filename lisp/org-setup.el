@@ -54,6 +54,9 @@
       "* %?\n  %U\n  %a")))
 
   :config
+  ;; Set font for org tables
+  (set-face-attribute 'org-table nil :font "Sarasa Mono SC-13")
+  
   ;; Archive configuration - quarterly archiving
   (defun my/quarterly-archive-location ()
     "Generate quarterly archive location string.
