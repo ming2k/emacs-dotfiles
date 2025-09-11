@@ -62,7 +62,6 @@
 (require 'shell-setup)
 (require 'lisp-setup)
 (require 'emacs-lisp-setup)
-(require 'json-setup)
 (require 'yaml-setup)
 (require 'markdown-setup)
 (require 'zig-setup)

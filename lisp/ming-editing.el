@@ -242,7 +242,7 @@
         eglot-extend-to-xref t
         eglot-events-buffer-size 0
         eglot-send-changes-idle-time 0.3
-        eglot-ignored-server-capabilities '(:hoverProvider :documentHighlightProvider))
+        eglot-ignored-server-capabilities '(:hoverProvider :documentHighlightProvider :inlayHintProvider))
   
   ;; Better eglot keybindings
   :bind (:map eglot-mode-map
