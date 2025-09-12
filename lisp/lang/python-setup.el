@@ -39,7 +39,6 @@
   (font-lock-mode 1)
   (subword-mode 1)
   (hs-minor-mode 1)
-  (flyspell-prog-mode)
   (setq-local tab-width 4
               indent-tabs-mode nil
               fill-column 88

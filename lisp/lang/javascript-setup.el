@@ -26,7 +26,6 @@
   (electric-indent-local-mode 1)
   (subword-mode 1)
   (hs-minor-mode 1)
-  (flyspell-prog-mode)
   (setq-local comment-auto-fill-only-comments t
               tab-width 2
               indent-tabs-mode nil))

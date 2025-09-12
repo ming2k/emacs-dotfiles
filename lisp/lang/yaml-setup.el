@@ -37,7 +37,6 @@
   "Enable helpful minor modes for YAML."
   (electric-indent-local-mode 1)
   (hs-minor-mode 1)
-  (flyspell-prog-mode)
   (font-lock-mode 1)
   (setq-local tab-width 2
               indent-tabs-mode nil

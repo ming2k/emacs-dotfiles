@@ -134,7 +134,6 @@
 (defun svelte-setup-minor-modes ()
   "Enable essential minor modes for Svelte development."
   (subword-mode 1)
-  (flyspell-prog-mode)
   (setq-local tab-width 2
               indent-tabs-mode nil))
 
@@ -161,8 +160,7 @@
   "Common setup for all web development modes."
   (setq-local tab-width 2
               indent-tabs-mode nil)
-  (subword-mode 1)
-  (flyspell-prog-mode))
+  (subword-mode 1))
 
 ;; Framework-specific setup based on file extension
 (defun web-dev-setup-framework-specific ()

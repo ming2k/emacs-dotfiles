@@ -39,8 +39,7 @@
   (setq git-commit-summary-max-length 50
         git-commit-fill-column 72)
   
-  ;; Enable spell checking in commit messages  
-  (add-hook 'git-commit-mode-hook 'flyspell-mode))
+)
 
 ;; Enhanced diffs and merge conflicts (optional - comment out if causing issues)
 ;; (use-package magit-delta
