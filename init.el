@@ -66,6 +66,7 @@
 (require 'markdown-setup)
 (require 'zig-setup)
 (require 'json-setup)
+(require 'lua-setup)
 
 ;; Add a specific directory for themes to custom-theme-load-path
 (add-to-list 'custom-theme-load-path (expand-file-name "themes" user-emacs-directory))
