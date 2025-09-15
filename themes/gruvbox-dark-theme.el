@@ -2,18 +2,48 @@
 
 ;;; Commentary:
 ;; A dark theme inspired by the gruvbox colorscheme
+;;
+;; This theme follows a layered color definition approach for better maintainability
+;; and semantic consistency:
+;;
+;; 1. BASE LAYER: Core background and foreground colors with tonal variations
+;;    - Provides the foundation palette with subtle gradations
+;;    - Includes main bg/fg, soft/hard variants, and intermediate tones
+;;    - Example: gruvbox-dark-bg, gruvbox-dark-bg-soft, gruvbox-dark-bg-lighter
+;;
+;; 2. CHROMATIC LAYER: Pure color definitions in multiple intensities
+;;    - Raw color values without semantic meaning
+;;    - Each color has normal and soft variants for flexibility
+;;    - Example: gruvbox-dark-red, gruvbox-dark-red-soft
+;;
+;; 3. SEMANTIC LAYER: Colors assigned to specific UI purposes
+;;    - Links, visited links, cursor, search matches, etc.
+;;    - Provides meaning and context to color usage
+;;    - Example: gruvbox-dark-link, gruvbox-dark-cursor, gruvbox-dark-match
+;;
+;; 4. FUNCTIONAL LAYER: Face definitions using semantic and base colors
+;;    - Maps semantic colors to actual UI elements
+;;    - Ensures consistent visual hierarchy and accessibility
+;;    - Example: `(cursor ((t (:background ,gruvbox-dark-cursor))))
 
 ;;; Code:
 
 (deftheme gruvbox-dark
   "A dark theme inspired by gruvbox colorscheme")
 
-(let ((gruvbox-dark-bg        "#282828")
-      (gruvbox-dark-bg-soft   "#32302f")
-      (gruvbox-dark-bg-hard   "#1d2021")
+(let (;; === BASE LAYER: Foundation colors with tonal variations ===
+      (gruvbox-dark-bg        "#1d2021")
+      (gruvbox-dark-bg-lighter "#3c3836")
+      (gruvbox-dark-bg-soft   "#252420")
+      (gruvbox-dark-bg-hard   "#0d1011")
       (gruvbox-dark-fg        "#ebdbb2")
+      (gruvbox-dark-fg-dim    "#d5c4a1")
       (gruvbox-dark-fg-soft   "#a89984")
       (gruvbox-dark-gray      "#928374")
+      (gruvbox-dark-gray-light "#a89984")
+      (gruvbox-dark-comment   "#7c6f64")
+
+      ;; === CHROMATIC LAYER: Pure color definitions ===
       (gruvbox-dark-red       "#cc241d")
       (gruvbox-dark-red-soft  "#fb4934")
       (gruvbox-dark-green     "#98971a")
@@ -27,40 +57,47 @@
       (gruvbox-dark-aqua      "#689d6a")
       (gruvbox-dark-aqua-soft "#8ec07c")
       (gruvbox-dark-orange    "#d65d0e")
-      (gruvbox-dark-orange-soft "#fe8019"))
+      (gruvbox-dark-orange-soft "#fe8019")
 
+      ;; === SEMANTIC LAYER: Purpose-driven color assignments ===
+      (gruvbox-dark-link      "#83a598")  ; Links (blue-soft)
+      (gruvbox-dark-visited   "#d3869b")  ; Visited links (purple-soft)
+      (gruvbox-dark-cursor    "#fe8019")  ; Cursor (orange-soft)
+      (gruvbox-dark-match     "#d79921")) ; Search matches (yellow)
+
+  ;; === FUNCTIONAL LAYER: Face definitions using layered colors ===
   (custom-theme-set-faces
    'gruvbox-dark
-   
+
    ;; Basic faces
    `(default ((t (:background ,gruvbox-dark-bg :foreground ,gruvbox-dark-fg))))
-   `(cursor ((t (:background ,gruvbox-dark-orange))))
-   `(region ((t (:background ,gruvbox-dark-aqua))))
-   `(highlight ((t (:background ,gruvbox-dark-bg-soft))))
+   `(cursor ((t (:background ,gruvbox-dark-cursor))))
+   `(region ((t (:background ,gruvbox-dark-bg-lighter))))
+   `(highlight ((t (:background ,gruvbox-dark-bg-lighter))))
    `(hl-line ((t (:background ,gruvbox-dark-bg-soft))))
    `(fringe ((t (:background ,gruvbox-dark-bg))))
    `(mode-line ((t (:background ,gruvbox-dark-bg-soft :foreground ,gruvbox-dark-fg))))
-   `(mode-line-inactive ((t (:background ,gruvbox-dark-bg-hard :foreground ,gruvbox-dark-gray))))
+   `(mode-line-inactive ((t (:background ,gruvbox-dark-bg-hard :foreground ,gruvbox-dark-fg-dim))))
    `(minibuffer-prompt ((t (:foreground ,gruvbox-dark-blue-soft :weight bold))))
    
    ;; Font lock faces
    `(font-lock-builtin-face ((t (:foreground ,gruvbox-dark-orange))))
-   `(font-lock-comment-face ((t (:foreground ,gruvbox-dark-gray :slant italic))))
-   `(font-lock-constant-face ((t (:foreground ,gruvbox-dark-purple))))
+   `(font-lock-comment-face ((t (:foreground ,gruvbox-dark-comment :slant italic))))
+   `(font-lock-constant-face ((t (:foreground ,gruvbox-dark-purple-soft))))
    `(font-lock-function-name-face ((t (:foreground ,gruvbox-dark-green-soft :weight bold))))
    `(font-lock-keyword-face ((t (:foreground ,gruvbox-dark-red :weight bold))))
-   `(font-lock-string-face ((t (:foreground ,gruvbox-dark-green))))
-   `(font-lock-type-face ((t (:foreground ,gruvbox-dark-yellow))))
-   `(font-lock-variable-name-face ((t (:foreground ,gruvbox-dark-blue))))
+   `(font-lock-string-face ((t (:foreground ,gruvbox-dark-green-soft))))
+   `(font-lock-type-face ((t (:foreground ,gruvbox-dark-yellow-soft))))
+   `(font-lock-variable-name-face ((t (:foreground ,gruvbox-dark-blue-soft))))
    `(font-lock-warning-face ((t (:foreground ,gruvbox-dark-red-soft :weight bold))))
    
    ;; Line numbers
-   `(line-number ((t (:foreground ,gruvbox-dark-gray :background ,gruvbox-dark-bg))))
+   `(line-number ((t (:foreground ,gruvbox-dark-comment :background ,gruvbox-dark-bg))))
    `(line-number-current-line ((t (:foreground ,gruvbox-dark-yellow :background ,gruvbox-dark-bg-soft :weight bold))))
    
    ;; Search
-   `(isearch ((t (:background ,gruvbox-dark-yellow :foreground ,gruvbox-dark-bg))))
-   `(lazy-highlight ((t (:background ,gruvbox-dark-yellow-soft :foreground ,gruvbox-dark-bg))))
+   `(isearch ((t (:background ,gruvbox-dark-match :foreground ,gruvbox-dark-bg))))
+   `(lazy-highlight ((t (:background ,gruvbox-dark-bg-lighter :foreground ,gruvbox-dark-yellow))))
    
    ;; Org mode
    `(org-level-1 ((t (:foreground ,gruvbox-dark-blue-soft :weight bold))))
@@ -68,10 +105,10 @@
    `(org-level-3 ((t (:foreground ,gruvbox-dark-yellow :weight bold))))
    `(org-level-4 ((t (:foreground ,gruvbox-dark-purple-soft :weight bold))))
    `(org-code ((t (:foreground ,gruvbox-dark-orange :background ,gruvbox-dark-bg-soft))))
-   `(org-verbatim ((t (:foreground ,gruvbox-dark-green))))
+   `(org-verbatim ((t (:foreground ,gruvbox-dark-aqua-soft))))
    `(org-block ((t (:background ,gruvbox-dark-bg-soft))))
-   `(org-block-begin-line ((t (:foreground ,gruvbox-dark-gray :background ,gruvbox-dark-bg-soft))))
-   `(org-block-end-line ((t (:foreground ,gruvbox-dark-gray :background ,gruvbox-dark-bg-soft))))
+   `(org-block-begin-line ((t (:foreground ,gruvbox-dark-comment :background ,gruvbox-dark-bg-soft))))
+   `(org-block-end-line ((t (:foreground ,gruvbox-dark-comment :background ,gruvbox-dark-bg-soft))))
    
    ;; Dired
    `(dired-directory ((t (:foreground ,gruvbox-dark-blue-soft :weight bold))))
@@ -86,8 +123,14 @@
    
    ;; Company/Corfu completion
    `(company-tooltip ((t (:background ,gruvbox-dark-bg-soft :foreground ,gruvbox-dark-fg))))
-   `(company-tooltip-selection ((t (:background ,gruvbox-dark-blue :foreground ,gruvbox-dark-bg))))
+   `(company-tooltip-selection ((t (:background ,gruvbox-dark-bg-lighter :foreground ,gruvbox-dark-fg))))
    `(company-tooltip-common ((t (:foreground ,gruvbox-dark-yellow :weight bold))))
+
+   ;; Corfu completion faces
+   `(corfu-default ((t (:background ,gruvbox-dark-bg-soft :foreground ,gruvbox-dark-fg))))
+   `(corfu-current ((t (:background ,gruvbox-dark-bg-lighter :foreground ,gruvbox-dark-fg))))
+   `(corfu-bar ((t (:background ,gruvbox-dark-gray))))
+   `(corfu-border ((t (:background ,gruvbox-dark-gray))))
    
    ;; Rainbow delimiters
    `(rainbow-delimiters-depth-1-face ((t (:foreground ,gruvbox-dark-red-soft))))
@@ -105,16 +148,24 @@
    `(which-key-command-description-face ((t (:foreground ,gruvbox-dark-green))))
    
    ;; Vertico
-   `(vertico-current ((t (:background ,gruvbox-dark-bg-soft))))
+   `(vertico-current ((t (:background ,gruvbox-dark-bg-lighter))))
    
    ;; Marginalia
    `(marginalia-key ((t (:foreground ,gruvbox-dark-yellow))))
-   `(marginalia-documentation ((t (:foreground ,gruvbox-dark-gray))))
+   `(marginalia-documentation ((t (:foreground ,gruvbox-dark-fg-dim))))
    
    ;; Error/warning faces
    `(error ((t (:foreground ,gruvbox-dark-red-soft :weight bold))))
    `(warning ((t (:foreground ,gruvbox-dark-yellow :weight bold))))
-   `(success ((t (:foreground ,gruvbox-dark-green-soft :weight bold))))))
+   `(success ((t (:foreground ,gruvbox-dark-green-soft :weight bold))))
+
+   ;; Links
+   `(link ((t (:foreground ,gruvbox-dark-link :underline t))))
+   `(link-visited ((t (:foreground ,gruvbox-dark-visited :underline t))))
+
+   ;; Secondary text using intermediate tones
+   `(shadow ((t (:foreground ,gruvbox-dark-fg-dim))))
+   `(secondary-selection ((t (:background ,gruvbox-dark-bg-lighter))))))
 
 (provide-theme 'gruvbox-dark)
 
