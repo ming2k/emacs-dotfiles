@@ -3,6 +3,9 @@
 \#*\#
 *.bak
 
+# treesit-install-language-grammar
+tree-sitter/
+
 # Lock files
 .#*
 
