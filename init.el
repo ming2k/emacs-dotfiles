@@ -11,8 +11,15 @@
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
 (prefer-coding-system 'utf-8)
-(global-visual-line-mode 1)
-(global-auto-revert-mode 1)
+;; Disable visual line mode
+(global-visual-line-mode -1)
+
+;; Configure prog-mode
+(add-hook 'prog-mode-hook
+          (lambda ()
+            (visual-line-mode -1)
+            (setq truncate-lines nil)))
+;; (global-auto-revert-mode 1)
 
 ;;(set-face-attribute 'default nil :font "Sarasa Mono SC-13")
 
