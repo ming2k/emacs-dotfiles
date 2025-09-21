@@ -100,7 +100,7 @@
                   rust-ts-mode-hook
                   typescript-ts-mode-hook
                   tsx-ts-mode-hook
-                  javascript-ts-mode-hook
+                  js-ts-mode-hook
                   go-ts-mode-hook
                   c-ts-mode-hook
                   c++-ts-mode-hook
