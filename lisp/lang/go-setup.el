@@ -2,30 +2,31 @@
 
 ;; Basic Go configuration with eglot LSP support
 
-;; Built-in Go tree-sitter mode (Emacs 29+)
-(when (treesit-language-available-p 'go)
-  (add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode))
-  (add-hook 'go-ts-mode-hook #'eglot-ensure)
-  (add-hook 'go-ts-mode-hook #'flymake-mode)
-  (add-hook 'go-ts-mode-hook (lambda ()
-                               ;; Go uses tabs by convention
-                               (setq-local tab-width 4
-                                          indent-tabs-mode t
-                                          fill-column 100))))
+;; Go minor modes setup
+(defun go-setup-minor-modes ()
+  "Enable helpful minor modes for Go."
+  ;; Go uses tabs by convention
+  (setq-local tab-width 4
+              indent-tabs-mode t
+              fill-column 100))
 
-;; Fallback Go mode for older Emacs
+;; Tree-sitter Go mode (preferred)
+(use-package go-ts-mode
+  :ensure nil
+  :when (treesit-language-available-p 'go)
+  :mode "\\.go\\'"
+  :hook ((go-ts-mode . eglot-ensure)
+         (go-ts-mode . flymake-mode)
+         (go-ts-mode . go-setup-minor-modes)))
+
+;; Fallback Go mode when tree-sitter is not available
 (unless (treesit-language-available-p 'go)
   (use-package go-mode
     :ensure t
     :mode "\\.go\\'"
     :hook ((go-mode . eglot-ensure)
-           (go-mode . flymake-mode))
-    :config
-    (add-hook 'go-mode-hook (lambda ()
-                              ;; Go uses tabs by convention
-                              (setq-local tab-width 4
-                                         indent-tabs-mode t
-                                         fill-column 100)))))
+           (go-mode . flymake-mode)
+           (go-mode . go-setup-minor-modes))))
 
 ;; Configure gopls LSP server
 (with-eval-after-load 'eglot
@@ -33,7 +34,9 @@
                '((go-mode go-ts-mode) . ("gopls"))))
 
 ;; Basic file associations
-(add-to-list 'auto-mode-alist '("go\\.mod\\'" . go-mod-ts-mode))
+(if (treesit-language-available-p 'gomod)
+    (add-to-list 'auto-mode-alist '("go\\.mod\\'" . go-mod-ts-mode))
+  (add-to-list 'auto-mode-alist '("go\\.mod\\'" . conf-mode)))
 (add-to-list 'auto-mode-alist '("go\\.sum\\'" . fundamental-mode))
 
 (provide 'go-setup)

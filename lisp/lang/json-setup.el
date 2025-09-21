@@ -3,16 +3,37 @@
 ;; JSON mode configuration with flyspell disabled
 ;;; Code:
 
-;; JSON mode configuration
-(use-package json-mode
-  :ensure t
-  :mode (("\\.json\\'" . json-mode)
-         ("\\.jsonl\\'" . json-mode)
-         ("\\.jsonc\\'" . json-mode))
-  :hook (json-mode . json-setup-minor-modes)
+;; Tree-sitter JSON mode (preferred)
+(use-package json-ts-mode
+  :ensure nil
+  :when (treesit-language-available-p 'json)
+  :mode (("\\.json\\'" . json-ts-mode)
+         ("\\.jsonl\\'" . json-ts-mode)
+         ("\\.jsonc\\'" . json-ts-mode))
+  :hook ((json-ts-mode . json-setup-minor-modes)
+         (json-ts-mode . eglot-ensure)
+         (json-ts-mode . flymake-mode))
   :config
-  (setq json-reformat:indent-width 2
-        json-reformat:pretty-string? nil))
+  (setq json-ts-mode-indent-offset 2))
+
+;; Fallback to json-mode when tree-sitter is not available
+(unless (treesit-language-available-p 'json)
+  (use-package json-mode
+    :ensure t
+    :mode (("\\.json\\'" . json-mode)
+           ("\\.jsonl\\'" . json-mode)
+           ("\\.jsonc\\'" . json-mode))
+    :hook ((json-mode . json-setup-minor-modes)
+           (json-mode . eglot-ensure)
+           (json-mode . flymake-mode))
+    :config
+    (setq json-reformat:indent-width 2
+          json-reformat:pretty-string? nil)))
+
+;; Configure JSON LSP server
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '((json-ts-mode json-mode) . ("vscode-json-language-server" "--stdio"))))
 
 ;; JSON minor modes setup (without flyspell)
 (defun json-setup-minor-modes ()

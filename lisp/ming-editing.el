@@ -84,6 +84,40 @@
   :config
   (setq savefold-backends '(outline org hideshow)))
 
+;;; TreeSit Folding
+(use-package treesit-fold
+  :ensure t
+  :config
+  ;; Enable treesit-fold for actual treesit modes
+  (defun enable-treesit-fold-conditionally ()
+    "Enable treesit-fold only if current buffer uses tree-sitter."
+    (when (and (bound-and-true-p treesit-parser-list)
+               treesit-parser-list)
+      (treesit-fold-mode 1)))
+
+  ;; Enable for all treesit modes
+  (dolist (mode '(python-ts-mode-hook
+                  rust-ts-mode-hook
+                  typescript-ts-mode-hook
+                  tsx-ts-mode-hook
+                  javascript-ts-mode-hook
+                  go-ts-mode-hook
+                  c-ts-mode-hook
+                  c++-ts-mode-hook
+                  yaml-ts-mode-hook
+                  json-ts-mode-hook
+                  css-ts-mode-hook
+                  html-ts-mode-hook))
+    (add-hook mode #'treesit-fold-mode))
+
+  ;; Add conditional hook for any prog-mode that might have treesit
+  (add-hook 'prog-mode-hook #'enable-treesit-fold-conditionally)
+
+  :bind (:map prog-mode-map
+              ("C-c f t" . treesit-fold-toggle)
+              ("C-c f o" . treesit-fold-open-all)
+              ("C-c f c" . treesit-fold-close-all)))
+
 ;;; YASnippet - Template system
 (use-package yasnippet
   :ensure t

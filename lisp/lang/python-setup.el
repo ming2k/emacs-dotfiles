@@ -13,25 +13,44 @@
       python-shell-prompt-detect-enabled nil
       python-shell-completion-native-disabled-interpreters '("python3"))
 
-;; Built-in Python mode configuration
-(use-package python
+;; Tree-sitter Python mode (preferred)
+(use-package python-ts-mode
   :ensure nil
-  :mode (("\\.py\\'" . python-mode)
-         ("\\.pyw\\'" . python-mode))
+  :when (treesit-language-available-p 'python)
+  :mode (("\\.py\\'" . python-ts-mode)
+         ("\\.pyw\\'" . python-ts-mode))
   :custom
   (python-shell-interpreter "python3")
-  :interpreter (("python" . python-mode)
-                ("python3" . python-mode))
-  :hook ((python-mode . python-setup-minor-modes)
-         (python-mode . python-setup-keybindings)
-         (python-mode . python-activate-venv)
-         (python-mode . eglot-ensure)
-         (python-mode . flymake-mode))
+  :interpreter (("python" . python-ts-mode)
+                ("python3" . python-ts-mode))
+  :hook ((python-ts-mode . python-setup-minor-modes)
+         (python-ts-mode . python-setup-keybindings)
+         (python-ts-mode . python-activate-venv)
+         (python-ts-mode . eglot-ensure)
+         (python-ts-mode . flymake-mode))
   :config
-  (setq python-indent-offset 4
-        python-indent-guess-indent-offset nil
-        python-shell-interpreter "python3"
-        python-shell-completion-native-enable nil))
+  (setq python-indent-offset 4))
+
+;; Fallback to regular python-mode if tree-sitter is not available
+(unless (treesit-language-available-p 'python)
+  (use-package python
+    :ensure nil
+    :mode (("\\.py\\'" . python-mode)
+           ("\\.pyw\\'" . python-mode))
+    :custom
+    (python-shell-interpreter "python3")
+    :interpreter (("python" . python-mode)
+                  ("python3" . python-mode))
+    :hook ((python-mode . python-setup-minor-modes)
+           (python-mode . python-setup-keybindings)
+           (python-mode . python-activate-venv)
+           (python-mode . eglot-ensure)
+           (python-mode . flymake-mode))
+    :config
+    (setq python-indent-offset 4
+          python-indent-guess-indent-offset nil
+          python-shell-interpreter "python3"
+          python-shell-completion-native-enable nil)))
 
 ;; Python minor modes setup
 (defun python-setup-minor-modes ()
@@ -230,6 +249,7 @@
               python-shell-completion-native-enable nil))
 
 (add-hook 'python-mode-hook #'python-setup-shell)
+(add-hook 'python-ts-mode-hook #'python-setup-shell)
 
 ;; Python import sorting (if available)
 (defun python-sort-imports ()
@@ -249,11 +269,11 @@
 
 ;; Add import sorting keybinding
 (defun python-setup-import-sorting-keybinding ()
-  "Setup import sorting keybinding for python-mode."
-  (when (boundp 'python-mode-map)
-    (define-key python-mode-map (kbd "C-c C-i") 'python-sort-imports)))
+  "Setup import sorting keybinding for python modes."
+  (local-set-key (kbd "C-c C-i") 'python-sort-imports))
 
 (add-hook 'python-mode-hook #'python-setup-import-sorting-keybinding)
+(add-hook 'python-ts-mode-hook #'python-setup-import-sorting-keybinding)
 
 (provide 'python-setup)
 ;;; config/lang/python.el ends here

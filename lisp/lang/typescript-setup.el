@@ -27,10 +27,23 @@
   :config
   (setq typescript-ts-mode-indent-offset 2))
 
-;; Fallback TypeScript mode for older Emacs (using built-in js-mode for .ts files)
+;; Fallback TypeScript mode for when tree-sitter is not available
 (unless (treesit-language-available-p 'typescript)
-  (add-to-list 'auto-mode-alist '("\\.ts\\'" . js-mode))
-  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . js-mode)))
+  (use-package typescript-mode
+    :ensure t
+    :mode (("\\.ts\\'" . typescript-mode)
+           ("\\.tsx\\'" . typescript-mode))
+    :hook ((typescript-mode . typescript-setup-minor-modes)
+           (typescript-mode . eglot-ensure)
+           (typescript-mode . flymake-mode))
+    :bind (:map typescript-mode-map
+                ("C-c C-r" . typescript-run-node)
+                ("C-c C-t" . typescript-run-npm-test)
+                ("C-c C-s" . typescript-run-npm-start)
+                ("C-c C-b" . typescript-run-npm-build)
+                ("C-c C-f" . typescript-format-buffer))
+    :config
+    (setq typescript-indent-level 2)))
 
 ;; TypeScript minor modes setup
 (defun typescript-setup-minor-modes ()
@@ -45,7 +58,7 @@
 ;; Configure TypeScript LSP server
 (with-eval-after-load 'eglot
   (add-to-list 'eglot-server-programs
-               '((typescript-ts-mode tsx-ts-mode) . ("typescript-language-server" "--stdio"))))
+               '((typescript-ts-mode tsx-ts-mode typescript-mode) . ("typescript-language-server" "--stdio"))))
 
 ;; TypeScript utility functions
 (defun typescript-run-node ()

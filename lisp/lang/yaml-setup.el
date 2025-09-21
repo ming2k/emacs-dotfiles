@@ -18,19 +18,20 @@
   :config
   (setq yaml-ts-mode-indent-offset 2))
 
-;; Use yaml-mode when tree-sitter is not available
-(use-package yaml-mode
-  :ensure t
-  :mode (("\\.ya?ml\\'" . yaml-mode)
-         ("\\.ya?ml\\.j2\\'" . yaml-mode)
-         ("docker-compose.*\\.ya?ml\\'" . yaml-mode)
-         ("\\.clang-format\\'" . yaml-mode)
-         ("\\.github/workflows/.*\\.ya?ml\\'" . yaml-mode))
-  :hook ((yaml-mode . yaml-setup-minor-modes)
-         (yaml-mode . eglot-ensure)
-         (yaml-mode . flymake-mode))
-  :config
-  (setq yaml-indent-offset 2))
+;; Fallback to yaml-mode when tree-sitter is not available
+(unless (treesit-language-available-p 'yaml)
+  (use-package yaml-mode
+    :ensure t
+    :mode (("\\.ya?ml\\'" . yaml-mode)
+           ("\\.ya?ml\\.j2\\'" . yaml-mode)
+           ("docker-compose.*\\.ya?ml\\'" . yaml-mode)
+           ("\\.clang-format\\'" . yaml-mode)
+           ("\\.github/workflows/.*\\.ya?ml\\'" . yaml-mode))
+    :hook ((yaml-mode . yaml-setup-minor-modes)
+           (yaml-mode . eglot-ensure)
+           (yaml-mode . flymake-mode))
+    :config
+    (setq yaml-indent-offset 2)))
 
 ;; YAML minor modes setup
 (defun yaml-setup-minor-modes ()
