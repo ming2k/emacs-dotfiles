@@ -29,6 +29,8 @@
   ;; TODO Keywords
   (org-todo-keywords
    '((sequence "TODO(t)" "IN-PROGRESS(i)" "|" "DONE(d)" "CANCELLED(c)")))
+  ;; Log the time when turn `TODO` into `DONE`
+  (org-log-done 'time)
 
   ;; Agenda settings
   (org-agenda-files 
@@ -47,7 +49,7 @@
   ;; Capture templates
   (org-capture-templates
    '(("t" "Todo" entry (file+headline "~/org/inbox.org" "Inbox")
-      "* TODO %?\n  CREATED: %U\n")
+      "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n")
      ("i" "Idea/Thought" entry (file+headline "~/org/inbox.org" "Inbox")
       "* %?\n  %U")
      ("r" "Remember" entry (file+headline "~/org/inbox.org" "Inbox")
@@ -89,9 +91,9 @@
       (make-directory archive-dir t)))
   
   ;; Create GTD style structure
-  (let ((org-files '(("inbox.org" . "#+TITLE: Inbox\n\n* Inbox\n")
-                     ("next.org" . "#+TITLE: Next\n\n* Next\n")
-                     ("waiting.org" . "#+TITLE: Waiting\n\n* Waiting\n"))))
+  (let ((org-files '(("inbox.org" . "* Inbox\n")
+                     ("next.org" . "* Next\n")
+                     ("waiting.org" . "* Waiting\n"))))
     (dolist (file-info org-files)
       (let ((filepath (expand-file-name (car file-info) org-directory))
             (content (cdr file-info)))
@@ -105,14 +107,7 @@
   :ensure t
   :bind (("C-c n f" . org-roam-node-find)
          ("C-c n i" . org-roam-node-insert)
-         ("C-c n c" . org-roam-capture)
-         ;; Optional additional bindings (uncomment as needed):
-         ;; ("C-c n g" . org-roam-graph)
-         ;; ("C-c n r" . org-roam-node-random)
-         ;; ("C-c n t" . org-roam-tag-add)
-         ;; ("C-c n a" . org-roam-alias-add)
-         ;; ("C-c n l" . org-roam-buffer-toggle)
-         )
+         ("C-c n c" . org-roam-capture))
   :config
   ;; Set org-roam directory and database location first
   (setq org-roam-directory (expand-file-name "~/org-roam/"))

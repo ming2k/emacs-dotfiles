@@ -1,11 +1,9 @@
-#+TITLE: Emacs Configuration
+#+TITLE: Ming's Emacs Configuration
 #+AUTHOR: Ming
 #+DATE: 2025
 #+DESCRIPTION: A Emacs configuration
 #+OPTIONS: toc:2 num:nil
 #+STARTUP: showeverything
-
-* Ming's Emacs Configuration
 
 This is a modern, vanilla Emacs configuration that prioritizes simplicity, performance, and maintainability. It follows Emacs best practices while providing a modular structure.
 
