@@ -3,8 +3,23 @@
 ;; Core editing features including completion, diagnostics, and fill-column settings
 ;;; Code:
 
-;;; Fill Column Settings
-(setq-default fill-column 80)
+;;; Sentence Wrap
+(add-hook 'prog-mode-hook
+          (lambda ()
+            (visual-line-mode -1)
+            (setq truncate-lines t)
+            (setq fill-column 80)
+            (setq display-fill-column-indicator-column 80)
+            (display-fill-column-indicator-mode 1)
+            (auto-fill-mode 1)))
+
+;;; Clear flymake backends in programming modes
+(add-hook 'prog-mode-hook
+          (lambda ()
+            (setq-local flymake-diagnostic-functions nil)))
+
+;;; Spell checking setup (disabled by default)
+(setq flyspell-mode nil)
 
 ;;; Built-in Completion Settings
 (setq completion-cycle-threshold 3
@@ -123,7 +138,8 @@
   :ensure t
   :config
   (yas-global-mode 1)
-  (setq yas-snippet-dirs (list (expand-file-name "snippets" user-emacs-directory))
+  (setq yas-snippet-dirs (list
+                          (expand-file-name "snippets" user-emacs-directory))
         yas-trigger-key (kbd "C-j")))
 
 ;;; Flymake - Error checking (LSP-only)
@@ -164,16 +180,6 @@
             (lambda ()
               (setq-local completion-at-point-functions
                           (list #'eglot-completion-at-point)))))
-
-;;; Clear flymake backends in programming modes
-(add-hook 'prog-mode-hook
-          (lambda ()
-            (setq-local flymake-diagnostic-functions nil)))
-
-;;; Spell checking setup (disabled by default)
-(setq ispell-program-name "hunspell"
-      ispell-local-dictionary "en_US"
-      flyspell-mode nil)
 
 (provide 'ming-editing)
 ;;; ming-editing.el ends here

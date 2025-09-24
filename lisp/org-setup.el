@@ -106,8 +106,8 @@
 (use-package org-roam
   :ensure t
   :bind (("C-c n f" . org-roam-node-find)
-         ("C-c n i" . org-roam-node-insert)
-         ("C-c n c" . org-roam-capture))
+         ("C-c n c" . org-roam-capture)
+         ("C-c n i" . org-roam-node-insert))
   :config
   ;; Set org-roam directory and database location first
   (setq org-roam-directory (expand-file-name "~/org-roam/"))

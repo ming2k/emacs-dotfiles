@@ -9,11 +9,6 @@
 ;; Show column number in mode line, from L1 into (1, 10)
 (column-number-mode 1)
 
-(add-hook 'prog-mode-hook
-          (lambda ()
-            (visual-line-mode -1)
-            (setq truncate-lines t)))
-
 ;; Line numbers
 (use-package display-line-numbers
   :ensure nil
