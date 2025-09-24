@@ -10,29 +10,20 @@
 (set-default-coding-systems 'utf-8)
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
+
 (prefer-coding-system 'utf-8)
-;; Disable visual line mode
-(global-visual-line-mode -1)
 
-;; Configure prog-mode
-(add-hook 'prog-mode-hook
-          (lambda ()
-            (visual-line-mode -1)
-            (setq truncate-lines nil)))
-;; (global-auto-revert-mode 1)
-
-;;(set-face-attribute 'default nil :font "Sarasa Mono SC-13")
+;; Enable automatic reloading for all files
+(global-auto-revert-mode 1)
 
 ;; Window navigation with Shift+arrow keys
 (windmove-default-keybindings)
 
-;; Enable mouse support in terminal
-(unless (display-graphic-p)
-  (xterm-mouse-mode 1)
-  (global-set-key [mouse-4] 'scroll-down-line)
-  (global-set-key [mouse-5] 'scroll-up-line))
+;; Disable middle-click (yank/paste)
+(setq mouse-yank-at-point nil)
 
-;;; Load Config Modules
+;; Enable mouse support in terminal
+;;(unless (display-graphic-p) )
 
 ;; Add lisp directory to load-path
 (let ((lisp-dir (expand-file-name "lisp" user-emacs-directory)))
@@ -82,7 +73,18 @@
 
 ;; Essential settings
 (setq select-enable-clipboard t
-      select-enable-primary t)
+      select-enable-primary nil) ; `primary` uses different clipboard mechanism with `clipboard`
+
+;; Clipboard for linux
+(defun wl-copy (text)
+  (let ((process-connection-type nil))
+    (let ((proc (start-process "wl-copy" "*Messages*" "wl-copy" "-f" "-n")))
+      (process-send-string proc text)
+      (process-send-eof proc))))
+(defun wl-paste ()
+  (shell-command-to-string "wl-paste -n"))
+(setq interprogram-cut-function 'wl-copy)
+(setq interprogram-paste-function 'wl-paste)
 
 ;; Performance optimizations
 (setq-default cursor-in-non-selected-windows nil)

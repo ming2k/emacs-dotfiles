@@ -6,6 +6,14 @@
 ;; Enable syntax highlighting globally
 (global-font-lock-mode 1)
 
+;; Show column number in mode line, from L1 into (1, 10)
+(column-number-mode 1)
+
+(add-hook 'prog-mode-hook
+          (lambda ()
+            (visual-line-mode -1)
+            (setq truncate-lines t)))
+
 ;; Line numbers
 (use-package display-line-numbers
   :ensure nil
@@ -20,12 +28,12 @@
 
 ;; Rainbow delimiters
 (use-package rainbow-delimiters
-  :ensure t
+  :ensure nil
   :hook (prog-mode . rainbow-delimiters-mode))
 
 ;; Rainbow mode for color visualization
 (use-package rainbow-mode
-  :ensure t
+  :ensure nil
   :hook ((css-mode . rainbow-mode)
          (web-mode . rainbow-mode)
          (html-mode . rainbow-mode)
