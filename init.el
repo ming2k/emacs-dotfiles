@@ -19,6 +19,9 @@
 ;; Window navigation with Shift+arrow keys
 (windmove-default-keybindings)
 
+;; Unbind to disable middle click paste
+(global-set-key [mouse-2] #'ignore)
+
 ;; Disable middle-click (yank/paste)
 (setq mouse-yank-at-point nil)
 

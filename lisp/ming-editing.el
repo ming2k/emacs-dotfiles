@@ -150,11 +150,8 @@
         eglot-send-changes-idle-time 0.1
         eglot-ignored-server-capabilities '(:hoverProvider :documentHighlightProvider))
   :bind (:map eglot-mode-map
-              ("C-c l r" . eglot-rename)
-              ("C-c l f" . eglot-format-buffer)
-              ("C-c l a" . eglot-code-actions)
-              ("M-." . eglot-find-declaration)
-              ("M-?" . eglot-find-references)))
+              ("C-c r" . eglot-rename)
+              ("C-c a" . eglot-code-actions)))
 
 ;;; LSP integration with flymake
 (with-eval-after-load 'eglot

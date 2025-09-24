@@ -5,7 +5,7 @@
 #+OPTIONS: toc:2 num:nil
 #+STARTUP: showeverything
 
-* Overview
+* Ming's Emacs Configuration
 
 This is a modern, vanilla Emacs configuration that prioritizes simplicity, performance, and maintainability. It follows Emacs best practices while providing a modular structure.
 
@@ -34,38 +34,17 @@ This is a modern, vanilla Emacs configuration that prioritizes simplicity, perfo
 - Contemporary completion UI
 - Git integration with Magit
 
-* Language Support
-
-Each language module provides:
-
-- *LSP Integration*: Using built-in ~eglot~
-- *Syntax Highlighting*: Tree-sitter when available
-- *Code Formatting*: Language-specific formatters
-- *Build/Run Commands*: Convenient compilation and execution
-- *Project Management*: Integration with project.el
-
 ** Supported Languages
 
-- *C/C++*: clangd LSP, clang-format, CMake/Makefile support
-- *Python*: pylsp, black/autopep8 formatting, pytest integration
-- *Rust*: rust-analyzer, rustfmt, cargo integration
-- *JavaScript/TypeScript*: typescript-language-server, prettier, npm scripts
-- *Go*: gopls, gofmt/goimports, go toolchain integration
-- *Lisp*: Built-in completion and editing support
+The project uses the treesitter mode for languges, e.g. "js-ts-mode" for javascript.
 
-** Adding Language Support
+Please install related treesitter library:
 
-To add a new language:
+~M-x~  ~treesit-install-language-grammar~
 
-1. Install the language server (see CLAUDE.md for details)
-2. Create the module configuration
-3. Follow the existing language module patterns
-4. Test LSP functionality and formatting
-5. Add language-specific keybindings
+** Required Dependencies
 
-* Required Dependencies
-
-** Language Servers
+*** Language Servers
 
 Install these for full language support:
 
@@ -87,15 +66,15 @@ go install golang.org/x/tools/gopls@latest
 go install golang.org/x/tools/cmd/goimports@latest
 #+END_SRC
 
-* Troubleshooting
+** Troubleshooting
 
-** Common Issues
+*** Common Issues
 
 - *LSP not starting*: Check if language server is installed and in PATH
 - *Packages not installing*: Check network connection and package archives
 - *Keybinding conflicts*: Use ~C-h k~ to check existing bindings
 
-** Configuration Changes Not Work
+*** Configuration Changes Not Work
 
 - *Manual reload required*:  Hot reloading is not supported.
 - *Restart Buffer*: Buffers contain loaded local variables, restart buffer to flush them.
@@ -103,22 +82,22 @@ go install golang.org/x/tools/cmd/goimports@latest
 - *Feature name unique*: Make the feature named by ~provide~ is unique.
   Use ~M-x describe-variable RET features RET~ to check all features.
   
-** Debugging
+*** Debugging
 
 - *Check ~*Messages*~ buffer* for error messages
 - *Use ~emacs --debug-init~* for startup issues
 - *Check LSP status* with ~M-x eglot-events-buffer~
 
-** Getting Help
+*** Getting Help
 
 - *Built-in help*: ~C-h~ prefix commands
 - *Package documentation*: ~C-h P <package-name>~
 - *Function help*: ~C-h f <function-name>~
 - *Variable help*: ~C-h v <variable-name>~
 
-* Contributing
+** Contributing
 
-** Code Style
+*** Code Style
 
 - Use ~lexical-binding: t~ in all files
 - Include proper file headers with description
