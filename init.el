@@ -90,7 +90,6 @@
 (setq interprogram-paste-function 'wl-paste)
 
 ;; Performance optimizations
-(setq-default cursor-in-non-selected-windows nil)
 (setq highlight-nonselected-windows nil)
 (setq fast-but-imprecise-scrolling t)
 (setq inhibit-compacting-font-caches t)

@@ -6,6 +6,10 @@
 ;; Enable syntax highlighting globally
 (global-font-lock-mode 1)
 
+;; Cusor style
+(setq-default cursor-in-non-selected-windows nil)
+(setq-default cursor-type 'bar)
+
 ;; Show column number in mode line, from L1 into (1, 10)
 (column-number-mode 1)
 

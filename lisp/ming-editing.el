@@ -3,6 +3,14 @@
 ;; Core editing features including completion, diagnostics, and fill-column settings
 ;;; Code:
 
+
+;;; TreeSitter Dir Config
+;; (setq treesit-extra-load-path '("/home/ming/.emacs.d/tree-sitter"))
+;; (unless (file-exists-p "/home/ming/.emacs.d/tree-sitter")
+;;   (make-directory "/home/ming/.emacs.d/tree-sitter" t))
+
+(global-visual-line-mode 1)
+
 ;;; Sentence Wrap
 (add-hook 'prog-mode-hook
           (lambda ()
