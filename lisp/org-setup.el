@@ -124,7 +124,7 @@
   (setq org-roam-capture-templates
         '(("d" "default" plain "%?"
            ;; :target (file+head "%<%Y/%m/%d>/%<%Y%m%d%H%M%S>.org"
-           :target (file+head "<%Y>/%<%Y%m%dT%H%M%S%z>.org" ; Following ISO 8601 format "20250903T143052+0800"
+           :target (file+head "%<%Y>/%<%Y%m%dT%H%M%S%z>.org" ; Following ISO 8601 format "20250903T143052+0800"
                               "#+title: ${title}\n#+created: %U\n")
            :unnarrowed t)))
   
