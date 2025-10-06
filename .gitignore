@@ -6,6 +6,9 @@
 # treesit-install-language-grammar
 tree-sitter/
 
+# dairy
+diary/
+
 # Lock files
 .#*
 
@@ -24,7 +27,7 @@ auto-save-list/
 # Native compilation cache (Emacs 28+)
 eln-cache/
 
-# Tramp
+# Transparent Remote Access, Multiple Protocols
 tramp
 
 # Session

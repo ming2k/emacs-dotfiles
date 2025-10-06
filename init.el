@@ -51,6 +51,7 @@
 ;; Load tool config
 (require 'magit-setup)
 (require 'org-setup)
+(require 'diary-setup)
 (require 'web-dev)
 
 ;; Load language configurations
