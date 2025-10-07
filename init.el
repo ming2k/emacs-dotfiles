@@ -21,6 +21,8 @@
 
 ;; Unbind to disable middle click paste
 (global-set-key [mouse-2] #'ignore)
+;; Disable touchpad pinch scale text up and down
+(global-set-key (kbd "<pinch>") 'ignore)
 
 ;; Disable middle-click (yank/paste)
 (setq mouse-yank-at-point nil)
@@ -51,7 +53,6 @@
 ;; Load tool config
 (require 'magit-setup)
 (require 'org-setup)
-(require 'diary-setup)
 (require 'web-dev)
 
 ;; Load language configurations
