@@ -189,5 +189,14 @@
               (setq-local completion-at-point-functions
                           (list #'eglot-completion-at-point)))))
 
+;;; EasyPG - GPG encryption support
+(use-package epa-file
+  :ensure nil
+  :config
+  (epa-file-enable)
+  (setq epa-file-cache-passphrase-for-symmetric-encryption t
+        epa-file-select-keys nil
+        epg-pinentry-mode 'loopback))
+
 (provide 'ming-editing)
 ;;; ming-editing.el ends here
