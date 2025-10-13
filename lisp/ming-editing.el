@@ -82,14 +82,14 @@
         corfu-auto-prefix 1
         corfu-popupinfo-delay '(0.5 . 0.2))
   :bind (:map corfu-map
-              ("C-n" . corfu-next)
-              ("C-p" . corfu-previous)
-              ("C-g" . corfu-quit)
-              ("TAB" . corfu-insert)
-              ("RET" . nil)
-              ("M-n" . corfu-popupinfo-scroll-up)
-              ("M-p" . corfu-popupinfo-scroll-down)
-              ("C-h" . corfu-popupinfo-documentation)))
+				;; ("TAB"        . corfu-next)
+				;; ("S-TAB"      . corfu-previous)
+        ;; ("S-RET"      . corfu-quit)
+				("<return>"     . corfu-insert)
+        ("<escape>"     . corfu-quit)
+				("M-n" . corfu-popupinfo-scroll-up)
+				("M-p" . corfu-popupinfo-scroll-down)
+				("C-h" . corfu-popupinfo-documentation)))
 
 ;;; Enhanced dabbrev for word completion
 (use-package dabbrev
