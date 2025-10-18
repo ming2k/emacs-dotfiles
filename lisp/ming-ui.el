@@ -9,6 +9,8 @@
 ;; Cusor style
 (setq-default cursor-in-non-selected-windows nil)
 (setq-default cursor-type 'bar)
+;; Ensure cursor is always visible
+(setq visible-cursor t)
 
 ;; Show column number in mode line, from L1 into (1, 10)
 (column-number-mode 1)
