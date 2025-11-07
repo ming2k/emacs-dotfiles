@@ -26,11 +26,18 @@
   (org-cycle-global-at-bob t)
   (org-startup-with-inline-images t)
   
-  ;; TODO Keywords
+  ;; TODO Keywords with logging
+  ;; ! = log timestamp, @ = prompt for note
+  ;; Format: STATE(key!/@@) where first is entering, second is leaving
   (org-todo-keywords
-   '((sequence "TODO(t)" "IN-PROGRESS(i)" "|" "DONE(d)" "CANCELLED(c)")))
+   '((sequence "TODO(t!)" "IN-PROGRESS(i!)" "WAITING(w@/!)" "|" "DONE(d!)" "CANCELLED(c@)")))
   ;; Log the time when turn `TODO` into `DONE`
   (org-log-done 'time)
+  ;; (org-log-done 'note)
+  ;; Log state changes into LOGBOOK drawer
+  (org-log-into-drawer t)
+  ;; Log state changes for all todo states
+  (org-log-repeat 'time)
 
   ;; Agenda settings
   (org-agenda-files 
