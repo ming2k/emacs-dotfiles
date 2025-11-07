@@ -31,12 +31,17 @@
   ;; Format: STATE(key!/@@) where first is entering, second is leaving
   (org-todo-keywords
    '((sequence "TODO(t!)" "IN-PROGRESS(i!)" "WAITING(w@/!)" "|" "DONE(d!)" "CANCELLED(c@)")))
-  ;; Log the time when turn `TODO` into `DONE`
+
+  ;; Logging configuration
+  ;; Add CLOSED: [timestamp] property when marking DONE (also logs to LOGBOOK via d!)
   (org-log-done 'time)
+  ;; Alternative: use 'note to prompt for completion note
   ;; (org-log-done 'note)
+
   ;; Log state changes into LOGBOOK drawer
   (org-log-into-drawer t)
-  ;; Log state changes for all todo states
+
+  ;; Log state changes for repeating tasks
   (org-log-repeat 'time)
 
   ;; Agenda settings
