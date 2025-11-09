@@ -73,16 +73,6 @@
   ;; Set font for org tables
   (set-face-attribute 'org-table nil :font "Sarasa Mono SC-13")
 
-  ;; Enable truncate-lines in org tables
-  (defun my/org-table-toggle-truncate-lines ()
-    "Toggle truncate-lines based on whether point is in an org table."
-    (when (derived-mode-p 'org-mode)
-      (setq truncate-lines (org-at-table-p))))
-
-  (add-hook 'org-mode-hook
-            (lambda ()
-              (add-hook 'post-command-hook #'my/org-table-toggle-truncate-lines nil t)))
-
   ;; Archive configuration - quarterly archiving
   (defun my/quarterly-archive-location ()
     "Generate quarterly archive location string.
