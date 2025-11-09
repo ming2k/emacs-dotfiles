@@ -11,6 +11,8 @@
   :bind (("C-c a" . org-agenda)
          ("C-c c" . org-capture)
          ("C-c l" . org-store-link))
+  :hook
+  (org-mode . visual-line-mode)
   :custom
   ;; Directory structure
   (org-directory "~/org/")
@@ -70,7 +72,17 @@
   :config
   ;; Set font for org tables
   (set-face-attribute 'org-table nil :font "Sarasa Mono SC-13")
-  
+
+  ;; Enable truncate-lines in org tables
+  (defun my/org-table-toggle-truncate-lines ()
+    "Toggle truncate-lines based on whether point is in an org table."
+    (when (derived-mode-p 'org-mode)
+      (setq truncate-lines (org-at-table-p))))
+
+  (add-hook 'org-mode-hook
+            (lambda ()
+              (add-hook 'post-command-hook #'my/org-table-toggle-truncate-lines nil t)))
+
   ;; Archive configuration - quarterly archiving
   (defun my/quarterly-archive-location ()
     "Generate quarterly archive location string.
@@ -155,12 +167,6 @@
   
   ;; Hook to create date directories automatically
   (advice-add 'org-roam-capture- :before #'org-roam-ensure-date-directory))
-
-;;; Disable Corfu in Org Mode
-(with-eval-after-load 'org
-  ;; Disable corfu-mode in org-mode buffers
-  (add-hook 'org-mode-hook (lambda () (corfu-mode -1))))
-
 ;;; Org-Babel Configuration
 (use-package ob
   :ensure nil

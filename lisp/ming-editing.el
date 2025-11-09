@@ -81,6 +81,9 @@
         corfu-auto-delay 0.1
         corfu-auto-prefix 1
         corfu-popupinfo-delay '(0.5 . 0.2))
+
+  ;; Disable corfu-mode in org-mode buffers
+  (add-hook 'org-mode-hook (lambda () (corfu-mode -1)))
   :bind (:map corfu-map
 				;; ("TAB"        . corfu-next)
 				;; ("S-TAB"      . corfu-previous)
