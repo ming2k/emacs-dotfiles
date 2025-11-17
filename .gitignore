@@ -185,5 +185,7 @@ snippets/personal/
 !templates/
 !templates/*.el
 
+# Multiple Corsor
+.mc-lists.el
 
 

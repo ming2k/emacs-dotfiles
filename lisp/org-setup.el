@@ -13,6 +13,7 @@
          ("C-c l" . org-store-link))
   :hook
   (org-mode . visual-line-mode)
+  (org-mode . org-indent-mode)
   :custom
   ;; Directory structure
   (org-directory "~/org/")
@@ -23,7 +24,9 @@
   
   ;; Display settings
   (org-startup-folded nil)
-  
+  (org-hide-leading-stars t)
+  (org-startup-indented t)
+
   ;; Remember fold status
   (org-cycle-global-at-bob t)
   (org-startup-with-inline-images t)
