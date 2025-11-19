@@ -15,13 +15,14 @@
   (org-mode . visual-line-mode)
   (org-mode . org-indent-mode)
   :custom
+  
   ;; Directory structure
   (org-directory "~/org/")
   (org-default-notes-file "~/org/inbox.org")
 
   ;; Modify the behavior of creating date/datetime to include the time zone
   ;;(org-time-stamp-formats '("<%Y-%m-%d %a>" . "<%Y-%m-%d %a %H:%M %Z>"))
-  
+
   ;; Display settings
   (org-startup-folded nil)
   (org-hide-leading-stars t)
@@ -30,6 +31,11 @@
   ;; Remember fold status
   (org-cycle-global-at-bob t)
   (org-startup-with-inline-images t)
+
+  ;; LaTeX preview settings
+  (org-startup-with-latex-preview nil)
+  (org-latex-compiler "pdflatex")  ; For export
+  (org-preview-latex-default-process 'dvipng)  ; For preview
   
   ;; TODO Keywords with logging
   ;; ! = log timestamp, @ = prompt for note
@@ -75,6 +81,33 @@
   :config
   ;; Set font for org tables
   (set-face-attribute 'org-table nil :font "Sarasa Mono SC-13")
+
+  ;; LaTeX preview scale
+  (plist-put org-format-latex-options :scale 1.0)
+
+  ;; LaTeX packages for export
+  (setq org-latex-packages-alist
+        '(("" "amsmath" t)
+          ("" "amssymb" t)))
+
+  ;; Remove ulem from default packages to avoid missing package error
+  (setq org-latex-default-packages-alist
+        (delq (assoc "normalem" org-latex-default-packages-alist)
+              org-latex-default-packages-alist))
+
+  ;; Configure dvipng to use latex instead of pdflatex
+  (setq org-preview-latex-process-alist
+        '((dvipng
+           :programs ("latex" "dvipng")
+           :description "dvi > png"
+           :message "you need to install the programs: latex and dvipng."
+           :image-input-type "dvi"
+           :image-output-type "png"
+           :image-size-adjust (1.0 . 1.0)
+           :latex-compiler ("latex -interaction nonstopmode -output-directory %o %f")
+           :image-converter ("dvipng -D %D -T tight -o %O %f")
+           :transparent-image-converter
+           ("dvipng -D %D -T tight -bg Transparent -o %O %f"))))
 
   ;; Archive configuration - quarterly archiving
   (defun my/quarterly-archive-location ()
@@ -171,7 +204,6 @@
    '((emacs-lisp . t)
      (shell . t)
      (python . t))))
-
 
 (provide 'org-setup)
 ;;; org-setup.el ends here
