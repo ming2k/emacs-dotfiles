@@ -109,6 +109,37 @@
            :transparent-image-converter
            ("dvipng -D %D -T tight -bg Transparent -o %O %f"))))
 
+  ;; Configure external applications for opening files
+  (setq org-file-apps
+        '((auto-mode . emacs)
+          (directory . emacs)
+          ("\\.mm\\'" . default)
+          ("\\.x?html?\\'" . default)
+          ("\\.pdf\\'" . "zathura %s")
+          ;; Video files
+          ("\\.mp4\\'" . "mpv %s")
+          ("\\.mkv\\'" . "mpv %s")
+          ("\\.avi\\'" . "mpv %s")
+          ("\\.webm\\'" . "mpv %s")
+          ("\\.mov\\'" . "mpv %s")
+          ("\\.flv\\'" . "mpv %s")
+          ("\\.wmv\\'" . "mpv %s")
+          ("\\.m4v\\'" . "mpv %s")
+          ;; Audio files
+          ("\\.mp3\\'" . "mpv %s")
+          ("\\.flac\\'" . "mpv %s")
+          ("\\.ogg\\'" . "mpv %s")
+          ("\\.wav\\'" . "mpv %s")
+          ("\\.m4a\\'" . "mpv %s")
+          ;; Images - use system default
+          ("\\.png\\'" . default)
+          ("\\.jpg\\'" . default)
+          ("\\.jpeg\\'" . default)
+          ("\\.gif\\'" . default)
+          ("\\.svg\\'" . default)
+          ;; Default fallback
+          (t . default)))
+
   ;; Archive configuration - quarterly archiving
   (defun my/quarterly-archive-location ()
     "Generate quarterly archive location string.
