@@ -22,9 +22,9 @@
 (add-to-list 'default-frame-alist '(height . 40))
 ;; Set all new frames to be created without decorations by default
 (add-to-list 'default-frame-alist '(undecorated . t))
-;; Set first frame color
+;; Set temporary colors to avoid white flash on startup (theme will override)
 (add-to-list 'default-frame-alist '(background-color . "#1e1e1e"))
-(add-to-list 'default-frame-alist '(foreground-color . "#d4d4d4"))
+(add-to-list 'default-frame-alist '(foreground-color . "#ebdbb2"))
 
 ;; Disable UI elements early to avoid flashing
 (when (fboundp 'menu-bar-mode)

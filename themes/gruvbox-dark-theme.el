@@ -32,7 +32,7 @@
   "A dark theme inspired by gruvbox colorscheme")
 
 (let (;; === BASE LAYER: Foundation colors with tonal variations ===
-      (gruvbox-dark-bg        "#1d2021")
+      (gruvbox-dark-bg        "#1e1e1e")
       (gruvbox-dark-bg-lighter "#3c3836")
       (gruvbox-dark-bg-soft   "#252420")
       (gruvbox-dark-bg-hard   "#0d1011")

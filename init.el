@@ -19,6 +19,9 @@
 ;; Window navigation with Shift+arrow keys
 (windmove-default-keybindings)
 
+;; Winner mode - undo/redo window configuration changes
+(winner-mode 1)
+
 ;; Unbind to disable middle click paste
 (global-set-key [mouse-2] #'ignore)
 ;; Disable touchpad pinch scale text up and down
@@ -74,6 +77,8 @@
 
 ;; Add a specific directory for themes to custom-theme-load-path
 (add-to-list 'custom-theme-load-path (expand-file-name "themes" user-emacs-directory))
+;; Disable all themes before loading to avoid conflicts on reload
+(mapc #'disable-theme custom-enabled-themes)
 ;; Load the theme using the standard function
 (load-theme 'gruvbox-dark t)
 
