@@ -64,19 +64,69 @@ go install golang.org/x/tools/gopls@latest
 go install golang.org/x/tools/cmd/goimports@latest
 #+END_SRC
 
+** Applying Configuration Changes
+
+*** Reloading Configuration Without Restart
+
+To apply changes without restarting Emacs:
+
+#+BEGIN_SRC elisp
+M-x eval-expression RET (load-file user-init-file) RET
+#+END_SRC
+
+Or evaluate in scratch buffer:
+#+BEGIN_SRC elisp
+(load-file user-init-file)
+#+END_SRC
+
+*** Important Precautions
+
+**** early-init.el Changes
+- *Requires full restart*: ~early-init.el~ is loaded before the GUI initializes
+- Changes to frame parameters, package system, or performance settings need restart
+- Reloading ~init.el~ will NOT apply ~early-init.el~ changes
+
+**** Non-Idempotent Operations
+Some configurations may not work correctly on reload:
+
+- *Hooks*: May be added multiple times if not idempotent
+  #+BEGIN_SRC elisp
+  ;; BAD - adds hook every reload
+  (add-hook 'prog-mode-hook 'my-function)
+
+  ;; GOOD - removes first to ensure single instance
+  (remove-hook 'prog-mode-hook 'my-function)
+  (add-hook 'prog-mode-hook 'my-function)
+  #+END_SRC
+
+- *Key bindings*: Safe to reload, will override previous bindings
+- *Themes*: Handled correctly - old themes are disabled before loading new ones
+- *Global modes*: Safe to reload, toggling with same value is harmless
+
+**** Buffer-Specific Settings
+After reloading configuration:
+
+- *Existing buffers*: Keep old settings and local variables
+- *Apply to buffer*: Use ~M-x revert-buffer~ or kill and reopen buffer
+- *Major modes*: May need to run ~M-x <mode-name>~ to reapply mode
+- *LSP connections*: May need ~M-x eglot-reconnect~ or buffer revert
+
+**** Quick Reference
+- Reload init: ~(load-file user-init-file)~
+- Refresh buffer: ~M-x revert-buffer~
+- Restart mode: ~M-x <mode-name>~ (e.g., ~M-x python-ts-mode~)
+- Reconnect LSP: ~M-x eglot-reconnect~
+- Full restart: Safest option for major changes
+
 ** Troubleshooting
 
 *** Common Issues
 
 - *LSP not starting*: Check if language server is installed and in PATH
 - *Packages not installing*: Check network connection and package archives
-- *Keybinding conflicts*: Use ~C-h k~ to check existing bindings
 
-*** Configuration Changes Not Work
+*** Feature Name Conflicts
 
-- *Manual reload required*:  Hot reloading is not supported.
-- *Restart Buffer*: Buffers contain loaded local variables, restart buffer to flush them.
-  Use ~M-x revert-buffer~ to restart buffers, or kill and reopen buffers
 - *Feature name unique*: Make the feature named by ~provide~ is unique.
   Use ~M-x describe-variable RET features RET~ to check all features.
   
