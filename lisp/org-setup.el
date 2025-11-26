@@ -78,6 +78,11 @@
      ("r" "Remember" entry (file+headline "~/org/inbox.org" "Inbox")
       "* %?\n  %U\n  %a")))
 
+  ;; Source block indentation settings
+  (org-edit-src-content-indentation 0)  ; No extra indentation inside src blocks
+  (org-src-preserve-indentation t)      ; Preserve indentation as written
+  (org-src-tab-acts-natively t)         ; TAB behaves according to source mode
+
   :config
   ;; Set font for org tables
   (set-face-attribute 'org-table nil :font "Sarasa Mono SC-13")
