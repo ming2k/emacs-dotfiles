@@ -180,6 +180,8 @@ snippets/personal/
 !README.org
 !CHANGELOG.md
 !LICENSE
+!docs/
+!docs/*.org
 
 # Configuration templates
 !templates/
@@ -188,4 +190,17 @@ snippets/personal/
 # Multiple Corsor
 .mc-lists.el
 
+# Private email configuration (contains passwords and personal info)
+private/
+!private/*.example
+!private/README.org
+
+# Mail directory (legacy location, not used but kept for safety)
+Mail/
+
+# Mu4e cache (XDG location: ~/.cache/mu)
+.mu/
+
+# Password stores (if using pass or similar)
+.password-store/
 

@@ -1,0 +1,800 @@
+#+TITLE: mu4e Email Configuration Guide
+#+AUTHOR: Ming
+#+DATE: 2025
+#+DESCRIPTION: Complete guide for configuring mu4e email in Emacs
+#+OPTIONS: toc:3 num:nil
+#+STARTUP: showeverything
+
+* Introduction
+
+This guide covers setting up mu4e (mu for Emacs) as your email client. The configuration follows XDG Base Directory standards and includes proper data desensitization for sharing dotfiles.
+
+* Architecture Overview
+
+** Directory Structure
+
+#+BEGIN_SRC
+~/.emacs.d/
+├── lisp/
+│   └── mu4e-setup.el           # Main configuration (public, with placeholders)
+├── private/
+│   ├── mu4e-private.el.example # Template for your credentials
+│   ├── mu4e-private.el         # Your actual credentials (git-ignored)
+│   ├── mbsyncrc.example        # Template for mail sync
+│   └── README.org              # Quick setup instructions
+├── docs/
+│   └── mu4e.org                # This documentation
+└── README.org                  # Main README (references this file)
+
+~/.mbsyncrc                     # Mail sync configuration (git-ignored)
+~/.local/share/mail/            # Mail storage root (XDG compliant)
+  └── username/                 # Account subdirectory (RECOMMENDED)
+      ├── INBOX
+      ├── Sent
+      └── Drafts
+~/.cache/mu/                    # mu index cache (XDG compliant)
+#+END_SRC
+
+*** Mail Directory Organization Best Practice
+
+*RECOMMENDED*: Use account-specific subdirectories:
+
+#+BEGIN_EXAMPLE
+~/.local/share/mail/            # Root directory
+├── username/                   # Primary account
+│   ├── INBOX
+│   ├── Sent
+│   ├── Drafts
+│   ├── Trash
+│   └── Archive
+├── work/                       # Work account
+│   ├── INBOX
+│   ├── Sent
+│   └── ...
+└── personal/                   # Personal account
+    ├── INBOX
+    └── ...
+#+END_EXAMPLE
+
+*Benefits*:
+- Clean separation between accounts
+- Easy to backup individual accounts
+- Prevents folder name conflicts
+- Matches multi-account patterns
+- Easier to manage and troubleshoot
+
+*Alternative* (not recommended for multiple accounts):
+#+BEGIN_EXAMPLE
+~/.local/share/mail/            # Flat structure
+├── INBOX
+├── Sent
+└── Drafts
+#+END_EXAMPLE
+
+** Data Flow
+
+#+BEGIN_EXAMPLE
+┌─────────────────┐
+│  Email Server   │
+│  (IMAP/SMTP)    │
+└────────┬────────┘
+         │
+         │ mbsync/isync fetches mail
+         ↓
+┌─────────────────────────┐
+│ ~/.local/share/mail/    │  ← XDG_DATA_HOME
+│ (Local Maildir)         │
+└────────┬────────────────┘
+         │
+         │ mu indexes mail
+         ↓
+┌─────────────────────────┐
+│ ~/.cache/mu/            │  ← XDG_CACHE_HOME
+│ (Search Database)       │
+└────────┬────────────────┘
+         │
+         │ mu4e displays
+         ↓
+┌─────────────────────────┐
+│     Emacs (mu4e)        │
+│ Read, Write, Search     │
+└─────────────────────────┘
+#+END_EXAMPLE
+
+* Prerequisites
+
+** System Packages
+
+*** Debian/Ubuntu
+#+BEGIN_SRC bash
+sudo apt install mu4e isync
+#+END_SRC
+
+*** macOS
+#+BEGIN_SRC bash
+brew install mu isync
+#+END_SRC
+
+*** Arch Linux
+#+BEGIN_SRC bash
+sudo pacman -S mu isync
+#+END_SRC
+
+** Password Management
+
+*** Recommended: GPG-encrypted .authinfo.gpg
+
+The simplest and most secure approach:
+
+#+BEGIN_SRC bash
+# Create ~/.authinfo with your credentials
+cat > ~/.authinfo << 'EOF'
+machine smtp.example.com port 587 login your-email@example.com password YOUR_PASSWORD
+machine imap.example.com login your-email@example.com password YOUR_PASSWORD
+EOF
+
+# Encrypt it with GPG
+gpg -c ~/.authinfo
+
+# This creates ~/.authinfo.gpg - now delete the plain text version
+rm ~/.authinfo
+
+# To view/edit later:
+gpg -d ~/.authinfo.gpg        # View
+gpg -d ~/.authinfo.gpg > ~/.authinfo  # Edit, then re-encrypt
+#+END_SRC
+
+*Format*: ~machine HOSTNAME port PORT login USERNAME password PASSWORD~
+
+*IMPORTANT*: The ~login~ value must match ~smtpmail-smtp-user~ in your ~mu4e-private.el~. Some servers need full email, others need just the username part.
+
+*** Alternative: pass (Unix password manager)
+
+#+BEGIN_SRC bash
+# Install pass
+sudo apt install pass        # Debian/Ubuntu
+# or
+brew install pass            # macOS
+# or
+sudo pacman -S pass          # Arch Linux
+
+# Initialize password store with your GPG key
+pass init your-gpg-key-id
+
+# Store your email password
+pass insert email/main
+#+END_SRC
+
+Then use ~PassCmd "pass email/main"~ in ~.mbsyncrc~.
+
+*** Plain text .authinfo (not recommended for production)
+
+#+BEGIN_SRC bash
+# Only for testing or non-sensitive accounts
+cat > ~/.authinfo << 'EOF'
+machine smtp.example.com port 587 login your-email@example.com password YOUR_PASSWORD
+EOF
+chmod 600 ~/.authinfo
+#+END_SRC
+
+* Configuration Steps
+
+** Step 1: Create Private Configuration
+
+#+BEGIN_SRC bash
+cd ~/.emacs.d/private
+cp mu4e-private.el.example mu4e-private.el
+#+END_SRC
+
+Edit ~mu4e-private.el~ with your settings:
+
+#+BEGIN_SRC elisp
+;; Personal Information
+(setq user-mail-address "your-email@example.com"
+      user-full-name "Your Full Name")
+
+;; SMTP Configuration (for sending mail)
+(setq smtpmail-smtp-server "smtp.example.com"
+      smtpmail-smtp-service 587
+      smtpmail-stream-type 'starttls
+      smtpmail-smtp-user "your-email@example.com")  ; Must match login in .authinfo/.authinfo.gpg
+#+END_SRC
+
+*IMPORTANT*: The ~smtpmail-smtp-user~ value must exactly match the ~login~ field in your ~.authinfo~ or ~.authinfo.gpg~ file. Some mail servers require just the username part (e.g., ~me~ instead of ~me@example.com~). See troubleshooting section if authentication fails.
+
+** Step 2: Configure Mail Synchronization
+
+Copy the mbsync template:
+
+#+BEGIN_SRC bash
+cd ~/.emacs.d/private
+cp mbsyncrc.example ~/.mbsyncrc
+#+END_SRC
+
+Edit ~~/.mbsyncrc~ with your IMAP settings:
+
+#+BEGIN_SRC conf
+# IMAP Account Configuration
+IMAPAccount main
+Host imap.example.com
+User your-email@example.com
+PassCmd "pass email/main"
+SSLType IMAPS
+
+# IMAP Store (Remote)
+IMAPStore main-remote
+Account main
+
+# Local Maildir Store
+# BEST PRACTICE: Use account subdirectory (replace 'username' with your account name)
+MaildirStore main-local
+Path ~/.local/share/mail/username/
+Inbox ~/.local/share/mail/username/INBOX
+SubFolders Verbatim
+
+# Sync channels
+Channel main-inbox
+Far :main-remote:
+Near :main-local:
+Patterns "INBOX"
+Create Both
+Expunge Both
+SyncState *
+
+# Group all channels
+Group main
+Channel main-inbox
+#+END_SRC
+
+** Step 3: Initial Mail Synchronization
+
+#+BEGIN_SRC bash
+# Create mail directory with account subdirectory
+# Replace 'username' with your account name (e.g., hihusky, work, personal)
+mkdir -p ~/.local/share/mail/username
+
+# Perform first sync (may take a while)
+mbsync -a
+
+# Initialize mu database
+# IMPORTANT: Use the root mail directory, not the subdirectory
+mu init --maildir=~/.local/share/mail --my-address=your-email@example.com
+
+# Index all mail
+mu index
+#+END_SRC
+
+*Note*: ~mu init~ uses the root mail directory (~/.local/share/mail~), which contains all account subdirectories. mu4e will automatically discover all subdirectories.
+
+** Step 4: Launch mu4e
+
+In Emacs:
+
+#+BEGIN_SRC elisp
+M-x mu4e
+#+END_SRC
+
+Or use the keybinding: ~C-c m~
+
+* Common Email Provider Configurations
+
+** Custom/Self-hosted
+
+#+BEGIN_SRC elisp
+;; In mu4e-private.el
+(setq user-mail-address "yourname@yourdomain.com"
+      user-full-name "Your Name"
+      smtpmail-smtp-server "mail.yourdomain.com"
+      smtpmail-smtp-service 587  ; or 465 for SSL
+      smtpmail-stream-type 'starttls  ; or 'ssl
+      smtpmail-smtp-user "yourname@yourdomain.com")
+#+END_SRC
+
+#+BEGIN_SRC conf
+# In ~/.mbsyncrc
+IMAPAccount custom
+Host mail.yourdomain.com
+User yourname@yourdomain.com
+PassCmd "pass email/custom"
+SSLType IMAPS  ; or STARTTLS
+#+END_SRC
+
+* Multiple Email Accounts
+
+** Configuration Example
+
+Edit ~mu4e-private.el~:
+
+#+BEGIN_SRC elisp
+;; Multiple account contexts
+(setq mu4e-contexts
+      (list
+       ;; Work account
+       (make-mu4e-context
+        :name "Work"
+        :match-func
+        (lambda (msg)
+          (when msg
+            (string-prefix-p "/work" (mu4e-message-field msg :maildir))))
+        :vars '((user-mail-address . "work@company.com")
+                (user-full-name . "Your Name")
+                (smtpmail-smtp-server . "smtp.company.com")
+                (smtpmail-smtp-service . 587)
+                (mu4e-drafts-folder . "/work/Drafts")
+                (mu4e-sent-folder . "/work/Sent")
+                (mu4e-refile-folder . "/work/Archive")
+                (mu4e-trash-folder . "/work/Trash")))
+       ;; Personal account
+       (make-mu4e-context
+        :name "Personal"
+        :match-func
+        (lambda (msg)
+          (when msg
+            (string-prefix-p "/personal" (mu4e-message-field msg :maildir))))
+        :vars '((user-mail-address . "personal@example.com")
+                (user-full-name . "Your Name")
+                (smtpmail-smtp-server . "smtp.example.com")
+                (smtpmail-smtp-service . 587)
+                (mu4e-drafts-folder . "/personal/Drafts")
+                (mu4e-sent-folder . "/personal/Sent")
+                (mu4e-refile-folder . "/personal/Archive")
+                (mu4e-trash-folder . "/personal/Trash")))))
+
+;; Context switching policy
+(setq mu4e-context-policy 'pick-first
+      mu4e-compose-context-policy 'ask)
+#+END_SRC
+
+** Multiple Account mbsync
+
+Edit ~~/.mbsyncrc~:
+
+#+BEGIN_SRC conf
+# Work Account
+IMAPAccount work
+Host imap.company.com
+User work@company.com
+PassCmd "pass email/work"
+SSLType IMAPS
+
+IMAPStore work-remote
+Account work
+
+MaildirStore work-local
+Path ~/.local/share/mail/work/
+Inbox ~/.local/share/mail/work/INBOX
+SubFolders Verbatim
+
+Channel work
+Far :work-remote:
+Near :work-local:
+Patterns *
+Create Both
+Expunge Both
+SyncState *
+
+# Personal Account
+IMAPAccount personal
+Host imap.example.com
+User personal@example.com
+PassCmd "pass email/personal"
+SSLType IMAPS
+
+IMAPStore personal-remote
+Account personal
+
+MaildirStore personal-local
+Path ~/.local/share/mail/personal/
+Inbox ~/.local/share/mail/personal/INBOX
+SubFolders Verbatim
+
+Channel personal
+Far :personal-remote:
+Near :personal-local:
+Patterns *
+Create Both
+Expunge Both
+SyncState *
+
+# Group for syncing all accounts
+Group all
+Channel work
+Channel personal
+#+END_SRC
+
+Sync all accounts:
+
+#+BEGIN_SRC bash
+mbsync -a
+#+END_SRC
+
+* Daily Usage
+
+** Basic Operations
+
+| Key       | Action                    |
+|-----------+---------------------------|
+| ~C-c m~   | Launch mu4e               |
+| ~j~       | Jump to maildir           |
+| ~s~       | Search                    |
+| ~C~       | Compose new message       |
+| ~R~       | Reply                     |
+| ~F~       | Forward                   |
+| ~d~       | Mark for deletion         |
+| ~m~       | Mark for move             |
+| ~x~       | Execute marked actions    |
+| ~U~       | Update mail (run mbsync)  |
+| ~q~       | Quit                      |
+
+** Bookmarks (Default)
+
+| Key | Bookmark                    |
+|-----+-----------------------------|
+| ~bu~ | Unread messages            |
+| ~bt~ | Today's messages           |
+| ~bw~ | Last 7 days                |
+| ~ba~ | Messages with attachments  |
+
+** Search Queries
+
+Examples:
+
+#+BEGIN_EXAMPLE
+from:john@example.com
+subject:meeting
+date:7d..now
+flag:unread AND NOT flag:trashed
+maildir:/INBOX
+attach:pdf
+#+END_EXAMPLE
+
+* Maintenance
+
+** Update Mail
+
+Automatically (every 5 minutes by default):
+- mu4e runs ~mbsync -a~ based on ~mu4e-update-interval~
+
+Manually in mu4e:
+- Press ~U~ to update
+
+From terminal:
+#+BEGIN_SRC bash
+mbsync -a && mu index
+#+END_SRC
+
+** Rebuild Index
+
+If search results seem incorrect:
+
+#+BEGIN_SRC bash
+mu index --rebuild
+#+END_SRC
+
+** Check Configuration
+
+#+BEGIN_SRC bash
+# Check mu configuration
+mu info
+
+# Test mbsync configuration
+mbsync -V  # Verbose output
+
+# Check what mu can find
+mu find date:today..now
+#+END_SRC
+
+* Troubleshooting
+
+** Connection Issues
+
+*** SMTP Connection Failed
+- Verify server address and port
+- Check firewall settings
+- Ensure correct encryption type (STARTTLS vs SSL)
+- Test with: ~telnet smtp.example.com 587~
+
+*** IMAP Connection Failed
+- Verify IMAP is enabled in email provider settings
+- Check server address and port
+- Test with: ~telnet imap.example.com 993~
+
+** Authentication Issues
+
+*** "535 Authentication credentials invalid" Error
+
+This error means SMTP authentication is failing. Common causes:
+
+1. *Username format mismatch*: The ~smtpmail-smtp-user~ in ~mu4e-private.el~ must exactly match the ~login~ in ~.authinfo~
+   - Some servers need full email: ~me@example.com~
+   - Others need just username: ~me~
+   - *Test which format your server needs*:
+
+#+BEGIN_SRC bash
+# Test with full email
+echo -n "me@example.com" | base64  # Copy output
+echo -n "your-password" | base64   # Copy output
+openssl s_client -connect mail.example.com:587 -starttls smtp
+# Type: EHLO localhost
+# Type: AUTH LOGIN
+# Paste base64 username, press Enter
+# Paste base64 password, press Enter
+# Look for "235 Authentication succeeded" or "535 ... invalid"
+
+# If that fails, test with just username
+echo -n "me" | base64
+# Repeat test above with this value
+#+END_SRC
+
+2. *Wrong password*: Verify password is correct in ~.authinfo~ or ~.authinfo.gpg~
+
+3. *File not found*: Check that ~auth-sources~ points to the right file (configured in ~mu4e-setup.el~)
+
+*** Gmail
+- Enable IMAP in Gmail settings
+- If 2FA enabled: Use App Password instead of regular password
+- ~smtpmail-smtp-user~ must be full email: ~your-email@gmail.com~
+- ~.authinfo~: ~machine smtp.gmail.com port 587 login your-email@gmail.com password APP_PASSWORD~
+
+*** Outlook/Office365
+- Enable IMAP in account settings
+- Check modern authentication requirements
+- Corporate accounts may need admin approval
+- ~smtpmail-smtp-user~ must be full email: ~your-email@outlook.com~
+
+*** Custom/Self-hosted Servers
+- Test authentication manually with ~openssl s_client~ (see above)
+- Try both full email and username-only formats
+- Check server documentation for required authentication format
+- Some servers (like cPanel-based hosting) require just the username part
+
+*** General
+- Verify password with: ~pass email/main~ (or your password command)
+- Check ~.authinfo~ file permissions: ~chmod 600 ~/.authinfo~
+- Ensure ~.authinfo~ format: ~machine SERVER port PORT login USERNAME password PASSWORD~
+- For GPG: Verify ~.authinfo.gpg~ decrypts: ~gpg -d ~/.authinfo.gpg~
+
+** Sync Issues
+
+*** Folders Not Syncing
+#+BEGIN_SRC bash
+# List remote folders
+mbsync -l main
+
+# Check folder names match in .mbsyncrc
+# Some providers use different names:
+# - Gmail: "[Gmail]/Sent Mail", "[Gmail]/All Mail"
+# - Others: "Sent", "Sent Items", "Sent Messages"
+#+END_SRC
+
+*** Sync Conflicts
+- Set ~mu4e-change-filenames-when-moving t~ (already in config)
+- Delete ~.mbsync/~ state files and re-sync if corrupted
+
+*** Slow Sync
+- Limit patterns in ~.mbsyncrc~ to specific folders
+- Use ~MaxMessages~ to limit initial sync
+- Exclude large folders: ~Patterns * !"[Gmail]/All Mail"~
+
+** mu4e Issues
+
+*** mu4e Won't Start
+- Check if mu is installed: ~which mu~
+- Verify maildir exists: ~ls ~/.local/share/mail~
+- Check mu database: ~mu info~
+
+*** Search Not Working
+- Rebuild index: ~mu index --rebuild~
+- Check database location: ~mu info~
+- Ensure mail is in correct location
+
+*** Messages Not Sending
+- Check SMTP settings in ~mu4e-private.el~
+- Test SMTP: ~msmtp --serverinfo --host=smtp.example.com~
+- Check ~*Messages*~ buffer for errors
+
+** Performance Issues
+
+*** Slow Startup
+- Large maildir: Consider archiving old mail
+- Check index size: ~du -sh ~/.cache/mu~
+- Limit ~mu4e-headers-results-limit~
+
+*** High Memory Usage
+- Reduce ~mu4e-headers-results-limit~
+- Close unused mail buffers
+- Restart Emacs periodically
+
+* Security Best Practices
+
+** Password Management
+
+*** Recommended: pass
+#+BEGIN_SRC bash
+# Encrypted with GPG
+pass insert email/main
+PassCmd "pass email/main"
+#+END_SRC
+
+*** Alternative: GPG-encrypted file
+#+BEGIN_SRC bash
+echo "password" | gpg -e -r your-email > ~/.mailpass.gpg
+PassCmd "gpg --quiet --no-tty -d ~/.mailpass.gpg"
+#+END_SRC
+
+*** Avoid: Plain text passwords
+#+BEGIN_SRC conf
+# DON'T DO THIS in production:
+Pass my-actual-password
+#+END_SRC
+
+** File Permissions
+
+Ensure private files are not world-readable:
+
+#+BEGIN_SRC bash
+chmod 600 ~/.mbsyncrc
+chmod 600 ~/.emacs.d/private/mu4e-private.el
+chmod 700 ~/.local/share/mail
+#+END_SRC
+
+** Git Safety
+
+The ~.gitignore~ is configured to exclude:
+- ~private/~ (except .example files)
+- ~~/.mbsyncrc~
+- ~~/.local/share/mail/~
+- ~~/.cache/mu/~
+
+Always verify before committing:
+#+BEGIN_SRC bash
+git status
+git diff
+#+END_SRC
+
+** Two-Factor Authentication
+
+For services with 2FA:
+- Gmail: Use App Passwords
+- Outlook: Use App Passwords
+- ProtonMail: Use Bridge with Bridge password
+
+** Regular Updates
+
+Keep software updated:
+#+BEGIN_SRC bash
+# Update mu and isync
+sudo apt update && sudo apt upgrade mu4e isync
+
+# Update Emacs packages
+M-x package-list-packages, then U x
+#+END_SRC
+
+* Advanced Configuration
+
+** Custom Bookmarks
+
+Add to ~mu4e-private.el~:
+
+#+BEGIN_SRC elisp
+(setq mu4e-bookmarks
+      '((:name "Unread messages" :query "flag:unread AND NOT flag:trashed" :key ?u)
+        (:name "Today's messages" :query "date:today..now" :key ?t)
+        (:name "Last 7 days" :query "date:7d..now" :key ?w)
+        (:name "Important" :query "flag:flagged" :key ?i)
+        (:name "From Boss" :query "from:boss@company.com" :key ?b)
+        (:name "Large attachments" :query "size:5M..500M" :key ?l)))
+#+END_SRC
+
+** Custom Folder Shortcuts
+
+#+BEGIN_SRC elisp
+(setq mu4e-maildir-shortcuts
+      '((:maildir "/INBOX" :key ?i)
+        (:maildir "/Sent" :key ?s)
+        (:maildir "/Drafts" :key ?d)
+        (:maildir "/Archive" :key ?a)
+        (:maildir "/work/INBOX" :key ?w)
+        (:maildir "/personal/INBOX" :key ?p)))
+#+END_SRC
+
+** HTML Email Rendering
+
+mu4e can render HTML emails. Add to ~mu4e-private.el~:
+
+#+BEGIN_SRC elisp
+;; Prefer text over HTML
+(setq mu4e-view-prefer-html nil)
+
+;; Use external browser for HTML
+(setq mu4e-view-use-gnus nil)
+
+;; Or use built-in rendering
+(require 'mu4e-contrib)
+(setq mu4e-html2text-command 'mu4e-shr2text)
+(setq shr-color-visible-luminance-min 60)
+(setq shr-color-visible-distance-min 5)
+#+END_SRC
+
+** Email Signatures
+
+#+BEGIN_SRC elisp
+(setq mu4e-compose-signature
+      "Best regards,\nYour Name\nhttps://yourwebsite.com")
+
+;; Or context-specific signatures
+(make-mu4e-context
+ :name "Work"
+ :vars '((mu4e-compose-signature . "Regards,\nYour Name\nJob Title\nCompany")))
+#+END_SRC
+
+** Attachments
+
+#+BEGIN_SRC elisp
+;; Default attachment directory
+(setq mu4e-attachment-dir "~/Downloads")
+
+;; Or use XDG Downloads
+(setq mu4e-attachment-dir
+      (expand-file-name
+       (or (getenv "XDG_DOWNLOAD_DIR") "~/Downloads")))
+#+END_SRC
+
+* XDG Compliance
+
+This configuration follows the XDG Base Directory Specification:
+
+| Purpose       | Variable          | Default Path                |
+|---------------+-------------------+-----------------------------|
+| Mail data     | ~XDG_DATA_HOME~   | ~~/.local/share/mail/~      |
+| mu cache      | ~XDG_CACHE_HOME~  | ~~/.cache/mu/~              |
+| Configuration | ~XDG_CONFIG_HOME~ | ~~/.emacs.d/~ (convention)  |
+
+To customize:
+
+#+BEGIN_SRC bash
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_CACHE_HOME="$HOME/.cache"
+export XDG_CONFIG_HOME="$HOME/.config"
+#+END_SRC
+
+* References
+
+** Official Documentation
+- mu4e Manual: https://www.djcbsoftware.nl/code/mu/mu4e/
+- mu Manual: https://www.djcbsoftware.nl/code/mu/
+- isync/mbsync: https://isync.sourceforge.io/
+
+** XDG Base Directory
+- Specification: https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
+
+** Related Tools
+- pass: https://www.passwordstore.org/
+- GPG: https://gnupg.org/
+
+* Appendix
+
+** Complete Example Configuration
+
+See the example files:
+- ~~/.emacs.d/lisp/mu4e-setup.el~ - Main configuration
+- ~~/.emacs.d/private/mu4e-private.el.example~ - Private config template
+- ~~/.emacs.d/private/mbsyncrc.example~ - Mail sync template
+
+** Quick Reference Card
+
+#+BEGIN_EXAMPLE
+Email Setup Checklist:
+□ Install mu and isync
+□ Set up password manager (pass)
+□ Copy mu4e-private.el.example → mu4e-private.el
+□ Edit mu4e-private.el with credentials
+□ Copy mbsyncrc.example → ~/.mbsyncrc
+□ Edit ~/.mbsyncrc with IMAP settings
+□ Store password: pass insert email/main
+□ Create mail directory: mkdir -p ~/.local/share/mail
+□ First sync: mbsync -a
+□ Initialize mu: mu init --maildir=~/.local/share/mail --my-address=email
+□ Index mail: mu index
+□ Launch mu4e: C-c m in Emacs
+#+END_EXAMPLE

@@ -57,6 +57,7 @@
 (require 'magit-setup)
 (require 'org-setup)
 (require 'web-dev)
+(require 'mu4e-setup)
 
 ;; Load language configurations
 (require 'cc-setup)

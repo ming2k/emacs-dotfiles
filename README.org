@@ -32,6 +32,30 @@ This is a modern, vanilla Emacs configuration that prioritizes simplicity, perfo
 - Contemporary completion UI
 - Git integration with Magit
 
+** Email Setup (mu4e)
+
+This configuration includes mu4e for email management with XDG compliance and full data desensitization.
+
+*** Quick Start
+
+1. Install: ~sudo apt install mu4e isync~ (or ~brew install mu isync~)
+2. Configure: Copy and edit example files in ~private/~ directory
+3. Sync: ~mbsync -a && mu index~
+4. Launch: ~M-x mu4e~ or ~C-c m~
+
+*** Complete Documentation
+
+See [[file:docs/mu4e.org][docs/mu4e.org]] for detailed setup instructions, including:
+- Step-by-step configuration guide
+- Common email provider settings (Gmail, Outlook, ProtonMail)
+- Multiple account setup
+- Troubleshooting tips
+- Security best practices
+
+*** Security Note
+
+All sensitive data (passwords, email addresses) is in the ~private/~ directory and git-ignored. Only template files with placeholders are committed.
+
 ** Supported Languages
 
 The project uses the treesitter mode for languges, e.g. "js-ts-mode" for javascript.
