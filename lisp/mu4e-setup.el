@@ -60,12 +60,14 @@
   ;; NOTE: Update these paths to match your account structure
   ;; Example: If your mail is in ~/.local/share/mail/username/
   ;; then use "/username/INBOX" instead of "/INBOX"
+  ;; IMPORTANT: mu4e defaults are /sent, /drafts, /trash (lowercase)
+  ;; Check your IMAP server's folder names with: a2 LIST "" "*"
+  ;; Override these in private/mu4e-private.el to match your server
   (setq mu4e-maildir-shortcuts
         '((:maildir "/INBOX" :key ?i)
-          (:maildir "/Sent" :key ?s)
-          (:maildir "/Drafts" :key ?d)
-          (:maildir "/Trash" :key ?t)
-          (:maildir "/Archive" :key ?a)))
+          (:maildir "/sent" :key ?s)
+          (:maildir "/drafts" :key ?d)
+          (:maildir "/trash" :key ?t)))
 
   ;; Bookmarks for common searches
   (setq mu4e-bookmarks
