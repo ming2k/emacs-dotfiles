@@ -48,6 +48,13 @@
   (setq mu4e-headers-sort-field :date)
   (setq mu4e-headers-sort-direction 'descending)
 
+  ;; Headers list format - 24h time format and compact layout
+  (setq mu4e-headers-date-format "%m-%d %H:%M"
+        mu4e-headers-fields '((:date . 12)
+                              (:flags . 6)
+                              (:from . 18)
+                              (:subject . 44)))
+
   ;; IMPORTANT: mu4e defaults are /sent, /drafts, /trash (lowercase)
 
   ;; Bookmarks for common searches
