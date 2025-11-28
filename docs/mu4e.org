@@ -16,10 +16,10 @@ This guide covers setting up mu4e (mu for Emacs) as your email client. The confi
 #+BEGIN_SRC
 ~/.emacs.d/
 ├── lisp/
-│   └── mu4e-setup.el           # Main configuration (public, with placeholders)
+│   └── mail-setup.el           # Main configuration (public, with placeholders)
 ├── private/
-│   ├── mu4e-private.el.example # Template for your credentials
-│   ├── mu4e-private.el         # Your actual credentials (git-ignored)
+│   ├── mail-private.el.example # Template for your credentials
+│   ├── mail-private.el         # Your actual credentials (git-ignored)
 │   ├── mbsyncrc.example        # Template for mail sync
 │   └── README.org              # Quick setup instructions
 ├── docs/
@@ -146,7 +146,7 @@ gpg -d ~/.authinfo.gpg > ~/.authinfo  # Edit, then re-encrypt
 
 *Format*: ~machine HOSTNAME port PORT login USERNAME password PASSWORD~
 
-*IMPORTANT*: The ~login~ value must match ~smtpmail-smtp-user~ in your ~mu4e-private.el~. Some servers need full email, others need just the username part.
+*IMPORTANT*: The ~login~ value must match ~smtpmail-smtp-user~ in your ~mail-private.el~. Some servers need full email, others need just the username part.
 
 *** Alternative: pass (Unix password manager)
 
@@ -183,10 +183,10 @@ chmod 600 ~/.authinfo
 
 #+BEGIN_SRC bash
 cd ~/.emacs.d/private
-cp mu4e-private.el.example mu4e-private.el
+cp mail-private.el.example mail-private.el
 #+END_SRC
 
-Edit ~mu4e-private.el~ with your settings:
+Edit ~mail-private.el~ with your settings:
 
 #+BEGIN_SRC elisp
 ;; Personal Information
@@ -281,7 +281,7 @@ Or use the keybinding: ~C-c m~
 ** Custom/Self-hosted
 
 #+BEGIN_SRC elisp
-;; In mu4e-private.el
+;; In mail-private.el
 (setq user-mail-address "yourname@yourdomain.com"
       user-full-name "Your Name"
       smtpmail-smtp-server "mail.yourdomain.com"
@@ -303,7 +303,7 @@ SSLType IMAPS  ; or STARTTLS
 
 ** Configuration Example
 
-Edit ~mu4e-private.el~:
+Edit ~mail-private.el~:
 
 #+BEGIN_SRC elisp
 ;; Multiple account contexts
@@ -505,7 +505,7 @@ mu find date:today..now
 
 This error means SMTP authentication is failing. Common causes:
 
-1. *Username format mismatch*: The ~smtpmail-smtp-user~ in ~mu4e-private.el~ must exactly match the ~login~ in ~.authinfo~
+1. *Username format mismatch*: The ~smtpmail-smtp-user~ in ~mail-private.el~ must exactly match the ~login~ in ~.authinfo~
    - Some servers need full email: ~me@example.com~
    - Others need just username: ~me~
    - *Test which format your server needs*:
@@ -528,7 +528,7 @@ echo -n "me" | base64
 
 2. *Wrong password*: Verify password is correct in ~.authinfo~ or ~.authinfo.gpg~
 
-3. *File not found*: Check that ~auth-sources~ points to the right file (configured in ~mu4e-setup.el~)
+3. *File not found*: Check that ~auth-sources~ points to the right file (configured in ~mail-setup.el~)
 
 *** Gmail
 - Enable IMAP in Gmail settings
@@ -589,7 +589,7 @@ mbsync -l main
 - Ensure mail is in correct location
 
 *** Messages Not Sending
-- Check SMTP settings in ~mu4e-private.el~
+- Check SMTP settings in ~mail-private.el~
 - Test SMTP: ~msmtp --serverinfo --host=smtp.example.com~
 - Check ~*Messages*~ buffer for errors
 
@@ -634,7 +634,7 @@ Ensure private files are not world-readable:
 
 #+BEGIN_SRC bash
 chmod 600 ~/.mbsyncrc
-chmod 600 ~/.emacs.d/private/mu4e-private.el
+chmod 600 ~/.emacs.d/private/mail-private.el
 chmod 700 ~/.local/share/mail
 #+END_SRC
 
@@ -674,7 +674,7 @@ M-x package-list-packages, then U x
 
 ** Custom Bookmarks
 
-Add to ~mu4e-private.el~:
+Add to ~mail-private.el~:
 
 #+BEGIN_SRC elisp
 (setq mu4e-bookmarks
@@ -700,7 +700,7 @@ Add to ~mu4e-private.el~:
 
 ** HTML Email Rendering
 
-mu4e can render HTML emails. Add to ~mu4e-private.el~:
+mu4e can render HTML emails. Add to ~mail-private.el~:
 
 #+BEGIN_SRC elisp
 ;; Prefer text over HTML
@@ -777,8 +777,8 @@ export XDG_CONFIG_HOME="$HOME/.config"
 ** Complete Example Configuration
 
 See the example files:
-- ~~/.emacs.d/lisp/mu4e-setup.el~ - Main configuration
-- ~~/.emacs.d/private/mu4e-private.el.example~ - Private config template
+- ~~/.emacs.d/lisp/mail-setup.el~ - Main configuration
+- ~~/.emacs.d/private/mail-private.el.example~ - Private config template
 - ~~/.emacs.d/private/mbsyncrc.example~ - Mail sync template
 
 ** Quick Reference Card
@@ -787,8 +787,8 @@ See the example files:
 Email Setup Checklist:
 □ Install mu and isync
 □ Set up password manager (pass)
-□ Copy mu4e-private.el.example → mu4e-private.el
-□ Edit mu4e-private.el with credentials
+□ Copy mail-private.el.example → mail-private.el
+□ Edit mail-private.el with credentials
 □ Copy mbsyncrc.example → ~/.mbsyncrc
 □ Edit ~/.mbsyncrc with IMAP settings
 □ Store password: pass insert email/main

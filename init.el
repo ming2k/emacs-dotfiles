@@ -13,6 +13,10 @@
 
 (prefer-coding-system 'utf-8)
 
+;; Authentication sources - used by mu4e, sieve-manage, TRAMP, ERC, etc.
+;; Supports both encrypted .authinfo.gpg (recommended) and plain .authinfo
+(setq auth-sources '("~/.authinfo.gpg" "~/.authinfo"))
+
 ;; Enable automatic reloading for all files
 (global-auto-revert-mode 1)
 
@@ -57,7 +61,7 @@
 (require 'magit-setup)
 (require 'org-setup)
 (require 'web-dev)
-(require 'mu4e-setup)
+(require 'mail-setup)
 
 ;; Load language configurations
 (require 'cc-setup)

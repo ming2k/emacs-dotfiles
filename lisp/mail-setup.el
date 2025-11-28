@@ -1,4 +1,4 @@
-;;; mu4e-setup.el --- Email configuration with mu4e -*- lexical-binding: t; -*-
+;;; mail-setup.el --- Email configuration with mu4e -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 ;; Email client configuration using mu4e with placeholders for sensitive data
@@ -17,7 +17,7 @@
                                                     "~/.local/share")))
 
   ;; SMTP configuration - REPLACE WITH YOUR SETTINGS
-  ;; To configure, copy this section to ~/.emacs.d/private/mu4e-private.el
+  ;; To configure, copy this section to ~/.emacs.d/private/mail-private.el
   ;; and fill in your actual values
   (setq user-mail-address "YOUR-EMAIL@example.com"
         user-full-name "YOUR FULL NAME"
@@ -32,11 +32,10 @@
         message-send-mail-function 'smtpmail-send-it
         send-mail-function 'smtpmail-send-it
 
-        ;; Authentication - supports both .authinfo and .authinfo.gpg
-        auth-sources '("~/.authinfo.gpg" "~/.authinfo")
-
         ;; Don't keep message buffers around
         message-kill-buffer-on-exit t)
+
+  ;; Note: auth-sources is set globally in init.el and used by mu4e, sieve-manage, etc.
 
   ;; Receiving mail configuration
   ;; mu4e doesn't fetch mail itself - use mbsync/isync, offlineimap, or fetchmail
@@ -45,29 +44,11 @@
         mu4e-update-interval 300  ; Update every 5 minutes (in seconds)
         mu4e-change-filenames-when-moving t)  ; Avoid sync conflicts
 
-  ;; Display and behavior
-  (setq mu4e-view-show-images t
-        mu4e-view-show-addresses t
-        mu4e-compose-format-flowed t
-        mu4e-date-format "%Y-%m-%d"
-        mu4e-headers-date-format "%Y-%m-%d"
-        mu4e-headers-time-format "%H:%M"
-        mu4e-headers-results-limit 1000
-        mu4e-headers-skip-duplicates t
-        mu4e-attachment-dir (expand-file-name "downloads" "~"))  ; or use XDG_DOWNLOAD_DIR
+  ;; Headers list sorting
+  (setq mu4e-headers-sort-field :date)
+  (setq mu4e-headers-sort-direction 'descending)
 
-  ;; Shortcuts for common folders
-  ;; NOTE: Update these paths to match your account structure
-  ;; Example: If your mail is in ~/.local/share/mail/username/
-  ;; then use "/username/INBOX" instead of "/INBOX"
   ;; IMPORTANT: mu4e defaults are /sent, /drafts, /trash (lowercase)
-  ;; Check your IMAP server's folder names with: a2 LIST "" "*"
-  ;; Override these in private/mu4e-private.el to match your server
-  (setq mu4e-maildir-shortcuts
-        '((:maildir "/INBOX" :key ?i)
-          (:maildir "/sent" :key ?s)
-          (:maildir "/drafts" :key ?d)
-          (:maildir "/trash" :key ?t)))
 
   ;; Bookmarks for common searches
   (setq mu4e-bookmarks
@@ -76,7 +57,7 @@
           (:name "Last 7 days" :query "date:7d..now" :key ?w)
           (:name "Messages with attachments" :query "flag:attach" :key ?a)))
 
-  ;; Load private configuration if it exists
+  ;; Load mu4e private configuration if it exists
   ;; This file should contain your actual credentials and NOT be committed to git
   ;; IMPORTANT: Load this INSIDE :config to ensure mu4e is loaded first
   (let ((private-config (expand-file-name "private/mu4e-private.el" user-emacs-directory)))
@@ -86,5 +67,5 @@
   ;; Key bindings
   (global-set-key (kbd "C-c m") 'mu4e))
 
-(provide 'mu4e-setup)
-;;; mu4e-setup.el ends here
+(provide 'mail-setup)
+;;; mail-setup.el ends here
