@@ -1,0 +1,340 @@
+#+TITLE: Authentication Setup Guide
+#+AUTHOR: Ming
+#+DATE: 2025
+#+DESCRIPTION: Guide for setting up encrypted authentication with authinfo.gpg
+#+OPTIONS: toc:2 num:nil
+#+STARTUP: showeverything
+
+* Introduction
+
+This guide covers setting up =~/.authinfo.gpg= for storing encrypted credentials used by mu4e (email), ERC (IRC), and other Emacs tools that need authentication.
+
+* Quick Setup
+
+** Create or Edit Encrypted File
+
+#+BEGIN_SRC bash
+# If file exists - decrypt, edit, then re-encrypt
+gpg -d ~/.authinfo.gpg > /tmp/authinfo
+emacs /tmp/authinfo
+gpg -c /tmp/authinfo
+mv /tmp/authinfo.gpg ~/.authinfo.gpg
+rm /tmp/authinfo
+#+END_SRC
+
+** First Time Creation
+
+#+BEGIN_SRC bash
+# Create new file
+touch /tmp/authinfo
+
+# Edit and add your credentials
+emacs /tmp/authinfo
+
+# Encrypt it
+gpg -c /tmp/authinfo
+
+# Move to home directory
+mv /tmp/authinfo.gpg ~/.authinfo.gpg
+
+# Remove plaintext
+rm /tmp/authinfo
+#+END_SRC
+
+* Format Reference
+
+** Entry Format
+
+Each line in the authinfo file follows this format:
+
+#+BEGIN_EXAMPLE
+machine HOSTNAME login USERNAME port PORT password PASSWORD
+#+END_EXAMPLE
+
+** Email (SMTP) Example
+
+For email SMTP authentication:
+
+#+BEGIN_EXAMPLE
+machine mail.example.com login username port smtp password YOUR_PASSWORD
+#+END_EXAMPLE
+
+Important notes:
+- Port is the word =smtp= (not a number like 587)
+- Some servers require just username, others require full email address
+- Check your mail server's requirements
+
+** Email (Sieve) Example
+
+For Sieve mail filtering:
+
+#+BEGIN_EXAMPLE
+machine mail.example.com login username port sieve password YOUR_PASSWORD
+#+END_EXAMPLE
+
+** IRC Example
+
+For IRC authentication:
+
+#+BEGIN_EXAMPLE
+machine irc.libera.chat login yournick password YOUR_PASSWORD port 6697
+#+END_EXAMPLE
+
+** Complete Example File
+
+#+BEGIN_EXAMPLE
+# Email - SMTP
+machine mail.hihusky.com login me port smtp password mypassword123
+
+# Email - Sieve
+machine mail.hihusky.com login me port sieve password mypassword123
+
+# IRC - Libera.Chat
+machine irc.libera.chat login mynick password ircpassword456 port 6697
+
+# IRC - OFTC
+machine irc.oftc.net login mynick password ircpassword456 port 6697
+#+END_EXAMPLE
+
+Important:
+- Each entry must be on a single line
+- No line breaks within an entry
+- Comments start with =#=
+
+* Testing Authentication
+
+** Test SMTP (Email Sending)
+
+#+BEGIN_SRC bash
+# Test SMTP connection and authentication
+echo -e "EHLO localhost\nAUTH LOGIN\nbWU=\nYOUR_BASE64_PASSWORD\nQUIT" | \
+  openssl s_client -connect mail.example.com:587 -starttls smtp -quiet 2>&1
+#+END_SRC
+
+Should return "Authentication succeeded" if working.
+
+** Test Sieve (Mail Filtering)
+
+In Emacs:
+
+#+BEGIN_SRC elisp
+;; M-x ielm
+(require 'sieve-manage)
+(sieve-manage-open "mail.example.com" 4190 "username")
+#+END_SRC
+
+Should connect without errors.
+
+** Test IRC Authentication
+
+Connect via ERC and check for successful authentication messages in the server buffer.
+
+** Test auth-source in Emacs
+
+#+BEGIN_SRC elisp
+;; M-x ielm
+(auth-source-search :host "mail.example.com" :port "smtp")
+#+END_SRC
+
+Should return your credentials.
+
+* Troubleshooting
+
+** GPG Timeout Errors
+
+If you see "Timeout" or "No secret key" errors:
+
+#+BEGIN_SRC bash
+# Check GPG agent status
+gpg-connect-agent 'getinfo version' /bye
+
+# Restart GPG agent
+gpgconf --kill gpg-agent
+gpg-agent --daemon
+
+# Test decryption
+gpg -d ~/.authinfo.gpg
+#+END_SRC
+
+** GPG Agent Not Running
+
+Start the GPG agent:
+
+#+BEGIN_SRC bash
+# Start agent
+eval $(gpg-agent --daemon)
+
+# Or add to ~/.bashrc or ~/.zshrc
+export GPG_TTY=$(tty)
+#+END_SRC
+
+** Wrong Passphrase Cached
+
+Clear the GPG cache:
+
+#+BEGIN_SRC bash
+# Clear all cached passphrases
+gpgconf --reload gpg-agent
+#+END_SRC
+
+Or use the GUI:
+
+#+BEGIN_SRC bash
+# Open pinentry to reset
+echo RELOADAGENT | gpg-connect-agent
+#+END_SRC
+
+** Emacs Can't Read File
+
+Check file permissions:
+
+#+BEGIN_SRC bash
+ls -la ~/.authinfo.gpg
+# Should be: -rw------- (600)
+
+# Fix if needed
+chmod 600 ~/.authinfo.gpg
+#+END_SRC
+
+** Testing Alternative (Unencrypted)
+
+For debugging only, use plain text =~/.authinfo=:
+
+#+BEGIN_SRC bash
+# Create plaintext version (TEMPORARY - for testing only)
+echo 'machine mail.example.com login username port smtp password PASSWORD' > ~/.authinfo
+chmod 600 ~/.authinfo
+#+END_SRC
+
+Important:
+- Only use for testing
+- Delete after confirming it works
+- Move to encrypted =~/.authinfo.gpg= for production use
+
+* Emacs Configuration
+
+** Auth Sources Setup
+
+Already configured in =~/.emacs.d/init.el=:
+
+#+BEGIN_SRC elisp
+(setq auth-sources '("~/.authinfo.gpg" "~/.authinfo"))
+#+END_SRC
+
+This configuration:
+- Tries =~/.authinfo.gpg= first (encrypted, recommended)
+- Falls back to =~/.authinfo= (plain text) if GPG fails
+- Used by mu4e, ERC, and other Emacs packages
+
+** No Additional Configuration Needed
+
+The auth-sources setting is global and works for:
+- mu4e (email)
+- ERC (IRC)
+- Sieve-manage (mail filtering)
+- TRAMP (remote file access)
+- Other packages using auth-source
+
+* Security Best Practices
+
+** Always Use GPG Encryption
+
+- Never commit =~/.authinfo= to git
+- Always use =~/.authinfo.gpg= for production
+- Plain text is for testing only
+
+** Secure File Permissions
+
+#+BEGIN_SRC bash
+# Correct permissions
+chmod 600 ~/.authinfo.gpg
+chmod 600 ~/.authinfo  # if exists
+#+END_SRC
+
+** Use Strong Passphrases
+
+- Use different passwords for different services
+- Use strong, unique passwords
+- Consider using a password manager
+
+** Regular Updates
+
+- Change passwords periodically
+- Update =~/.authinfo.gpg= when passwords change
+- Keep GPG keys backed up securely
+
+* Advanced Usage
+
+** Multiple Accounts
+
+You can have multiple entries for the same host with different ports or usernames:
+
+#+BEGIN_EXAMPLE
+# Work email
+machine smtp.company.com login work@company.com port smtp password workpass123
+
+# Personal email
+machine smtp.gmail.com login personal@gmail.com port smtp password personalpass456
+#+END_EXAMPLE
+
+** Using Pass (Password Manager)
+
+Integration with =pass= password manager:
+
+#+BEGIN_SRC elisp
+;; In your Emacs config
+(require 'auth-source-pass)
+(auth-source-pass-enable)
+#+END_SRC
+
+Then store passwords:
+
+#+BEGIN_SRC bash
+pass insert email/smtp
+pass insert irc/libera
+#+END_SRC
+
+** Custom Auth Sources
+
+You can specify custom locations:
+
+#+BEGIN_SRC elisp
+(setq auth-sources '("~/.authinfo.gpg"
+                     "~/.authinfo"
+                     "~/.config/authinfo.gpg"))
+#+END_SRC
+
+* Reference
+
+** File Locations
+
+| File | Purpose | Security |
+|------|---------|----------|
+| =~/.authinfo.gpg= | Encrypted credentials | Recommended |
+| =~/.authinfo= | Plain text credentials | Testing only |
+| =~/.password-store/= | Pass password manager | Alternative |
+
+** Common Ports
+
+| Service | Port Name | Port Number |
+|---------|-----------|-------------|
+| SMTP (TLS) | smtp | 587 |
+| SMTP (SSL) | smtp | 465 |
+| IMAP | imap | 993 |
+| Sieve | sieve | 4190 |
+| IRC (SSL) | 6697 | 6697 |
+
+** auth-source Functions
+
+| Function | Purpose |
+|----------|---------|
+| =(auth-source-search ...)= | Search for credentials |
+| =(auth-source-forget-all-cached)= | Clear credential cache |
+| =(auth-source-pass-enable)= | Enable pass integration |
+
+* See Also
+
+- [[file:mail.org][Email Configuration Guide]]
+- [[file:irc.org][IRC Client Guide]]
+- [[https://www.gnupg.org/documentation/][GnuPG Documentation]]
+- [[https://www.gnu.org/software/emacs/manual/html_node/auth/index.html][Emacs Auth-Source Manual]]

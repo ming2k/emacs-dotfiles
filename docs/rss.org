@@ -1,0 +1,422 @@
+#+TITLE: RSS Reader Configuration Guide
+#+AUTHOR: Ming
+#+DATE: 2025
+#+DESCRIPTION: Complete guide for configuring RSS/Atom feeds with Elfeed in Emacs
+#+OPTIONS: toc:3 num:nil
+#+STARTUP: showeverything
+
+* Introduction
+
+This guide covers setting up Elfeed as your RSS/Atom feed reader in Emacs. Elfeed is a fast, lightweight feed reader that integrates seamlessly with Emacs.
+
+* Architecture Overview
+
+** Directory Structure
+
+#+BEGIN_SRC
+~/.emacs.d/
+├── lisp/
+│   └── elfeed-setup.el            # Main configuration (public)
+├── private/
+│   ├── elfeed-private.example.el  # Template for your feeds
+│   └── elfeed-private.el          # Your actual feeds (git-ignored)
+├── docs/
+│   └── rss.org                    # This documentation
+├── elfeed/                        # Database (git-ignored)
+│   ├── data/                      # Feed database
+│   └── index                      # Search index
+└── README.org                     # Main README
+#+END_SRC
+
+* Installation
+
+** Install Elfeed Package
+
+The configuration uses ~use-package~ to manage Elfeed installation. When you first start Emacs with the new configuration:
+
+#+BEGIN_SRC emacs-lisp
+M-x package-refresh-contents
+M-x package-install RET elfeed RET
+#+END_SRC
+
+Or restart Emacs and ~use-package~ will automatically install it.
+
+* Configuration
+
+** Basic Configuration Location
+
+Main configuration: =~/.emacs.d/lisp/elfeed-setup.el=
+
+The configuration is already loaded in =init.el= via:
+#+BEGIN_SRC emacs-lisp
+(require 'elfeed-setup)
+#+END_SRC
+
+** Adding Your Feeds
+
+*** Recommended: Use Private Configuration
+
+The recommended approach is to create =~/.emacs.d/private/elfeed-private.el= to keep your feeds private and separate from the version-controlled configuration.
+
+**** Step 1: Copy the Example Template
+
+#+BEGIN_SRC bash
+cd ~/.emacs.d/private/
+cp elfeed-private.example.el elfeed-private.el
+#+END_SRC
+
+**** Step 2: Edit Your Feed List
+
+Edit =~/.emacs.d/private/elfeed-private.el= and customize the feeds:
+
+#+BEGIN_SRC emacs-lisp
+;;; elfeed-private.el --- Private feed list -*- lexical-binding: t; -*-
+
+;; Your personal feed list
+(setq elfeed-feeds
+      '(;; Personal blogs
+        ("https://hihusky.com/rss" blog personal)
+
+        ;; Tech News
+        ("https://planet.emacslife.com/atom.xml" emacs planet)
+        ("https://sachachua.com/blog/category/emacs-news/feed/" emacs news)
+        ("https://lwn.net/headlines/rss" linux news)
+
+        ;; Programming
+        ("https://lobste.rs/rss" programming community)
+
+        ;; Add more feeds here
+        ))
+
+(provide 'elfeed-private)
+;;; elfeed-private.el ends here
+#+END_SRC
+
+**** Step 3: Restart Emacs
+
+The private configuration will be automatically loaded when you start Emacs.
+
+*** Alternative: Edit Main Configuration
+
+If you prefer, you can edit =~/.emacs.d/lisp/elfeed-setup.el= directly and modify the ~elfeed-feeds~ variable. However, this will be tracked by git.
+
+** Feed Format
+
+Each feed entry is a list:
+#+BEGIN_SRC emacs-lisp
+("URL" tag1 tag2 tag3 ...)
+#+END_SRC
+
+- URL: RSS/Atom feed URL
+- Tags: Optional tags for filtering and organization
+
+** Configuration Options
+
+Key settings in =elfeed-setup.el=:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| =elfeed-db-directory= | =~/.emacs.d/elfeed= | Database location |
+| =elfeed-search-filter= | =@6-months-ago +unread= | Default search filter |
+| =elfeed-search-trailing-width= | =30= | Column width |
+| =elfeed-show-truncate-long-urls= | =t= | Truncate long URLs |
+
+* Usage
+
+** Starting Elfeed
+
+| Keybinding | Command | Description |
+|------------|---------|-------------|
+| =C-c e= | =elfeed= | Open Elfeed |
+
+** Search Buffer (Main View)
+
+*** Navigation
+
+| Key | Action |
+|-----|--------|
+| =n= / =j= | Next entry |
+| =p= / =k= | Previous entry |
+| =RET= | Open entry |
+| =g= | Refresh view |
+| =G= / =U= | Update all feeds |
+| =q= | Quit Elfeed |
+
+*** Filtering
+
+| Key | Action |
+|-----|--------|
+| =s= | Edit search filter |
+| =r= | Mark all visible as read |
+| =u= | Mark all visible as unread |
+
+*** Tagging
+
+| Key | Action |
+|-----|--------|
+| =b= | Toggle unread (read/unread) |
+| =+= | Add tags |
+| =-= | Remove tags |
+
+** Entry View (Reading)
+
+| Key | Action |
+|-----|--------|
+| =b= | Toggle unread |
+| =q= | Close entry |
+| =n= | Next entry |
+| =p= | Previous entry |
+| =v= | Visit URL in browser |
+
+** Search Filters
+
+Elfeed uses a simple filter syntax:
+
+*** Basic Filters
+
+| Filter | Meaning |
+|--------|---------|
+| =+unread= | Show unread entries |
+| =-unread= | Hide unread entries |
+| =+emacs= | Show entries tagged "emacs" |
+| =@1-week-ago= | From last week |
+| =@6-months-ago= | From last 6 months |
+
+*** Combining Filters
+
+#+BEGIN_EXAMPLE
+@1-week-ago +unread        # Unread entries from last week
++emacs +news               # Entries tagged both "emacs" AND "news"
++emacs | +programming      # Entries tagged "emacs" OR "programming"
+linux                      # Search for "linux" in title/content
+#+END_EXAMPLE
+
+*** Common Filter Patterns
+
+#+BEGIN_SRC
+@1-day-ago +unread         # Today's unread
+@1-week-ago                # This week
++important                 # Important feeds
++blog -read                # Unread blog posts
+@2-weeks-ago +emacs        # Emacs news from last 2 weeks
+#+END_SRC
+
+* Advanced Usage
+
+** Auto-Update Feeds
+
+Feeds automatically update every 8 hours. To change the interval, edit =elfeed-setup.el=:
+
+#+BEGIN_SRC emacs-lisp
+;; Update every 4 hours (in seconds)
+(run-at-time nil (* 4 60 60) #'elfeed-update)
+#+END_SRC
+
+** Custom Tags
+
+Use tags to organize feeds:
+
+#+BEGIN_SRC emacs-lisp
+(setq elfeed-feeds
+      '(;; By topic
+        ("https://example.com/feed" programming tutorial)
+        ("https://news.example.com/rss" news tech)
+
+        ;; By priority
+        ("https://important.example.com/feed" important must-read)
+        ("https://casual.example.com/feed" casual)
+
+        ;; By language
+        ("https://french-blog.example.com/feed" blog french)))
+#+END_SRC
+
+** Score-Based Filtering
+
+Auto-tag entries based on content:
+
+#+BEGIN_SRC emacs-lisp
+;; Add to elfeed-setup.el :config section
+(add-hook 'elfeed-new-entry-hook
+          (elfeed-make-tagger :feed-url "youtube\\.com"
+                              :add '(video youtube)))
+
+(add-hook 'elfeed-new-entry-hook
+          (elfeed-make-tagger :entry-title '(not "advertisement")
+                              :add 'good))
+#+END_SRC
+
+** Clean Old Entries
+
+The default configuration auto-removes unread tag from entries older than 30 days:
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'elfeed-new-entry-hook
+          (elfeed-make-tagger :before "30 days ago"
+                              :remove 'unread))
+#+END_SRC
+
+To completely delete old entries:
+
+#+BEGIN_SRC emacs-lisp
+M-x elfeed-db-compact
+#+END_SRC
+
+* Tips & Tricks
+
+** Finding Feed URLs
+
+Most websites have feeds. Look for:
+- RSS/Atom icons in the browser
+- Links in page footer
+- =/feed= or =/rss= at end of URL
+- Use browser extensions to detect feeds
+
+** Keyboard-Driven Workflow
+
+1. =C-c e= - Open Elfeed
+2. =G= - Update all feeds
+3. =j/k= - Navigate entries
+4. =RET= - Read entry
+5. =b= - Mark as read (automatically)
+6. =q= - Close entry
+7. =q= - Close Elfeed
+
+** Organizing Large Feed Lists
+
+Group feeds by topic using tags:
+
+#+BEGIN_SRC emacs-lisp
+;; In elfeed-private.el
+(setq elfeed-feeds
+      '(;; === TECH NEWS ===
+        ("https://news.ycombinator.com/rss" tech hn)
+        ("https://lobste.rs/rss" tech programming)
+
+        ;; === EMACS ===
+        ("https://planet.emacslife.com/atom.xml" emacs planet)
+        ("https://sachachua.com/blog/category/emacs-news/feed/" emacs news)
+
+        ;; === BLOGS ===
+        ("https://blog.example.com/feed" blog personal)))
+#+END_SRC
+
+Then filter by tag: =+emacs= or =+tech=
+
+** Reading Later Workflow
+
+1. Browse entries with =j/k=
+2. Keep interesting ones unread
+3. Use filter =+unread= to see reading list
+4. Process them later
+
+Or create a custom "read-later" tag:
+
+#+BEGIN_SRC emacs-lisp
+;; Tag entries for later reading
+;; In search buffer: + RET read-later RET
+;; Filter: +read-later
+#+END_SRC
+
+* Troubleshooting
+
+** Elfeed Won't Start
+
+Check if package is installed:
+#+BEGIN_SRC emacs-lisp
+M-x package-list-packages
+;; Search for "elfeed"
+#+END_SRC
+
+** Feeds Not Updating
+
+Manual update:
+#+BEGIN_SRC emacs-lisp
+M-x elfeed-update
+#+END_SRC
+
+Check for errors:
+#+BEGIN_SRC emacs-lisp
+M-x elfeed-log
+#+END_SRC
+
+** Database Corruption
+
+Reset database:
+#+BEGIN_SRC bash
+rm -rf ~/.emacs.d/elfeed
+#+END_SRC
+
+Then restart Emacs and run =M-x elfeed-update=.
+
+** Slow Performance
+
+Compact database:
+#+BEGIN_SRC emacs-lisp
+M-x elfeed-db-compact
+#+END_SRC
+
+Reduce retention period in =elfeed-setup.el=:
+#+BEGIN_SRC emacs-lisp
+(add-hook 'elfeed-new-entry-hook
+          (elfeed-make-tagger :before "15 days ago"  ; Changed from 30
+                              :remove 'unread))
+#+END_SRC
+
+* Popular Feed Recommendations
+
+** Emacs Community
+
+#+BEGIN_SRC
+https://planet.emacslife.com/atom.xml
+https://sachachua.com/blog/category/emacs-news/feed/
+https://www.reddit.com/r/emacs/.rss
+#+END_SRC
+
+** Tech News
+
+#+BEGIN_SRC
+https://news.ycombinator.com/rss
+https://lobste.rs/rss
+https://lwn.net/headlines/rss
+#+END_SRC
+
+** Programming
+
+#+BEGIN_SRC
+https://github.blog/feed/
+https://stackoverflow.blog/feed/
+#+END_SRC
+
+* Reference
+
+** Key Bindings Summary
+
+| Context | Key | Action |
+|---------|-----|--------|
+| Global | =C-c e= | Open Elfeed |
+| Search | =RET= | Open entry |
+| Search | =g= | Refresh view |
+| Search | =G= / =U= | Update feeds |
+| Search | =s= | Edit filter |
+| Search | =b= | Toggle read/unread |
+| Search | =r= | Mark all as read |
+| Search | =u= | Mark all as unread |
+| Search | =q= | Quit |
+| Entry | =v= | Visit in browser |
+| Entry | =b= | Toggle read/unread |
+| Entry | =n= / =p= | Next/Previous |
+| Entry | =q= | Close |
+
+** Configuration Files
+
+| File | Purpose | Version Control |
+|------|---------|-----------------|
+| =~/.emacs.d/lisp/elfeed-setup.el= | Main config | Tracked |
+| =~/.emacs.d/private/elfeed-private.el= | Your feeds | Ignored |
+| =~/.emacs.d/elfeed/= | Database | Ignored |
+
+* See Also
+
+- [[https://github.com/skeeto/elfeed][Elfeed GitHub Repository]]
+- [[https://github.com/skeeto/elfeed#filter-syntax][Filter Syntax Documentation]]
+- =M-x describe-mode= (in elfeed buffer for more keys)

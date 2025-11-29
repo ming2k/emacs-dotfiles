@@ -1,13 +1,15 @@
-#+TITLE: mu4e Email Configuration Guide
+#+TITLE: Email Configuration Guide
 #+AUTHOR: Ming
 #+DATE: 2025
-#+DESCRIPTION: Complete guide for configuring mu4e email in Emacs
+#+DESCRIPTION: Complete guide for configuring email with mu4e in Emacs
 #+OPTIONS: toc:3 num:nil
 #+STARTUP: showeverything
 
 * Introduction
 
 This guide covers setting up mu4e (mu for Emacs) as your email client. The configuration follows XDG Base Directory standards and includes proper data desensitization for sharing dotfiles.
+
+For authentication setup, see [[file:authinfo.org][Authentication Setup Guide]].
 
 * Architecture Overview
 
@@ -18,7 +20,7 @@ This guide covers setting up mu4e (mu for Emacs) as your email client. The confi
 ├── lisp/
 │   └── mail-setup.el           # Main configuration (public, with placeholders)
 ├── private/
-│   ├── mail-private.el.example # Template for your credentials
+│   ├── mail-private.example.el # Template for your credentials
 │   ├── mail-private.el         # Your actual credentials (git-ignored)
 │   ├── mbsyncrc.example        # Template for mail sync
 │   └── README.org              # Quick setup instructions
@@ -183,7 +185,7 @@ chmod 600 ~/.authinfo
 
 #+BEGIN_SRC bash
 cd ~/.emacs.d/private
-cp mail-private.el.example mail-private.el
+cp mail-private.example.el mail-private.el
 #+END_SRC
 
 Edit ~mail-private.el~ with your settings:
@@ -410,43 +412,278 @@ mbsync -a
 
 * Daily Usage
 
-** Basic Operations
+** Starting mu4e
 
-| Key       | Action                    |
-|-----------+---------------------------|
-| ~C-c m~   | Launch mu4e               |
-| ~j~       | Jump to maildir           |
-| ~s~       | Search                    |
-| ~C~       | Compose new message       |
-| ~R~       | Reply                     |
-| ~F~       | Forward                   |
-| ~d~       | Mark for deletion         |
-| ~m~       | Mark for move             |
-| ~x~       | Execute marked actions    |
-| ~U~       | Update mail (run mbsync)  |
-| ~q~       | Quit                      |
+Launch mu4e:
+#+BEGIN_SRC elisp
+C-c m    ; Or M-x mu4e
+#+END_SRC
 
-** Bookmarks (Default)
+The main view shows:
+- Bookmarks for quick access to common searches
+- Mailbox list
+- Unread count
 
-| Key | Bookmark                    |
-|-----+-----------------------------|
-| ~bu~ | Unread messages            |
-| ~bt~ | Today's messages           |
-| ~bw~ | Last 7 days                |
-| ~ba~ | Messages with attachments  |
+** Reading Mail
 
-** Search Queries
+*** Headers View (Mail List)
 
-Examples:
+| Key | Action                          |
+|-----+---------------------------------|
+| ~j~ | Jump to maildir                 |
+| ~b~ | Show bookmarks                  |
+| ~s~ | Search mail                     |
+| ~n~ | Next message                    |
+| ~p~ | Previous message                |
+| ~RET~ | Open/view message             |
+| ~q~ | Quit headers view               |
+
+*** Message View (Reading a Message)
+
+| Key | Action                          |
+|-----+---------------------------------|
+| ~n~ | Next message                    |
+| ~p~ | Previous message                |
+| ~R~ | Reply to sender                 |
+| ~W~ | Reply to all                    |
+| ~F~ | Forward message                 |
+| ~E~ | Edit message (if draft)         |
+| ~q~ | Close message view              |
+
+*** Working with Attachments
+
+| Key | Action                          |
+|-----+---------------------------------|
+| ~e~ | Extract attachment (save)       |
+| ~o~ | Open attachment                 |
+| ~a~ | View all attachments            |
+| ~A~ | Save all attachments            |
+
+To save an attachment:
+1. Open message with ~RET~
+2. Navigate to attachment
+3. Press ~e~ to extract (save)
+4. Choose destination directory
+
+** Composing Mail
+
+*** New Message
+
+#+BEGIN_SRC elisp
+C     ; Compose new message
+#+END_SRC
+
+*** Replying and Forwarding
+
+| Key | Action                          |
+|-----+---------------------------------|
+| ~R~ | Reply to sender                 |
+| ~W~ | Wide reply (reply all)          |
+| ~F~ | Forward message                 |
+
+*** Composing Operations
+
+While composing (in message buffer):
+
+| Key | Action                          |
+|-----+---------------------------------|
+| ~C-c C-c~ | Send message                |
+| ~C-c C-k~ | Kill (cancel) composition   |
+| ~C-c C-a~ | Attach file                 |
+| ~C-c C-d~ | Save as draft               |
+
+To attach a file:
+1. Press ~C-c C-a~ while composing
+2. Select file using completion
+3. File is attached to message
+
+** Managing Messages
+
+*** Marking Messages
+
+| Key | Action                          |
+|-----+---------------------------------|
+| ~d~ | Mark for deletion (trash)       |
+| ~m~ | Mark for move to folder         |
+| ~r~ | Mark for refile (archive)       |
+| ~u~ | Unmark message                  |
+| ~U~ | Unmark all in thread            |
+| ~x~ | Execute marked actions          |
+
+Common workflow:
+1. Navigate to message
+2. Press ~d~ to mark for deletion
+3. Press ~x~ to execute (move to trash)
+
+*** Moving Messages
+
+To move message to folder:
+1. Press ~m~ (mark for move)
+2. Enter destination folder (with completion)
+3. Press ~x~ to execute move
+
+*** Flags and Tags
+
+| Key | Action                          |
+|-----+---------------------------------|
+| ~+~ | Add flag                        |
+| ~-~ | Remove flag                     |
+| ~!~ | Toggle important flag           |
+| ~?~ | Toggle unread flag              |
+
+** Searching Mail
+
+*** Quick Search
+
+Press ~s~ in headers view, then enter query:
 
 #+BEGIN_EXAMPLE
-from:john@example.com
-subject:meeting
-date:7d..now
-flag:unread AND NOT flag:trashed
-maildir:/INBOX
-attach:pdf
+from:john                    # From specific sender
+to:me@example.com           # To specific recipient
+subject:meeting             # Subject contains
+date:7d..now                # Last 7 days
+date:2025-01-01..2025-01-31 # Specific date range
+flag:unread                 # Unread messages
+flag:attach                 # Has attachments
+maildir:/INBOX              # Specific folder
+size:1M..                   # Larger than 1MB
 #+END_EXAMPLE
+
+*** Combining Queries
+
+Use AND, OR, NOT:
+
+#+BEGIN_EXAMPLE
+from:john AND subject:meeting
+flag:unread AND NOT flag:trashed
+from:alice OR from:bob
+subject:invoice AND date:30d..now
+#+END_EXAMPLE
+
+*** Common Search Patterns
+
+#+BEGIN_EXAMPLE
+# Today's unread mail
+date:today..now AND flag:unread
+
+# Last week from specific person
+from:boss@company.com AND date:7d..now
+
+# Unread with attachments
+flag:unread AND flag:attach
+
+# Specific folder, unread only
+maildir:/work/INBOX AND flag:unread
+#+END_EXAMPLE
+
+** Bookmarks
+
+*** Default Bookmarks
+
+| Key  | Bookmark                       | Query                              |
+|------+--------------------------------+------------------------------------|
+| ~bu~ | Unread messages                | ~flag:unread AND NOT flag:trashed~ |
+| ~bt~ | Today's messages               | ~date:today..now~                  |
+| ~bw~ | Last 7 days                    | ~date:7d..now~                     |
+| ~ba~ | Messages with attachments      | ~flag:attach~                      |
+
+Access bookmarks:
+- Press ~b~ in main view
+- Choose bookmark with letter key
+
+*** Custom Bookmarks
+
+Edit =~/.emacs.d/lisp/mail-setup.el= or =~/.emacs.d/private/mail-private.el=:
+
+#+BEGIN_SRC elisp
+(setq mu4e-bookmarks
+      '((:name "Unread messages"
+         :query "flag:unread AND NOT flag:trashed"
+         :key ?u)
+        (:name "Today's messages"
+         :query "date:today..now"
+         :key ?t)
+        ;; Add your own
+        (:name "Important unread"
+         :query "flag:unread AND flag:flagged"
+         :key ?i)
+        (:name "From boss"
+         :query "from:boss@company.com AND date:30d..now"
+         :key ?b)))
+#+END_SRC
+
+** Updating Mail
+
+*** Automatic Updates
+
+mu4e checks for new mail every 5 minutes (configurable via ~mu4e-update-interval~).
+
+*** Manual Update
+
+| Key | Action                          |
+|-----+---------------------------------|
+| ~U~ | Update mail (fetch new)         |
+
+This runs ~mbsync -a~ and re-indexes.
+
+*** Update from Terminal
+
+#+BEGIN_SRC bash
+# Fetch new mail and index
+mbsync -a && mu index
+
+# Or just sync specific channel
+mbsync channel-name
+#+END_SRC
+
+** Keyboard Navigation Tips
+
+*** Efficient Workflow
+
+1. *Launch*: ~C-c m~
+2. *Update*: ~U~ (fetch new mail)
+3. *Browse*: ~j~ (jump to folder) or ~b~ (bookmark)
+4. *Read*: ~n~/~p~ to navigate, ~RET~ to open
+5. *Action*: ~R~ reply, ~d~ delete, ~x~ execute
+6. *Quit*: ~q~
+
+*** Threading
+
+| Key | Action                          |
+|-----+---------------------------------|
+| ~W~ | Toggle threading on/off         |
+| ~P~ | Go to parent message            |
+| ~N~ | Go to next thread               |
+| ~T~ | Toggle thread visibility        |
+
+** Common Tasks
+
+*** Archive Old Mail
+
+1. Search: ~date:..6m~ (older than 6 months)
+2. Mark all: ~* A~ (mark all in view)
+3. Move: ~m~ then enter archive folder
+4. Execute: ~x~
+
+*** Delete Spam
+
+1. Search: ~maildir:/Junk~
+2. Mark all: ~* A~
+3. Delete: ~d~
+4. Execute: ~x~
+
+*** Find Large Messages
+
+#+BEGIN_EXAMPLE
+size:5M..    # Messages larger than 5MB
+#+END_EXAMPLE
+
+Then delete or archive as needed.
+
+** External Links
+
+- [[https://www.djcbsoftware.nl/code/mu/mu4e/][Official mu4e Manual]]
+- [[file:authinfo.org][Authentication Setup Guide]]
 
 * Maintenance
 
@@ -778,7 +1015,7 @@ export XDG_CONFIG_HOME="$HOME/.config"
 
 See the example files:
 - ~~/.emacs.d/lisp/mail-setup.el~ - Main configuration
-- ~~/.emacs.d/private/mail-private.el.example~ - Private config template
+- ~~/.emacs.d/private/mail-private.example.el~ - Private config template
 - ~~/.emacs.d/private/mbsyncrc.example~ - Mail sync template
 
 ** Quick Reference Card
@@ -787,7 +1024,7 @@ See the example files:
 Email Setup Checklist:
 □ Install mu and isync
 □ Set up password manager (pass)
-□ Copy mail-private.el.example → mail-private.el
+□ Copy mail-private.example.el → mail-private.el
 □ Edit mail-private.el with credentials
 □ Copy mbsyncrc.example → ~/.mbsyncrc
 □ Edit ~/.mbsyncrc with IMAP settings

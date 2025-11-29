@@ -1,0 +1,659 @@
+#+TITLE: IRC Client Configuration Guide
+#+AUTHOR: Ming
+#+DATE: 2025
+#+DESCRIPTION: Complete guide for configuring IRC with ERC in Emacs
+#+OPTIONS: toc:3 num:nil
+#+STARTUP: showeverything
+
+* Introduction
+
+This guide covers setting up ERC (Emacs IRC Client) for chatting on IRC networks. ERC is built into Emacs and provides a powerful, extensible IRC client with full Emacs integration.
+
+For authentication setup, see [[file:authinfo.org][Authentication Setup Guide]].
+
+* Architecture Overview
+
+** Directory Structure
+
+#+BEGIN_SRC
+~/.emacs.d/
+├── lisp/
+│   └── erc-setup.el               # Main configuration (public)
+├── private/
+│   ├── erc-private.example.el     # Template for your settings
+│   └── erc-private.el             # Your actual settings (git-ignored)
+├── docs/
+│   └── irc.org                    # This documentation
+└── README.org                     # Main README
+
+~/.authinfo.gpg                    # Encrypted credentials (recommended)
+~/.authinfo                        # Plain credentials (alternative)
+#+END_SRC
+
+* Installation
+
+** ERC Built-in
+
+ERC is built into Emacs, no installation needed. The configuration is already set up in:
+
+=~/.emacs.d/lisp/erc-setup.el=
+
+And loaded in =init.el= via:
+#+BEGIN_SRC emacs-lisp
+(require 'erc-setup)
+#+END_SRC
+
+* Configuration
+
+** Personal Settings
+
+*** Recommended: Use Private Configuration
+
+The recommended approach is to create =~/.emacs.d/private/erc-private.el= to keep your IRC settings private and separate from the version-controlled configuration.
+
+**** Step 1: Copy the Example Template
+
+#+BEGIN_SRC bash
+cd ~/.emacs.d/private/
+cp erc-private.example.el erc-private.el
+#+END_SRC
+
+**** Step 2: Edit Your Settings
+
+Edit =~/.emacs.d/private/erc-private.el=:
+
+#+BEGIN_SRC emacs-lisp
+;;; erc-private.el --- Private ERC configuration -*- lexical-binding: t; -*-
+
+;; Personal information
+(setq erc-nick "mynick"
+      erc-user-full-name "My Full Name")
+
+;; Auto-join channels
+(setq erc-autojoin-channels-alist
+      '(("irc.libera.chat" "#emacs" "#org-mode" "#linux")
+        ("irc.oftc.net" "#debian" "#git")))
+
+;; Custom connect functions for your networks
+(defun my/erc-connect-libera ()
+  "Connect to Libera.Chat."
+  (interactive)
+  (erc-tls :server "irc.libera.chat" :port 6697
+           :nick erc-nick :full-name erc-user-full-name))
+
+(defun my/erc-connect-oftc ()
+  "Connect to OFTC."
+  (interactive)
+  (erc-tls :server "irc.oftc.net" :port 6697
+           :nick erc-nick :full-name erc-user-full-name))
+
+;; Keybindings
+(global-set-key (kbd "C-c C-e l") 'my/erc-connect-libera)
+(global-set-key (kbd "C-c C-e o") 'my/erc-connect-oftc)
+
+(provide 'erc-private)
+;;; erc-private.el ends here
+#+END_SRC
+
+**** Step 3: Restart Emacs
+
+The private configuration will be automatically loaded when you start Emacs.
+
+*** Alternative: Edit Main Configuration
+
+If you prefer, you can edit =~/.emacs.d/lisp/erc-setup.el= directly. However, this will be tracked by git and your personal information will be visible in your repository.
+
+** Authentication Setup
+
+*** Using .authinfo.gpg (Recommended)
+
+Encrypted credential storage:
+
+#+BEGIN_SRC
+# ~/.authinfo.gpg
+machine irc.libera.chat login mynick password mypassword port 6697
+machine irc.oftc.net login mynick password mypassword port 6697
+#+END_SRC
+
+Create it:
+#+BEGIN_SRC bash
+# Create file
+touch ~/.authinfo
+
+# Add credentials (format above)
+emacs ~/.authinfo
+
+# Encrypt it
+gpg --encrypt --recipient your-email@example.com ~/.authinfo
+mv ~/.authinfo.gpg ~/.authinfo.gpg
+rm ~/.authinfo  # Remove unencrypted version
+#+END_SRC
+
+*** Using .authinfo (Plain Text)
+
+Less secure but simpler:
+
+#+BEGIN_SRC
+# ~/.authinfo
+machine irc.libera.chat login mynick password mypassword port 6697
+machine irc.oftc.net login mynick password mypassword port 6697
+#+END_SRC
+
+*** NickServ Authentication
+
+Most networks require nickname registration. On first connection:
+
+#+BEGIN_EXAMPLE
+/msg NickServ REGISTER your-password your-email@example.com
+#+END_EXAMPLE
+
+Follow the email instructions, then add credentials to =~/.authinfo.gpg=.
+
+** Channel Auto-Join
+
+Configure channels to join automatically:
+
+#+BEGIN_SRC emacs-lisp
+(setq erc-autojoin-channels-alist
+      '(("irc.libera.chat" "#emacs" "#org-mode" "#linux")
+        ("irc.oftc.net" "#debian")))
+#+END_SRC
+
+Format: =(("server" "channel1" "channel2") ...)=
+
+* Usage
+
+** Connecting to IRC
+
+*** Default Connection
+
+| Keybinding | Command | Description |
+|------------|---------|-------------|
+| =C-c i= | =erc= | Connect to IRC (prompts for details) |
+| =C-c C-i= | =my/erc-connect-libera= | Connect to Libera.Chat |
+
+*** Custom Connection Functions
+
+From =erc-private.el=:
+
+#+BEGIN_SRC emacs-lisp
+M-x my/erc-connect-libera    ; Connect to Libera.Chat
+M-x my/erc-connect-oftc      ; Connect to OFTC
+#+END_SRC
+
+*** Manual Connection
+
+#+BEGIN_SRC emacs-lisp
+M-x erc-tls
+;; Enter: server, port, nickname
+#+END_SRC
+
+For TLS/SSL (recommended):
+- Server: =irc.libera.chat=
+- Port: =6697=
+
+For plain connection:
+#+BEGIN_SRC emacs-lisp
+M-x erc
+#+END_SRC
+
+** Basic Commands
+
+*** IRC Commands (in ERC buffer)
+
+| Command | Description |
+|---------|-------------|
+| =/join #channel= | Join a channel |
+| =/part= | Leave current channel |
+| =/quit= | Disconnect from server |
+| =/nick newnick= | Change nickname |
+| =/msg nick message= | Send private message |
+| =/query nick= | Start private conversation |
+| =/names= | List users in channel |
+| =/who #channel= | List users with details |
+| =/whois nick= | Get info about user |
+| =/away message= | Set away status |
+| =/back= | Remove away status |
+
+*** Channel Management
+
+| Command | Description |
+|---------|-------------|
+| =/topic New topic= | Set channel topic |
+| =/mode +o nick= | Give operator status |
+| =/mode -o nick= | Remove operator status |
+| =/kick nick reason= | Kick user |
+| =/ban nick= | Ban user |
+
+** Emacs Keybindings
+
+*** In ERC Buffers
+
+| Key | Action |
+|-----|--------|
+| =RET= | Send message |
+| =TAB= | Complete nickname |
+| =C-c C-j= | Join channel |
+| =C-c C-p= | Part channel |
+| =C-c C-q= | Quit server |
+| =C-c C-n= | Next channel buffer |
+| =C-c C-b= | Previous channel buffer |
+
+*** Buffer Navigation
+
+| Key | Action |
+|-----|--------|
+| =C-x b= | Switch to ERC buffer |
+| =M-x erc-track-switch-buffer= | Jump to active channel |
+
+** Channel Interaction
+
+*** Sending Messages
+
+Just type and press =RET=:
+#+BEGIN_EXAMPLE
+Hello everyone!
+#+END_EXAMPLE
+
+*** Mentioning Users
+
+Use TAB completion for nicknames:
+#+BEGIN_EXAMPLE
+john<TAB>: thanks for the help!
+#+END_EXAMPLE
+
+*** Private Messages
+
+#+BEGIN_EXAMPLE
+/msg nickname Hey, how are you?
+#+END_EXAMPLE
+
+Or use =/query= to open dedicated buffer:
+#+BEGIN_EXAMPLE
+/query nickname
+#+END_EXAMPLE
+
+* Advanced Features
+
+** Tracking Channel Activity
+
+ERC automatically tracks:
+- Mentions of your nickname (highlighted)
+- New messages in channels
+- Private messages
+
+Active channels appear in the mode-line with indicators:
+- =#emacs= - Normal activity
+- =#emacs[5]= - 5 unread messages
+- Highlighted colors for mentions
+
+** Notifications
+
+The configuration highlights when someone mentions your nick. For desktop notifications, add:
+
+#+BEGIN_SRC emacs-lisp
+;; Add to erc-setup.el or erc-private.el
+(add-hook 'erc-text-matched-hook
+          (lambda (match-type nickuserhost message)
+            (when (eq match-type 'current-nick)
+              (notifications-notify
+               :title "ERC Mention"
+               :body message))))
+#+END_SRC
+
+** Filtering Messages
+
+The default config hides JOIN/PART/QUIT messages:
+
+#+BEGIN_SRC emacs-lisp
+(setq erc-hide-list '("JOIN" "PART" "QUIT"))
+#+END_SRC
+
+To show them:
+#+BEGIN_SRC emacs-lisp
+(setq erc-hide-list nil)
+#+END_SRC
+
+** Logging Conversations
+
+Enable logging:
+
+#+BEGIN_SRC emacs-lisp
+;; Add to erc-setup.el :config section
+(setq erc-log-channels-directory "~/.emacs.d/erc/logs/")
+(erc-log-mode 1)
+#+END_SRC
+
+Logs saved to =~/.emacs.d/erc/logs/SERVER/#channel.txt=
+
+** Multiple Servers
+
+Connect to multiple servers simultaneously:
+
+#+BEGIN_SRC emacs-lisp
+;; Connect to multiple networks
+M-x my/erc-connect-libera
+M-x my/erc-connect-oftc
+
+;; Switch between them with C-x b or erc-track-switch-buffer
+#+END_SRC
+
+Each server gets separate buffers.
+
+** Custom Connect Functions
+
+Add to =erc-private.el=:
+
+#+BEGIN_SRC emacs-lisp
+(defun my/erc-freenode ()
+  "Connect to Freenode."
+  (interactive)
+  (erc-tls :server "irc.freenode.net" :port 6697
+           :nick erc-nick :full-name erc-user-full-name))
+
+;; Bind to key
+(global-set-key (kbd "C-c C-e f") 'my/erc-freenode)
+#+END_SRC
+
+* ERC Modules
+
+ERC has many optional modules. Enabled by default in config:
+
+| Module | Purpose |
+|--------|---------|
+| =timestamp= | Show message timestamps |
+| =autojoin= | Auto-join channels on connect |
+| =track= | Track channel activity |
+| =match= | Highlight keywords |
+| =fill= | Wrap long lines |
+| =ring= | Cycle through ERC buffers |
+| =netsplit= | Handle network splits |
+| =readonly= | Make old messages read-only |
+| =spelling= | Spell check |
+
+To enable additional modules:
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'erc-modules 'log)
+(erc-update-modules)
+#+END_SRC
+
+View available modules:
+#+BEGIN_SRC emacs-lisp
+M-x customize-variable RET erc-modules
+#+END_SRC
+
+* Tips & Tricks
+
+** Keyboard-Driven Workflow
+
+1. =C-c C-i= - Connect to Libera.Chat
+2. Auto-joins configured channels
+3. Use =erc-track-switch-buffer= to jump to active channels
+4. TAB-complete nicknames
+5. =C-c C-n= / =C-c C-b= to navigate channels
+
+** IRC Etiquette
+
+- Read channel topic: =/topic=
+- Don't flood (send many lines quickly)
+- Don't cross-post to multiple channels
+- Use pastebin for code (=https://paste.sr.ht=)
+- Wait for replies (IRC is often slow)
+- Be respectful and patient
+
+** Common Channels
+
+*** Libera.Chat
+
+#+BEGIN_EXAMPLE
+#emacs         - Emacs discussion
+#org-mode      - Org-mode
+#linux         - General Linux
+#git           - Git version control
+#archlinux     - Arch Linux
+#+END_EXAMPLE
+
+*** OFTC
+
+#+BEGIN_EXAMPLE
+#debian        - Debian Linux
+#kernelnewbies - Linux kernel development
+#+END_EXAMPLE
+
+** Dealing with Spam
+
+Ignore user:
+#+BEGIN_EXAMPLE
+/ignore nickname
+#+END_EXAMPLE
+
+Unignore:
+#+BEGIN_EXAMPLE
+/unignore nickname
+#+END_EXAMPLE
+
+** Keeping Connection Alive
+
+For persistent IRC, consider:
+- [[https://www.gnu.org/software/screen/][GNU Screen]] or [[https://github.com/tmux/tmux][tmux]] with Emacs in terminal
+- [[https://wiki.znc.in/ZNC][ZNC]] IRC bouncer
+- [[https://weechat.org/][WeeChat]] relay mode
+
+** Reconnecting
+
+If disconnected:
+#+BEGIN_SRC emacs-lisp
+M-x erc-tls
+;; Or your custom function
+M-x my/erc-connect-libera
+#+END_SRC
+
+Auto-reconnect:
+#+BEGIN_SRC emacs-lisp
+;; Add to erc-setup.el
+(setq erc-server-reconnect-attempts 5
+      erc-server-reconnect-timeout 3)
+(erc-server-reconnect-mode 1)
+#+END_SRC
+
+* Popular IRC Networks
+
+** Libera.Chat (Most Popular for FOSS)
+
+#+BEGIN_EXAMPLE
+Server: irc.libera.chat
+Port: 6697 (TLS)
+#+END_EXAMPLE
+
+Register nickname:
+#+BEGIN_EXAMPLE
+/msg NickServ REGISTER password email@example.com
+#+END_EXAMPLE
+
+** OFTC (Debian, Git, etc.)
+
+#+BEGIN_EXAMPLE
+Server: irc.oftc.net
+Port: 6697 (TLS)
+#+END_EXAMPLE
+
+** Freenode (Historical)
+
+#+BEGIN_EXAMPLE
+Server: irc.freenode.net
+Port: 6697 (TLS)
+#+END_EXAMPLE
+
+* Troubleshooting
+
+** Can't Connect
+
+Check:
+1. Server/port correct?
+2. Internet connection working?
+3. Firewall blocking port 6697?
+4. Try without TLS: =M-x erc= port =6667=
+
+** Authentication Fails
+
+Check:
+1. Is nickname registered?
+2. Correct password in =~/.authinfo.gpg=?
+3. Try manual: =/msg NickServ IDENTIFY password=
+
+Test auth file:
+#+BEGIN_SRC emacs-lisp
+M-x auth-source-search
+;; Enter: :host "irc.libera.chat"
+#+END_SRC
+
+** Can't Join Channel
+
+Possible reasons:
+- Channel requires registration: =/msg NickServ REGISTER=
+- Banned: Contact channel operators
+- Invite-only: Request invite
+- Wrong channel name: Must start with =#=
+
+** Message Send Fails
+
+Check:
+- Still connected? (Look for disconnect message)
+- Reconnect: =M-x erc-tls=
+- Check buffer name (must be in channel/query buffer)
+
+** Buffer Clutter
+
+Close inactive buffers:
+#+BEGIN_SRC emacs-lisp
+M-x erc-kill-buffer
+;; Or in ERC buffer:
+C-c C-q  (part and close)
+#+END_SRC
+
+Clean all ERC buffers:
+#+BEGIN_SRC emacs-lisp
+M-x erc-kill-server
+#+END_SRC
+
+* Security Best Practices
+
+** Use Encrypted Credentials
+
+Always use =~/.authinfo.gpg= instead of =~/.authinfo=:
+
+#+BEGIN_SRC bash
+# If you have ~/.authinfo
+gpg --encrypt --recipient your-email@example.com ~/.authinfo
+mv ~/.authinfo.gpg ~/
+rm ~/.authinfo
+#+END_SRC
+
+** Use TLS/SSL
+
+Always use =erc-tls= (port 6697) instead of plain =erc= (port 6667).
+
+** Register Your Nickname
+
+Prevent impersonation:
+#+BEGIN_EXAMPLE
+/msg NickServ REGISTER password email@example.com
+#+END_EXAMPLE
+
+** Don't Share Sensitive Info
+
+- Don't paste passwords/tokens in channels
+- Use private messages for sensitive discussion
+- Remember: IRC is not encrypted end-to-end
+
+* Example Private Configuration
+
+Create =~/.emacs.d/private/erc-private.el=:
+
+#+BEGIN_SRC emacs-lisp
+;;; erc-private.el --- Private ERC configuration -*- lexical-binding: t; -*-
+
+;;; Commentary:
+;; Personal ERC settings - NOT tracked by git
+
+;;; Code:
+
+;; Personal info
+(setq erc-nick "johndoe"
+      erc-user-full-name "John Doe")
+
+;; Auto-join channels
+(setq erc-autojoin-channels-alist
+      '(("irc.libera.chat" "#emacs" "#org-mode" "#archlinux")
+        ("irc.oftc.net" "#debian" "#git")))
+
+;; Quick connect functions
+(defun my/erc-libera ()
+  "Connect to Libera.Chat."
+  (interactive)
+  (erc-tls :server "irc.libera.chat" :port 6697
+           :nick erc-nick :full-name erc-user-full-name))
+
+(defun my/erc-oftc ()
+  "Connect to OFTC."
+  (interactive)
+  (erc-tls :server "irc.oftc.net" :port 6697
+           :nick erc-nick :full-name erc-user-full-name))
+
+;; Keybindings
+(global-set-key (kbd "C-c C-e l") 'my/erc-libera)
+(global-set-key (kbd "C-c C-e o") 'my/erc-oftc)
+
+;; Custom highlights
+(setq erc-keywords '("Emacs" "Org-mode" "johndoe"))
+
+(provide 'erc-private)
+;;; erc-private.el ends here
+#+END_SRC
+
+* Reference
+
+** Key Bindings Summary
+
+| Context | Key | Action |
+|---------|-----|--------|
+| Global | =C-c i= | Connect to IRC (erc) |
+| Global | =C-c C-i= | Connect to Libera.Chat |
+| ERC | =RET= | Send message |
+| ERC | =TAB= | Complete nickname |
+| ERC | =C-c C-j= | Join channel |
+| ERC | =C-c C-p= | Part channel |
+| ERC | =C-c C-q= | Quit server |
+| ERC | =C-c C-n= | Next channel |
+| ERC | =C-c C-b= | Previous channel |
+
+** IRC Commands Summary
+
+| Command | Description |
+|---------|-------------|
+| =/join #channel= | Join channel |
+| =/part= | Leave channel |
+| =/quit= | Disconnect |
+| =/nick newnick= | Change nick |
+| =/msg nick text= | Private message |
+| =/query nick= | Open private chat |
+| =/whois nick= | User info |
+| =/away message= | Set away |
+| =/topic text= | Set topic |
+
+** Configuration Files
+
+| File | Purpose | Version Control |
+|------|---------|-----------------|
+| =~/.emacs.d/lisp/erc-setup.el= | Main config | Tracked |
+| =~/.emacs.d/private/erc-private.el= | Your settings | Ignored |
+| =~/.authinfo.gpg= | Encrypted credentials | Ignored |
+| =~/.authinfo= | Plain credentials | Ignored |
+
+* See Also
+
+- [[https://www.gnu.org/software/emacs/manual/html_mono/erc.html][ERC Manual]]
+- [[https://libera.chat/guides/][Libera.Chat Guides]]
+- [[https://www.irchelp.org/][IRC Help]]
+- =C-h i m ERC= (ERC manual in Emacs)

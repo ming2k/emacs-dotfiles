@@ -192,7 +192,7 @@ snippets/personal/
 
 # Private email configuration (contains passwords and personal info)
 private/
-!private/*.example
+!private/*.example.el
 !private/README.org
 
 # Mail directory (legacy location, not used but kept for safety)
@@ -200,6 +200,12 @@ Mail/
 
 # Mu4e cache (XDG location: ~/.cache/mu)
 .mu/
+
+# Elfeed database
+elfeed/
+
+# ERC logs
+erc/
 
 # Password stores (if using pass or similar)
 .password-store/

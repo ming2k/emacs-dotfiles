@@ -1,80 +1,136 @@
 #+TITLE: Ming's Emacs Configuration
 #+AUTHOR: Ming
 #+DATE: 2025
-#+DESCRIPTION: A Emacs configuration
+#+DESCRIPTION: A modern, vanilla Emacs configuration
 #+OPTIONS: toc:2 num:nil
 #+STARTUP: showeverything
 
-This is a modern, vanilla Emacs configuration that prioritizes simplicity, performance, and maintainability. It follows Emacs best practices while providing a modular structure.
+A modern, vanilla Emacs configuration that prioritizes simplicity, performance, and maintainability.
 
-** Philosophy
+* Philosophy
 
-*** Built-in First
+** KISS Principle
+Keep It Simple, Stupid - follow Occam's Razor for all design decisions.
+
+** Built-in First
 - Prefer Emacs built-in packages over external alternatives
 - Use ~use-package~ for external packages with ~:ensure t~
 - Leverage modern Emacs features (tree-sitter, eglot, etc.)
 
-*** Minimal Complexity
+** Minimal Complexity
 - Core settings live directly in ~init.el~
 - Modular structure only where it provides clear benefits
 - No unnecessary abstractions or complex loading systems
 - Readable, self-documenting code
 
-*** Performance Oriented
+** Performance Oriented
 - Optimized startup with ~early-init.el~
 - Lazy loading where appropriate
 - Minimal package dependencies
 - Efficient completion stack (vertico, corfu, marginalia)
 
-*** Modern Development
-- LSP integration via built-in ~eglot~
-- Tree-sitter for syntax highlighting (Emacs 29+)
-- Contemporary completion UI
-- Git integration with Magit
+* Quick Start
 
-** Email Setup (mu4e)
+** Installation
 
-This configuration includes mu4e for email management with XDG compliance and full data desensitization.
+1. Clone this repository to =~/.emacs.d=
+2. Start Emacs - packages will auto-install
+3. Install tree-sitter grammars: =M-x treesit-install-language-grammar=
 
-*** Quick Start
+** Configuration Structure
 
-1. Install: ~sudo apt install mu4e isync~ (or ~brew install mu isync~)
-2. Configure: Copy and edit example files in ~private/~ directory
-3. Sync: ~mbsync -a && mu index~
-4. Launch: ~M-x mu4e~ or ~C-c m~
+#+BEGIN_SRC
+~/.emacs.d/
+├── init.el              # Main configuration entry point
+├── early-init.el        # Early startup optimizations
+├── lisp/                # Modular configuration files
+│   ├── ming-*.el        # Core configurations
+│   ├── *-setup.el       # Tool configurations
+│   └── lang/            # Language-specific configs
+├── docs/                # Detailed documentation
+│   ├── mail.org         # Email setup guide
+│   ├── rss.org          # RSS reader guide
+│   └── irc.org          # IRC client guide
+├── themes/              # Custom themes
+└── private/             # Your private settings (git-ignored)
+    ├── *.el             # Your actual credentials
+    └── *.example.el     # Templates
+#+END_SRC
 
-*** Complete Documentation
+* Features
 
-See [[file:docs/mu4e.org][docs/mu4e.org]] for detailed setup instructions, including:
-- Step-by-step configuration guide
-- Common email provider settings (Gmail, Outlook, ProtonMail)
-- Multiple account setup
-- Troubleshooting tips
-- Security best practices
+** Core Tools
+- *Git*: Magit for version control
+- *Email*: mu4e with XDG compliance - see [[file:docs/mail.org][docs/mail.org]]
+- *RSS*: Elfeed for feed reading - see [[file:docs/rss.org][docs/rss.org]]
+- *IRC*: ERC for chat - see [[file:docs/irc.org][docs/irc.org]]
+- *Org*: Powerful note-taking and task management
 
-*** Security Note
+** Language Support
+Modern language support using tree-sitter and eglot (built-in LSP):
+- C/C++
+- Python
+- Rust
+- JavaScript/TypeScript
+- Go
+- Shell scripts
+- Emacs Lisp
+- YAML, JSON, Markdown
+- Zig, Lua
 
-All sensitive data (passwords, email addresses) is in the ~private/~ directory and git-ignored. Only template files with placeholders are committed.
+** Key Bindings
 
-** Supported Languages
+| Key       | Function                 |
+|-----------+--------------------------|
+| =C-c m=   | Open mu4e (email)        |
+| =C-c e=   | Open Elfeed (RSS)        |
+| =C-c i=   | Connect to IRC           |
+| =C-c g=   | Magit status             |
+| =C-c c=   | Org capture              |
+| =C-c a=   | Org agenda               |
 
-The project uses the treesitter mode for languges, e.g. "js-ts-mode" for javascript.
+* Documentation
 
-Please install related treesitter library:
+Detailed setup guides and usage instructions:
 
-~M-x~  ~treesit-install-language-grammar~
+- [[file:docs/mail.org][Email Configuration]] - Complete mu4e setup with authentication
+- [[file:docs/rss.org][RSS Reader]] - Elfeed configuration and feed management
+- [[file:docs/irc.org][IRC Client]] - ERC setup and IRC basics
+- [[file:docs/authinfo.org][Authentication Setup]] - Encrypted credential storage with GPG
 
-** Required Dependencies
+* Privacy & Security
 
-*** Language Servers
+All sensitive data (passwords, email addresses, feed URLs) is stored in the =private/= directory and git-ignored:
 
-Install these for full language support:
+#+BEGIN_SRC
+private/
+├── mail-private.el      # Email credentials
+├── elfeed-private.el    # RSS feed list
+├── erc-private.el       # IRC settings
+└── *.example.el         # Templates (tracked by git)
+#+END_SRC
+
+Use =~/.authinfo.gpg= for encrypted password storage (recommended).
+
+* Dependencies
+
+** Required for Full Functionality
+
+#+BEGIN_SRC bash
+# Email (mu4e)
+sudo apt install mu4e isync  # or: brew install mu isync
+
+# Tree-sitter (Emacs 29+)
+# Install grammars via: M-x treesit-install-language-grammar
+#+END_SRC
+
+** Optional Language Servers
 
 #+BEGIN_SRC bash
 # C/C++
-sudo apt install clangd  # or brew install llvm
+sudo apt install clangd
 
-# Python  
+# Python
 pip install python-lsp-server[all] ruff black isort
 
 # Rust
@@ -85,98 +141,28 @@ npm install -g typescript-language-server typescript prettier
 
 # Go
 go install golang.org/x/tools/gopls@latest
-go install golang.org/x/tools/cmd/goimports@latest
 #+END_SRC
 
-** Applying Configuration Changes
+* Troubleshooting
 
-*** Reloading Configuration Without Restart
-
-To apply changes without restarting Emacs:
+** Reload Configuration
 
 #+BEGIN_SRC elisp
 M-x eval-expression RET (load-file user-init-file) RET
 #+END_SRC
 
-Or evaluate in scratch buffer:
-#+BEGIN_SRC elisp
-(load-file user-init-file)
-#+END_SRC
+Note: Changes to =early-init.el= require a full Emacs restart.
 
-*** Important Precautions
-
-**** early-init.el Changes
-- *Requires full restart*: ~early-init.el~ is loaded before the GUI initializes
-- Changes to frame parameters, package system, or performance settings need restart
-- Reloading ~init.el~ will NOT apply ~early-init.el~ changes
-
-**** Non-Idempotent Operations
-Some configurations may not work correctly on reload:
-
-- *Hooks*: May be added multiple times if not idempotent
-  #+BEGIN_SRC elisp
-  ;; BAD - adds hook every reload
-  (add-hook 'prog-mode-hook 'my-function)
-
-  ;; GOOD - removes first to ensure single instance
-  (remove-hook 'prog-mode-hook 'my-function)
-  (add-hook 'prog-mode-hook 'my-function)
-  #+END_SRC
-
-- *Key bindings*: Safe to reload, will override previous bindings
-- *Themes*: Handled correctly - old themes are disabled before loading new ones
-- *Global modes*: Safe to reload, toggling with same value is harmless
-
-**** Buffer-Specific Settings
-After reloading configuration:
-
-- *Existing buffers*: Keep old settings and local variables
-- *Apply to buffer*: Use ~M-x revert-buffer~ or kill and reopen buffer
-- *Major modes*: May need to run ~M-x <mode-name>~ to reapply mode
-- *LSP connections*: May need ~M-x eglot-reconnect~ or buffer revert
-
-**** Quick Reference
-- Reload init: ~(load-file user-init-file)~
-- Refresh buffer: ~M-x revert-buffer~
-- Restart mode: ~M-x <mode-name>~ (e.g., ~M-x python-ts-mode~)
-- Reconnect LSP: ~M-x eglot-reconnect~
-- Full restart: Safest option for major changes
-
-** Troubleshooting
-
-*** Common Issues
+** Common Issues
 
 - *LSP not starting*: Check if language server is installed and in PATH
-- *Packages not installing*: Check network connection and package archives
+- *Packages not installing*: Run =M-x package-refresh-contents=
+- *Check errors*: Look in =*Messages*= buffer or start with =emacs --debug-init=
 
-*** Feature Name Conflicts
+* License
 
-- *Feature name unique*: Make the feature named by ~provide~ is unique.
-  Use ~M-x describe-variable RET features RET~ to check all features.
-  
-*** Debugging
+This configuration is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-- *Check ~*Messages*~ buffer* for error messages
-- *Use ~emacs --debug-init~* for startup issues
-- *Check LSP status* with ~M-x eglot-events-buffer~
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-*** Getting Help
-
-- *Built-in help*: ~C-h~ prefix commands
-- *Package documentation*: ~C-h P <package-name>~
-- *Function help*: ~C-h f <function-name>~
-- *Variable help*: ~C-h v <variable-name>~
-
-** Contributing
-
-*** Code Style
-
-- Use ~lexical-binding: t~ in all files
-- Include proper file headers with description
-- Group related configurations together
-- Comment complex or non-obvious configurations
-- Use consistent indentation (2 spaces for Lisp)
-- Prefer ~use-package~ for external packages with ~:ensure t~
-- Use ~setq-default~ for global defaults, ~setq~ for local settings
-- Keep line length under 80 characters where practical
-
+You should have received a copy of the GNU General Public License along with this program. If not, see [[https://www.gnu.org/licenses/]].
