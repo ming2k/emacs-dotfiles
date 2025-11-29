@@ -1,0 +1,230 @@
+#+TITLE: Quick Reference Card
+#+AUTHOR: Ming
+#+DATE: 2025
+#+DESCRIPTION: Quick reference for common tasks
+#+OPTIONS: toc:nil num:nil
+#+STARTUP: showeverything
+
+* Quick Reference Card
+
+Fast lookup for common commands and locations.
+
+* Key Bindings
+
+** Core Tools
+| Key     | Command          | Description              |
+|---------+------------------+--------------------------|
+| C-c m   | mu4e             | Open email               |
+| C-c e   | elfeed           | Open RSS reader          |
+| C-c i   | erc              | Connect to IRC           |
+| C-c g   | magit-status     | Git status               |
+| C-c c   | org-capture      | Capture note/task        |
+| C-c a   | org-agenda       | Show agenda              |
+| M-x eww | eww              | Open web browser         |
+
+** Email (mu4e)
+| Key | Command                    | Context    |
+|-----+----------------------------+------------|
+| U   | Update mail                | mu4e       |
+| C   | Compose new message        | mu4e       |
+| R   | Reply to sender            | message    |
+| W   | Reply to all               | message    |
+| F   | Forward                    | message    |
+| d   | Mark for deletion          | headers    |
+| x   | Execute marks              | headers    |
+| s   | Search                     | headers    |
+| j   | Jump to mailbox            | headers    |
+
+** RSS (Elfeed)
+| Key | Command              | Context |
+|-----+----------------------+---------|
+| G   | Update feeds         | elfeed  |
+| g   | Refresh view         | elfeed  |
+| b   | Toggle read/unread   | elfeed  |
+| r   | Mark all as read     | elfeed  |
+| s   | Edit search filter   | elfeed  |
+| RET | Open entry           | elfeed  |
+
+** IRC (ERC)
+| Command           | Description                 |
+|-------------------+-----------------------------|
+| /join #channel    | Join channel                |
+| /part             | Leave channel               |
+| /quit             | Disconnect                  |
+| /msg nick message | Send private message        |
+| /query nick       | Start private conversation  |
+
+** Web Browser (EWW)
+| Key | Command                  | Context |
+|-----+--------------------------+---------|
+| g   | Open new URL             | eww     |
+| l   | Back                     | eww     |
+| r   | Forward                  | eww     |
+| R   | Reload                   | eww     |
+| O   | Open in external browser | eww     |
+| w   | Copy URL                 | eww     |
+
+* File Locations
+
+** Configuration
+| File                              | Description                     |
+|-----------------------------------+---------------------------------|
+| ~/.emacs.d/init.el                | Main configuration              |
+| ~/.emacs.d/early-init.el          | Early initialization            |
+| ~/.emacs.d/lisp/                  | Configuration modules           |
+| ~/.emacs.d/private/               | Private settings (git-ignored)  |
+| ~/.emacs.d/themes/                | Custom themes                   |
+
+** Documentation
+| File                              | Description                     |
+|-----------------------------------+---------------------------------|
+| ~/.emacs.d/README.org             | Main README                     |
+| ~/.emacs.d/docs/INDEX.org         | Documentation index             |
+| ~/.emacs.d/docs/authinfo.org      | Authentication guide            |
+| ~/.emacs.d/docs/mail.org          | Email setup guide               |
+| ~/.emacs.d/docs/rss.org           | RSS reader guide                |
+| ~/.emacs.d/docs/irc.org           | IRC client guide                |
+| ~/.emacs.d/docs/eww.org           | Web browser guide               |
+
+** Data Locations
+| Location                          | Description                     |
+|-----------------------------------+---------------------------------|
+| ~/.local/share/mail/              | Email storage (Maildir)         |
+| ~/.cache/mu/                      | Email search database           |
+| ~/.emacs.d/elfeed/                | RSS feed database               |
+| ~/.authinfo.gpg                   | Encrypted credentials           |
+| ~/.mbsyncrc                       | Mail sync configuration         |
+
+* Common Tasks
+
+** Setup New Tool
+
+1. Create =~/.emacs.d/lisp/tool-setup.el=
+2. Add =(require 'tool-setup)= to init.el
+3. Create =~/.emacs.d/docs/tool.org=
+4. Update =~/.emacs.d/docs/INDEX.org=
+5. If private config needed: create =private/tool-private.example.el=
+
+** Update Mail
+
+Terminal:
+#+BEGIN_SRC bash
+mbsync -a && mu index
+#+END_SRC
+
+In Emacs:
+Press =U= in mu4e
+
+** Update RSS Feeds
+
+Press =G= in Elfeed (C-c e to open)
+
+** Check Configuration Errors
+
+#+BEGIN_SRC bash
+emacs --debug-init
+#+END_SRC
+
+Or check =*Messages*= buffer in Emacs
+
+** Reload Configuration
+
+#+BEGIN_SRC emacs-lisp
+M-x eval-expression RET (load-file user-init-file) RET
+#+END_SRC
+
+Note: early-init.el requires full restart
+
+* Search Queries
+
+** Email Search (mu4e)
+| Query                    | Description                |
+|--------------------------+----------------------------|
+| from:john                | From specific sender       |
+| to:me@example.com        | To specific recipient      |
+| subject:meeting          | Subject contains           |
+| date:7d..now             | Last 7 days                |
+| flag:unread              | Unread messages            |
+| flag:attach              | Has attachments            |
+| size:1M..                | Larger than 1MB            |
+
+** RSS Search (Elfeed)
+| Filter               | Description                |
+|----------------------+----------------------------|
+| +unread              | Unread entries             |
+| +emacs               | Tagged "emacs"             |
+| @1-week-ago          | From last week             |
+| +emacs +news         | Tagged both "emacs" & "news" |
+| @1-week-ago +unread  | Unread from last week      |
+
+* Troubleshooting Quick Fixes
+
+** Packages Not Loading
+#+BEGIN_SRC emacs-lisp
+M-x package-refresh-contents
+M-x package-install-selected-packages
+#+END_SRC
+
+** Email Not Syncing
+#+BEGIN_SRC bash
+mbsync -V  # Verbose mode to see errors
+mu index --rebuild
+#+END_SRC
+
+** Authentication Failing
+#+BEGIN_SRC bash
+# Test decryption
+gpg -d ~/.authinfo.gpg
+
+# Check format
+cat ~/.authinfo  # If using plain text
+#+END_SRC
+
+** GPG Issues
+#+BEGIN_SRC bash
+# Restart GPG agent
+gpgconf --kill gpg-agent
+gpg-agent --daemon
+
+# Test
+gpg -d ~/.authinfo.gpg
+#+END_SRC
+
+* Getting Help
+
+** Built-in Help
+| Key     | Command            | Description              |
+|---------+--------------------+--------------------------|
+| C-h k   | describe-key       | Describe key binding     |
+| C-h f   | describe-function  | Describe function        |
+| C-h v   | describe-variable  | Describe variable        |
+| C-h m   | describe-mode      | Describe current mode    |
+| C-h i   | info               | Read Info manuals        |
+
+** Documentation
+- [[file:INDEX.org][Complete Documentation Index]]
+- [[file:../README.org][Main README]]
+- =C-h i m Emacs= - Emacs manual
+- =C-h i m ERC= - ERC manual
+
+** External Resources
+- https://www.gnu.org/software/emacs/manual/
+- https://www.djcbsoftware.nl/code/mu/mu4e/
+- https://github.com/skeeto/elfeed
+- https://emacs.stackexchange.com/
+
+* Contact & Support
+
+For this configuration:
+- Check [[file:INDEX.org][Documentation Index]]
+- Read specific guide in [[file:./][docs/]]
+- Check =*Messages*= buffer for errors
+
+For Emacs general help:
+- =#emacs= on Libera.Chat (IRC)
+- https://emacs.stackexchange.com/
+- https://www.reddit.com/r/emacs/
+
+---
+
+For complete documentation, see [[file:INDEX.org][Documentation Index]]

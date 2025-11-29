@@ -1,0 +1,548 @@
+#+TITLE: EWW (Emacs Web Wowser) Configuration Guide
+#+AUTHOR: Ming
+#+DATE: 2025
+#+DESCRIPTION: Guide for using EWW, the built-in Emacs web browser
+#+OPTIONS: toc:3 num:nil
+#+STARTUP: showeverything
+
+* Introduction
+
+EWW (Emacs Web Wowser) is Emacs' built-in web browser. It provides a text-based browsing experience that integrates seamlessly with Emacs, perfect for reading documentation, lightweight browsing, and staying within your workflow.
+
+* Architecture Overview
+
+** Configuration Structure
+
+#+BEGIN_SRC
+~/.emacs.d/
+├── lisp/
+│   └── eww-setup.el              # EWW configuration
+├── docs/
+│   └── eww.org                   # This documentation
+└── README.org                    # Main README
+
+~/.emacs.d/cookies                # Cookie storage
+#+END_SRC
+
+* Installation
+
+** Built-in Package
+
+EWW is built into Emacs (version 24.4+), no installation needed. The configuration is already set up in:
+
+=~/.emacs.d/lisp/eww-setup.el=
+
+And loaded in =init.el= via:
+#+BEGIN_SRC emacs-lisp
+(require 'eww-setup)
+#+END_SRC
+
+* Configuration
+
+** Default Settings
+
+The configuration includes:
+
+| Setting | Value | Description |
+|---------+-------+-------------|
+| =eww-search-prefix= | DuckDuckGo | Default search engine |
+| =eww-history-limit= | 150 | Number of history entries |
+| =eww-download-directory= | =~/Downloads= | Download location |
+| =url-cookie-file= | =~/.emacs.d/cookies= | Cookie storage |
+
+** Customization
+
+Edit =~/.emacs.d/lisp/eww-setup.el= to customize:
+
+#+BEGIN_SRC emacs-lisp
+;; Change search engine
+(setq eww-search-prefix "https://google.com/search?q=")
+
+;; Change download directory
+(setq eww-download-directory "~/downloads")
+
+;; Adjust history limit
+(setq eww-history-limit 500)
+#+END_SRC
+
+* Usage
+
+** Starting EWW
+
+*** Open URL
+
+#+BEGIN_SRC emacs-lisp
+M-x eww
+;; Enter URL or search term
+#+END_SRC
+
+Or directly:
+#+BEGIN_SRC emacs-lisp
+M-x eww RET https://example.com RET
+#+END_SRC
+
+*** Search Web
+
+#+BEGIN_SRC emacs-lisp
+M-x eww RET emacs tutorial RET
+;; Searches using configured search engine
+#+END_SRC
+
+** Basic Navigation
+
+*** Keybindings
+
+| Key | Action |
+|-----+--------|
+| =g= / =G= | Open new URL (with current URL prefilled) |
+| =o= | Open new URL in EWW |
+| =O= | Open current page in external browser |
+| =r= / =R= | Reload current page |
+| =w= | Copy current URL |
+| =q= | Quit EWW |
+
+*** History Navigation
+
+| Key | Action |
+|-----+--------|
+| =l= | Back in history |
+| =r= | Forward in history |
+| =H= | Show history list |
+
+*** Page Navigation
+
+| Key | Action |
+|-----+--------|
+| =n= / =p= | Next/previous link |
+| =SPC= | Scroll down |
+| =S-SPC= / =DEL= | Scroll up |
+| =TAB= | Next link/button |
+| =S-TAB= | Previous link/button |
+| =RET= | Follow link at point |
+
+** Links and Interaction
+
+*** Following Links
+
+| Key | Action |
+|-----+--------|
+| =RET= | Follow link at point |
+| =f= | Follow link (ace-link, if installed) |
+| =F= | Open link in external browser |
+| =w= | Copy link URL at point |
+
+*** Multiple Buffers
+
+| Key | Action |
+|-----+--------|
+| =&= | Open URL in new buffer |
+| =C-u M-x eww= | Open in new buffer |
+
+** Bookmarks and History
+
+*** Bookmarks
+
+| Key | Action |
+|-----+--------|
+| =b= | Add bookmark |
+| =B= | List bookmarks |
+| =d= | Download link at point |
+
+Bookmarks are stored in Emacs' standard bookmark system and can be accessed with:
+#+BEGIN_SRC emacs-lisp
+M-x bookmark-bmenu-list
+#+END_SRC
+
+*** History
+
+| Key | Action |
+|-----+--------|
+| =H= | Show browsing history |
+| =l= / =r= | Navigate history |
+
+** Searching on Page
+
+| Key | Action |
+|-----+--------|
+| =s= / =C-s= | Search forward (isearch) |
+| =C-r= | Search backward |
+| =M-s o= | Occur (show all matches) |
+
+** Downloads
+
+| Key | Action |
+|-----+--------|
+| =d= | Download link at point |
+| =D= | Download current page |
+
+Downloads are saved to =~/Downloads= (or configured directory).
+
+* Advanced Features
+
+** Reading Mode
+
+EWW automatically renders pages in a readable format:
+- Removes ads and clutter
+- Adjusts fonts for readability
+- Follows Emacs color theme
+
+** External Browser Integration
+
+*** Open in External Browser
+
+| Key | Action |
+|-----+--------|
+| =O= | Open current page externally |
+| =F= | Open link at point externally |
+
+Configure default external browser:
+#+BEGIN_SRC emacs-lisp
+;; Use Firefox
+(setq browse-url-firefox-program "firefox")
+(setq browse-url-generic-program "firefox")
+
+;; Use Chrome
+(setq browse-url-chrome-program "google-chrome")
+(setq browse-url-generic-program "google-chrome")
+#+END_SRC
+
+** Cookies
+
+Cookies are enabled by default and stored in =~/.emacs.d/cookies=.
+
+Configure cookie behavior:
+#+BEGIN_SRC emacs-lisp
+;; Accept all cookies
+(setq url-cookie-confirmation nil)
+
+;; Prompt for cookies (default)
+(setq url-cookie-confirmation t)
+
+;; Save interval (in seconds, default 3600)
+(setq url-cookie-save-interval 3600)
+#+END_SRC
+
+** Forms and Input
+
+EWW supports:
+- Text input fields
+- Checkboxes and radio buttons
+- Submit buttons
+- Basic forms
+
+| Key | Action |
+|-----+--------|
+| =RET= | Activate button/submit form |
+| =C-c C-c= | Submit form |
+
+* Common Use Cases
+
+** Reading Documentation
+
+EWW is excellent for reading documentation:
+
+#+BEGIN_SRC emacs-lisp
+M-x eww RET https://www.gnu.org/software/emacs/manual/ RET
+#+END_SRC
+
+Benefits:
+- Stays in Emacs
+- Follows your theme
+- Easy copying and searching
+- Keyboard navigation
+
+** Quick Web Searches
+
+Search without leaving Emacs:
+
+#+BEGIN_SRC emacs-lisp
+M-x eww RET emacs lisp tutorial RET
+#+END_SRC
+
+** Reading Articles
+
+Clean, distraction-free reading:
+- No ads
+- No JavaScript pop-ups
+- Readable fonts
+- Easy navigation
+
+** Lightweight Browsing
+
+For sites that don't need JavaScript:
+- Documentation sites
+- Blogs
+- News sites (text-only)
+- Man pages
+
+* Tips & Tricks
+
+** Keyboard-Driven Workflow
+
+1. =M-x eww= - Start browser
+2. Enter URL or search term
+3. =TAB= or =n= to navigate links
+4. =RET= to follow
+5. =l= / =r= for history
+6. =q= to quit
+
+** Default to EWW for URLs
+
+Make EWW the default browser in Emacs:
+
+#+BEGIN_SRC emacs-lisp
+;; In eww-setup.el (already configured)
+(setq browse-url-browser-function 'eww-browse-url)
+#+END_SRC
+
+This makes =C-c C-o= in Org-mode open links in EWW.
+
+** Selective External Browsing
+
+Open specific sites externally:
+
+#+BEGIN_SRC emacs-lisp
+(setq browse-url-browser-function
+      '(("youtube\\.com" . browse-url-firefox)
+        ("github\\.com" . browse-url-firefox)
+        ("." . eww-browse-url)))
+#+END_SRC
+
+** Readable Fonts
+
+EWW respects Emacs font settings:
+
+#+BEGIN_SRC emacs-lisp
+;; Increase default font size for better readability
+(set-face-attribute 'default nil :height 120)
+
+;; Or EWW-specific
+(defun my/eww-mode-hook ()
+  (text-scale-increase 1))
+(add-hook 'eww-mode-hook 'my/eww-mode-hook)
+#+END_SRC
+
+** Copy Page Content
+
+EWW content is plain text in the buffer:
+- =M-w= to copy regions
+- =C-x h M-w= to copy entire page
+- Easy to paste into Org files or other buffers
+
+** Integration with Org-mode
+
+Open Org links in EWW:
+
+#+BEGIN_EXAMPLE
+[[https://gnu.org][GNU Homepage]]
+#+END_EXAMPLE
+
+Press =C-c C-o= to open in EWW (if configured as default browser).
+
+* Limitations
+
+** What EWW Cannot Do
+
+- Complex JavaScript applications
+- Video playback (use external player)
+- Rich web apps (Gmail, Google Docs, etc.)
+- Modern SPA frameworks
+- WebGL/Canvas content
+
+** When to Use External Browser
+
+Use external browser (=O= key) for:
+- Social media sites
+- Web applications
+- Video streaming
+- Online editors
+- Sites requiring JavaScript
+
+** Performance
+
+- Large pages may be slow to render
+- Image-heavy sites take time to load
+- For complex sites, use external browser
+
+* Troubleshooting
+
+** Page Not Loading
+
+Check:
+1. URL is correct and accessible
+2. Internet connection working
+3. No firewall blocking
+4. Try reloading: =r= or =R=
+
+** Images Not Displaying
+
+EWW supports images but they may not always load:
+
+#+BEGIN_SRC emacs-lisp
+;; Toggle image display
+M-x eww-toggle-images
+#+END_SRC
+
+Or in config:
+#+BEGIN_SRC emacs-lisp
+;; Disable images for faster loading
+(setq shr-inhibit-images t)
+
+;; Re-enable
+(setq shr-inhibit-images nil)
+#+END_SRC
+
+** Cookies Not Working
+
+Check cookie file:
+
+#+BEGIN_SRC bash
+ls -la ~/.emacs.d/cookies
+#+END_SRC
+
+Ensure it's writable:
+#+BEGIN_SRC bash
+chmod 644 ~/.emacs.d/cookies
+#+END_SRC
+
+** Forms Not Submitting
+
+- Ensure point is on submit button
+- Try =RET= or =C-c C-c=
+- Some complex forms may not work (use external browser)
+
+** Slow Performance
+
+For better performance:
+#+BEGIN_SRC emacs-lisp
+;; Disable images
+(setq shr-inhibit-images t)
+
+;; Limit pixel width
+(setq shr-max-image-proportion 0.5)
+
+;; Use external browser for heavy sites
+;; Press O to open in external browser
+#+END_SRC
+
+* Configuration Reference
+
+** Search Engines
+
+#+BEGIN_SRC emacs-lisp
+;; DuckDuckGo (default)
+(setq eww-search-prefix "https://duckduckgo.com/html/?q=")
+
+;; Google
+(setq eww-search-prefix "https://www.google.com/search?q=")
+
+;; Bing
+(setq eww-search-prefix "https://www.bing.com/search?q=")
+
+;; Ecosia
+(setq eww-search-prefix "https://www.ecosia.org/search?q=")
+#+END_SRC
+
+** Display Settings
+
+#+BEGIN_SRC emacs-lisp
+;; Maximum image proportion
+(setq shr-max-image-proportion 0.7)
+
+;; Image width
+(setq shr-width 80)  ; Characters
+
+;; Disable images
+(setq shr-inhibit-images t)
+#+END_SRC
+
+** History and Downloads
+
+#+BEGIN_SRC emacs-lisp
+;; History limit
+(setq eww-history-limit 150)
+
+;; Download directory
+(setq eww-download-directory "~/Downloads")
+
+;; Cookie file
+(setq url-cookie-file "~/.emacs.d/cookies")
+
+;; Cookie save interval (seconds)
+(setq url-cookie-save-interval 3600)
+#+END_SRC
+
+* Key Bindings Summary
+
+** Navigation
+
+| Key | Action |
+|-----+--------|
+| =g= / =G= | Open new URL |
+| =o= | Open new URL in EWW |
+| =O= | Open in external browser |
+| =l= | Back |
+| =r= | Forward |
+| =R= | Reload |
+| =q= | Quit |
+
+** Links
+
+| Key | Action |
+|-----+--------|
+| =RET= | Follow link |
+| =TAB= | Next link |
+| =S-TAB= | Previous link |
+| =n= / =p= | Next/previous link |
+| =F= | Open link externally |
+
+** Content
+
+| Key | Action |
+|-----+--------|
+| =SPC= | Scroll down |
+| =S-SPC= | Scroll up |
+| =s= / =C-s= | Search |
+| =w= | Copy URL |
+
+** Management
+
+| Key | Action |
+|-----+--------|
+| =b= | Add bookmark |
+| =B= | List bookmarks |
+| =H= | Show history |
+| =d= | Download link |
+| =D= | Download page |
+
+* See Also
+
+- [[file:authinfo.org][Authentication Setup Guide]]
+- [[https://www.gnu.org/software/emacs/manual/html_node/eww/][Official EWW Manual]]
+- =C-h i m EWW= (EWW manual in Emacs)
+
+* Reference
+
+** Configuration Files
+
+| File | Purpose | Version Control |
+|------+---------+-----------------|
+| =~/.emacs.d/lisp/eww-setup.el= | Main config | Tracked |
+| =~/.emacs.d/cookies= | Cookie storage | Ignored |
+
+** Common Tasks Quick Reference
+
+#+BEGIN_EXAMPLE
+Browse:          M-x eww
+Search:          M-x eww RET search term
+Follow link:     RET or n then RET
+Back:            l
+External:        O
+Bookmark:        b
+History:         H
+Quit:            q
+#+END_EXAMPLE
+
+---
+
+*Last Updated:* 2025-11-29

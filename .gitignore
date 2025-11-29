@@ -183,6 +183,11 @@ snippets/personal/
 !docs/
 !docs/*.org
 
+# Ignore documentation artifacts
+docs/node_modules/
+docs/package.json
+docs/package-lock.json
+
 # Configuration templates
 !templates/
 !templates/*.el

@@ -64,6 +64,7 @@
 (require 'mail-setup)
 (require 'elfeed-setup)
 (require 'erc-setup)
+(require 'eww-setup)
 
 ;; Load language configurations
 (require 'cc-setup)

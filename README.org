@@ -91,12 +91,17 @@ Modern language support using tree-sitter and eglot (built-in LSP):
 
 * Documentation
 
-Detailed setup guides and usage instructions:
+** Quick Access
+- *[[file:docs/INDEX.org][Complete Documentation Index]]* - Central hub for all documentation
 
+** Core Guides
+- [[file:docs/authinfo.org][Authentication Setup]] - Encrypted credential storage with GPG
 - [[file:docs/mail.org][Email Configuration]] - Complete mu4e setup with authentication
 - [[file:docs/rss.org][RSS Reader]] - Elfeed configuration and feed management
 - [[file:docs/irc.org][IRC Client]] - ERC setup and IRC basics
-- [[file:docs/authinfo.org][Authentication Setup]] - Encrypted credential storage with GPG
+- [[file:docs/eww.org][Web Browser]] - EWW configuration and usage
+
+For a comprehensive overview of all documentation, including configuration architecture, troubleshooting, and quick references, see the [[file:docs/INDEX.org][Documentation Index]].
 
 * Privacy & Security
 

@@ -1,0 +1,379 @@
+#+TITLE: Emacs Configuration Documentation Index
+#+AUTHOR: Ming
+#+DATE: 2025
+#+DESCRIPTION: Central index for all configuration documentation
+#+OPTIONS: toc:3 num:nil
+#+STARTUP: showeverything
+
+* Welcome
+
+This is the central documentation hub for Ming's Emacs configuration. All documentation is organized by category for easy navigation.
+
+* Quick Links
+
+** Getting Started
+- [[file:../README.org][Main README]] - Overview and quick start guide
+- [[file:../CLAUDE.md][Configuration Principles]] - KISS and Occam's Razor guidelines
+- [[file:QUICKREF.org][Quick Reference Card]] - Fast lookup for commands and locations
+
+** Core Tools Documentation
+- [[file:authinfo.org][Authentication Setup]] - GPG-encrypted credential management
+- [[file:mail.org][Email (mu4e)]] - Complete email client setup
+- [[file:rss.org][RSS Reader (Elfeed)]] - Feed reader configuration
+- [[file:irc.org][IRC Client (ERC)]] - Internet Relay Chat setup
+- [[file:eww.org][Web Browser (EWW)]] - Emacs Web Wowser configuration
+
+* Documentation by Category
+
+** 1. Authentication & Security
+*** [[file:authinfo.org][Authentication Setup Guide]]
+Complete guide for setting up encrypted credentials using GPG.
+
+*Topics covered:*
+- Creating and managing =~/.authinfo.gpg=
+- Password formats for different services (SMTP, IMAP, Sieve, IRC)
+- Testing authentication
+- Troubleshooting GPG issues
+- Security best practices
+
+*Prerequisites:* GPG installed
+*Used by:* mu4e, ERC, and other authenticated services
+
+** 2. Communication Tools
+
+*** [[file:mail.org][Email Configuration (mu4e)]]
+Comprehensive email setup with mu4e, mbsync, and SMTP.
+
+*Topics covered:*
+- Complete installation and setup
+- XDG-compliant directory structure
+- Multiple account configuration
+- Daily usage and keyboard shortcuts
+- Search and filtering
+- Attachments and composition
+- Troubleshooting
+
+*Prerequisites:* mu, isync, GPG
+*Configuration files:*
+- =~/.emacs.d/lisp/mail-setup.el=
+- =~/.emacs.d/private/mail-private.el=
+- =~/.mbsyncrc=
+
+*** [[file:irc.org][IRC Client (ERC)]]
+IRC chat client configuration and usage.
+
+*Topics covered:*
+- Connecting to IRC networks (Libera.Chat, OFTC)
+- Nickname registration and authentication
+- Channel management
+- Auto-join configuration
+- Multiple server connections
+- Logging and notifications
+
+*Prerequisites:* None (built into Emacs)
+*Configuration files:*
+- =~/.emacs.d/lisp/erc-setup.el=
+- =~/.emacs.d/private/erc-private.el=
+
+*** [[file:rss.org][RSS Reader (Elfeed)]]
+Feed reader setup and management.
+
+*Topics covered:*
+- Installation and configuration
+- Adding and organizing feeds
+- Search filters and tags
+- Keyboard-driven workflow
+- Custom bookmarks
+- Auto-update configuration
+
+*Prerequisites:* None (package auto-installs)
+*Configuration files:*
+- =~/.emacs.d/lisp/elfeed-setup.el=
+- =~/.emacs.d/private/elfeed-private.el=
+
+** 3. Web Browsing
+
+*** [[file:eww.org][EWW (Emacs Web Wowser)]]
+Built-in web browser configuration.
+
+*Topics covered:*
+- Basic browsing in Emacs
+- Search engine configuration
+- Keybindings and navigation
+- Cookie management
+- External browser integration
+
+*Prerequisites:* None (built into Emacs)
+*Configuration files:*
+- =~/.emacs.d/lisp/eww-setup.el=
+
+** 4. Development Tools
+
+*** Version Control
+See: =~/.emacs.d/lisp/magit-setup.el=
+- Magit for Git integration
+- Key binding: =C-c g=
+
+*** Org Mode
+See: =~/.emacs.d/lisp/org-setup.el=
+- Note-taking and task management
+- Key bindings: =C-c c= (capture), =C-c a= (agenda)
+
+*** Language Support
+Individual language configurations in =~/.emacs.d/lisp/lang/=:
+- C/C++ (cc-setup.el)
+- Python (python-setup.el)
+- Rust (rust-setup.el)
+- JavaScript/TypeScript (javascript-setup.el, typescript-setup.el)
+- Go (go-setup.el)
+- Shell (shell-setup.el)
+- And more...
+
+* Configuration Architecture
+
+** Directory Structure
+
+#+BEGIN_SRC
+~/.emacs.d/
+├── init.el                    # Main entry point
+├── early-init.el              # Startup optimizations
+├── README.org                 # Main README
+├── CLAUDE.md                  # Configuration principles
+│
+├── docs/                      # Documentation (you are here)
+│   ├── INDEX.org              # This file
+│   ├── authinfo.org           # Authentication guide
+│   ├── mail.org               # Email guide
+│   ├── rss.org                # RSS guide
+│   ├── irc.org                # IRC guide
+│   └── eww.org                # Browser guide
+│
+├── lisp/                      # Configuration modules
+│   ├── ming-*.el              # Core configs
+│   ├── *-setup.el             # Tool configs
+│   └── lang/                  # Language configs
+│
+├── private/                   # Private settings (git-ignored)
+│   ├── *.el                   # Your credentials
+│   └── *.example.el           # Templates
+│
+├── themes/                    # Custom themes
+└── snippets/                  # Yasnippet templates
+#+END_SRC
+
+** Configuration Flow
+
+1. *Early Init* (early-init.el)
+   - Package system setup
+   - Performance optimizations
+   - UI tweaks before GUI loads
+
+2. *Main Init* (init.el)
+   - UTF-8 configuration
+   - Load core configs (ming-*.el)
+   - Load tool configs (*-setup.el)
+   - Load language configs (lang/*.el)
+
+3. *Private Configs* (private/*.el)
+   - Loaded automatically by setup files
+   - Contains your personal settings
+   - Git-ignored for privacy
+
+** Data Storage Locations
+
+Following XDG Base Directory specification:
+
+| Type | Location | Description |
+|------+----------+-------------|
+| Mail data | =~/.local/share/mail/= | Email storage (Maildir) |
+| Mail cache | =~/.cache/mu/= | mu search database |
+| RSS data | =~/.emacs.d/elfeed/= | Feed database |
+| Credentials | =~/.authinfo.gpg= | Encrypted passwords |
+| Config | =~/.emacs.d/= | Emacs configuration |
+
+* Quick Reference
+
+** Key Bindings Summary
+
+| Key | Function | Tool |
+|-----+----------+------|
+| =C-c m= | Open email | mu4e |
+| =C-c e= | Open RSS reader | Elfeed |
+| =C-c i= | Connect to IRC | ERC |
+| =C-c g= | Git status | Magit |
+| =C-c c= | Org capture | Org |
+| =C-c a= | Org agenda | Org |
+
+** Common Tasks
+
+*** Email
+- Update mail: =U= (in mu4e)
+- Compose: =C= (in mu4e)
+- Search: =s= (in mu4e headers)
+
+*** RSS
+- Open Elfeed: =C-c e=
+- Update feeds: =G= (in Elfeed)
+- Mark read: =b= (in Elfeed)
+
+*** IRC
+- Connect: =C-c i= or custom functions
+- Join channel: =/join #channel=
+- Switch channels: =C-c C-n= / =C-c C-b=
+
+** File Locations Quick Reference
+
+| Purpose | File Path |
+|---------+-----------|
+| Main README | =~/.emacs.d/README.org= |
+| Documentation Index | =~/.emacs.d/docs/INDEX.org= |
+| Email config | =~/.emacs.d/lisp/mail-setup.el= |
+| Email private | =~/.emacs.d/private/mail-private.el= |
+| RSS config | =~/.emacs.d/lisp/elfeed-setup.el= |
+| RSS feeds | =~/.emacs.d/private/elfeed-private.el= |
+| IRC config | =~/.emacs.d/lisp/erc-setup.el= |
+| IRC private | =~/.emacs.d/private/erc-private.el= |
+| Web browser | =~/.emacs.d/lisp/eww-setup.el= |
+| Credentials | =~/.authinfo.gpg= |
+| Mail sync | =~/.mbsyncrc= |
+
+* Setup Workflow
+
+** New Installation
+
+1. *Clone repository*
+   #+BEGIN_SRC bash
+   git clone <your-repo> ~/.emacs.d
+   #+END_SRC
+
+2. *Start Emacs*
+   - Packages will auto-install
+
+3. *Configure private settings*
+   #+BEGIN_SRC bash
+   cd ~/.emacs.d/private
+   cp mail-private.example.el mail-private.el
+   cp elfeed-private.example.el elfeed-private.el
+   cp erc-private.example.el erc-private.el
+   # Edit each file with your settings
+   #+END_SRC
+
+4. *Set up authentication*
+   - Follow [[file:authinfo.org][Authentication Setup Guide]]
+   - Create =~/.authinfo.gpg=
+
+5. *Configure email (optional)*
+   - Follow [[file:mail.org][Email Configuration Guide]]
+   - Install mu and isync
+   - Configure =~/.mbsyncrc=
+
+6. *Restart Emacs*
+
+** Adding New Tools
+
+1. *Create setup file*
+   - Add to =~/.emacs.d/lisp/tool-setup.el=
+
+2. *Add require statement*
+   - Add =(require 'tool-setup)= to =init.el=
+
+3. *Create documentation*
+   - Add =~/.emacs.d/docs/tool.org=
+   - Update this INDEX.org
+
+4. *Private configuration (if needed)*
+   - Create =~/.emacs.d/private/tool-private.example.el=
+   - Users copy to =tool-private.el=
+
+* Troubleshooting
+
+** General Issues
+
+*** Packages Not Loading
+#+BEGIN_SRC elisp
+M-x package-refresh-contents
+M-x package-install-selected-packages
+#+END_SRC
+
+*** Configuration Errors
+#+BEGIN_SRC bash
+emacs --debug-init
+#+END_SRC
+
+*** Check Messages
+- =*Messages*= buffer shows errors and warnings
+- =*Warnings*= buffer shows startup warnings
+
+** Tool-Specific Issues
+
+See individual documentation files:
+- Email issues → [[file:mail.org::*Troubleshooting][mail.org Troubleshooting]]
+- IRC issues → [[file:irc.org::*Troubleshooting][irc.org Troubleshooting]]
+- RSS issues → [[file:rss.org::*Troubleshooting][rss.org Troubleshooting]]
+- Auth issues → [[file:authinfo.org::*Troubleshooting][authinfo.org Troubleshooting]]
+
+** Performance Issues
+
+1. *Slow startup*
+   - Check early-init.el optimizations
+   - Review package list
+   - Consider lazy loading
+
+2. *High memory usage*
+   - Close unused buffers
+   - Restart Emacs periodically
+   - Check for memory leaks in packages
+
+* Contributing
+
+** Documentation Style
+
+All documentation should:
+- Use Org format (=.org= files)
+- Include clear table of contents
+- Provide working examples
+- Follow KISS principle
+- Include troubleshooting section
+- Cross-reference related docs
+
+** File Naming
+
+- Main docs: =topic.org= (e.g., =mail.org=, =irc.org=)
+- Support files: =topic-appendix.org=
+- All lowercase, hyphen-separated
+
+** Organization
+
+1. Place in =~/.emacs.d/docs/=
+2. Update this INDEX.org
+3. Link from README.org if major feature
+4. Keep examples realistic and tested
+
+* External Resources
+
+** Emacs Documentation
+- [[https://www.gnu.org/software/emacs/manual/][Official Emacs Manual]]
+- [[https://www.gnu.org/software/emacs/manual/html_node/emacs/][Emacs Manual (HTML)]]
+
+** Package Documentation
+- [[https://www.djcbsoftware.nl/code/mu/mu4e/][mu4e Manual]]
+- [[https://github.com/skeeto/elfeed][Elfeed GitHub]]
+- [[https://www.gnu.org/software/emacs/manual/html_mono/erc.html][ERC Manual]]
+- [[https://magit.vc/manual/][Magit Manual]]
+- [[https://orgmode.org/manual/][Org Manual]]
+
+** Community
+- [[https://www.reddit.com/r/emacs/][r/emacs subreddit]]
+- [[https://emacs.stackexchange.com/][Emacs Stack Exchange]]
+- =#emacs= on Libera.Chat (IRC)
+
+* License
+
+This documentation is part of Ming's Emacs configuration, distributed under the GNU General Public License v3.0 or later.
+
+See [[file:../LICENSE][LICENSE]] for full terms.
+
+---
+
+*Last Updated:* 2025-11-29
+*Maintainer:* Ming
