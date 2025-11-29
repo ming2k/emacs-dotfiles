@@ -180,13 +180,22 @@ snippets/personal/
 !README.org
 !CHANGELOG.md
 !LICENSE
+
+# Docs directory - allow specific files only
 !docs/
-!docs/*.org
+!docs/INDEX.org
+!docs/QUICKREF.org
+!docs/authinfo.org
+!docs/mail.org
+!docs/rss.org
+!docs/irc.org
+!docs/eww.org
 
 # Ignore documentation artifacts
 docs/node_modules/
 docs/package.json
 docs/package-lock.json
+docs/README.org
 
 # Configuration templates
 !templates/

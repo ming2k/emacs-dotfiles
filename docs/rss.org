@@ -121,6 +121,80 @@ Key settings in =elfeed-setup.el=:
 | =elfeed-search-trailing-width= | =30= | Column width |
 | =elfeed-show-truncate-long-urls= | =t= | Truncate long URLs |
 
+* Quick Reference Tutorial
+
+** Essential Keys - Quick Start
+
+*** Navigation and Reading
+| Key         | Action                    |
+|-------------+---------------------------|
+| ~C-c e~     | Open Elfeed               |
+| ~n~ / ~j~   | Next entry                |
+| ~p~ / ~k~   | Previous entry            |
+| ~RET~       | Open/Read entry           |
+| ~b~         | Toggle read/unread        |
+| ~v~         | Visit URL in browser      |
+| ~q~         | Quit/Close                |
+
+*** Feed Management
+| Key     | Action                    |
+|---------+---------------------------|
+| ~g~     | Refresh view              |
+| ~G~     | Update all feeds (fetch)  |
+| ~U~     | Update all feeds          |
+| ~s~     | Edit search filter        |
+
+*** Tagging and Organization
+| Key | Action                    |
+|-----+---------------------------|
+| ~r~ | Mark all visible as read  |
+| ~u~ | Mark all visible unread   |
+| ~+~ | Add tags to entry         |
+| ~-~ | Remove tags from entry    |
+
+*** Common Filters (type in search)
+| Filter                  | Meaning                   |
+|-------------------------+---------------------------|
+| ~+unread~               | Show only unread          |
+| ~+emacs~                | Show emacs-tagged entries |
+| ~@1-week-ago~           | Entries from last week    |
+| ~@1-week-ago +unread~   | Unread from last week     |
+| ~+blog +programming~    | Multiple tags (AND)       |
+
+*** Common Workflows
+
+**** Read new entries
+1. ~C-c e~ - Open Elfeed
+2. ~G~ - Update all feeds (fetch new)
+3. ~j~ / ~k~ - Navigate through entries
+4. ~RET~ - Open entry to read
+5. ~b~ - Mark as read (or auto-marked)
+6. ~q~ - Close entry
+7. ~q~ - Close Elfeed
+
+**** Read by topic
+1. ~C-c e~ - Open Elfeed
+2. ~s~ - Edit filter
+3. Type: ~+emacs +unread~
+4. ~RET~ - Apply filter
+5. ~j~ / ~k~ - Browse filtered entries
+
+**** Mark all as read
+1. ~C-c e~ - Open Elfeed
+2. ~s~ - Set filter (e.g., ~+unread~)
+3. ~r~ - Mark all visible as read
+
+**** Open article in browser
+1. Navigate to entry
+2. ~RET~ - Open entry
+3. ~v~ - Visit URL in external browser
+
+**** Add custom tag for later
+1. Navigate to entry
+2. ~+~ - Add tag
+3. Type: ~read-later~
+4. Later: ~s~ then ~+read-later~ to find them
+
 * Usage
 
 ** Starting Elfeed

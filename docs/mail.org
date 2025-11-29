@@ -410,6 +410,77 @@ Sync all accounts:
 mbsync -a
 #+END_SRC
 
+* Quick Reference Tutorial
+
+** Essential Keys - Quick Start
+
+*** Reading Mail
+| Key     | Action                    |
+|---------+---------------------------|
+| ~C-c m~ | Open mu4e                 |
+| ~j~     | Jump to maildir           |
+| ~s~     | Search                    |
+| ~RET~   | Open message              |
+| ~n~     | Next message              |
+| ~p~     | Previous message          |
+| ~q~     | Quit/Close                |
+
+*** Composing and Replying
+| Key       | Action                    |
+|-----------+---------------------------|
+| ~C~       | Compose new message       |
+| ~R~       | Reply to sender           |
+| ~W~       | Reply to all (wide reply) |
+| ~F~       | Forward message           |
+| ~E~       | Edit draft                |
+| ~C-c C-a~ | Add attachment            |
+| ~C-c C-c~ | Send message              |
+| ~C-c C-k~ | Cancel/Kill composition   |
+| ~C-c C-d~ | Save as draft             |
+
+*** Managing Messages
+| Key | Action                    |
+|-----+---------------------------|
+| ~d~ | Mark for deletion (trash) |
+| ~m~ | Mark for move             |
+| ~r~ | Mark for refile (archive) |
+| ~u~ | Unmark                    |
+| ~x~ | Execute marked actions    |
+| ~!~ | Toggle important flag     |
+| ~?~ | Toggle unread flag        |
+
+*** Common Workflows
+
+**** Send a new email
+1. ~C-c m~ - Open mu4e
+2. ~C~ - Compose new message
+3. Type recipient, subject, body
+4. ~C-c C-a~ - Add attachment (optional)
+5. ~C-c C-c~ - Send
+
+**** Reply to email
+1. ~C-c m~ - Open mu4e
+2. ~RET~ - Open message
+3. ~R~ - Reply (or ~W~ for reply-all)
+4. Write your reply
+5. ~C-c C-c~ - Send
+
+**** Delete emails
+1. Navigate to message
+2. ~d~ - Mark for deletion
+3. Repeat for more messages
+4. ~x~ - Execute (move to trash)
+
+**** Archive emails
+1. Navigate to message
+2. ~r~ - Mark for refile
+3. ~x~ - Execute (move to archive)
+
+**** Search emails
+1. ~s~ - Search
+2. Type query: ~from:john subject:meeting~
+3. ~RET~ - Execute search
+
 * Daily Usage
 
 ** Starting mu4e

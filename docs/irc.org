@@ -161,6 +161,82 @@ Configure channels to join automatically:
 
 Format: =(("server" "channel1" "channel2") ...)=
 
+* Quick Reference Tutorial
+
+** Essential Keys - Quick Start
+
+*** Connecting
+| Key         | Action                    |
+|-------------+---------------------------|
+| ~C-c i~     | Connect to IRC (generic)  |
+| ~C-c C-i~   | Connect to Libera.Chat    |
+| ~M-x erc-tls~ | Connect with TLS        |
+
+*** Basic Communication
+| Command                  | Action                    |
+|--------------------------|---------------------------|
+| Type text + ~RET~        | Send message to channel   |
+| ~/join #channel~         | Join a channel            |
+| ~/part~                  | Leave current channel     |
+| ~/quit~                  | Disconnect from server    |
+| ~/msg nick message~      | Send private message      |
+| ~/query nick~            | Open private chat         |
+| ~/nick newnick~          | Change nickname           |
+
+*** Channel Management
+| Key       | Action                    |
+|-----------+---------------------------|
+| ~C-c C-j~ | Join channel              |
+| ~C-c C-p~ | Part (leave) channel      |
+| ~C-c C-q~ | Quit server               |
+| ~C-c C-n~ | Next channel buffer       |
+| ~C-c C-b~ | Previous channel buffer   |
+| ~TAB~     | Complete nickname         |
+
+*** Information Commands
+| Command           | Action                    |
+|-------------------|---------------------------|
+| ~/whois nick~     | Get user info             |
+| ~/names~          | List users in channel     |
+| ~/topic~          | View channel topic        |
+| ~/away message~   | Set away status           |
+| ~/back~           | Remove away status        |
+
+*** Common Workflows
+
+**** Connect and join a channel
+1. ~C-c C-i~ - Connect to Libera.Chat (or ~M-x erc-tls~)
+2. Wait for connection and auto-join
+3. Or manually: ~/join #emacs~
+4. Type message and press ~RET~
+
+**** Send a private message
+1. ~/query nickname~ - Open private chat
+2. Type message + ~RET~
+3. Or one-off: ~/msg nickname your message here~
+
+**** Register your nickname (first time)
+1. Connect to network
+2. ~/msg NickServ REGISTER password email@example.com~
+3. Check email for verification
+4. Add to ~/.authinfo.gpg for auto-login
+
+**** Switch between channels
+1. ~C-c C-n~ - Next channel
+2. ~C-c C-b~ - Previous channel
+3. Or ~C-x b~ and select buffer name
+
+**** Leave IRC cleanly
+1. ~/quit~ - Disconnect from server
+2. Or ~C-c C-q~ in ERC buffer
+3. Kill buffers if needed
+
+**** Handle mentions
+1. When mentioned, channel highlights in mode-line
+2. Use ~M-x erc-track-switch-buffer~ to jump
+3. Reply by typing: ~nickname: your message~
+4. Use ~TAB~ to complete nicknames
+
 * Usage
 
 ** Connecting to IRC
