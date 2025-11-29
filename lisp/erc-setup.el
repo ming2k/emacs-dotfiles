@@ -24,16 +24,14 @@
   ;; Hide join/part/quit messages for better readability
   (setq erc-hide-list '("JOIN" "PART" "QUIT"))
 
+  ;; Enable modules
+  (setq erc-modules '(autojoin networks services timestamp track match fill ring netsplit readonly spelling))
+  (erc-update-modules)
+
   ;; Timestamp format
   (setq erc-timestamp-format "[%H:%M] "
         erc-timestamp-only-if-changed-flag nil
         erc-insert-timestamp-function 'erc-insert-timestamp-left)
-
-  ;; Enable timestamp module
-  (add-to-list 'erc-modules 'timestamp)
-
-  ;; Enable spelling for ERC buffers
-  (erc-spelling-mode 1)
 
   ;; Track channel activity
   (setq erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT" "MODE"
@@ -43,32 +41,8 @@
   (setq erc-kill-queries-on-quit t
         erc-kill-server-buffer-on-quit t)
 
-  ;; Prompt for channel password if needed
-  (setq erc-prompt-for-password t)
-
-  ;; Enable autojoin
-  (erc-autojoin-mode 1)
-
-  ;; Enable track mode - highlights channels with activity
-  (erc-track-mode 1)
-
-  ;; Enable match mode - highlights keywords
-  (erc-match-mode 1)
-
-  ;; Enable fill mode - wraps long lines
-  (erc-fill-mode 1)
-
-  ;; Ring mode - cycle through ERC buffers
-  (erc-ring-mode 1)
-
-  ;; Non-commands scroll buffer
-  (erc-netsplit-mode 1)
-
-  ;; Readonly mode for old messages
-  (erc-readonly-mode 1)
-
-  ;; Show images inline (requires emacs-w3m or similar)
-  ;; (erc-image-mode 1)
+  ;; Use authinfo for passwords instead of prompting
+  (setq erc-prompt-for-password nil)
 
   ;; Notifications
   (setq erc-current-nick-highlight-type 'nick)
@@ -77,22 +51,8 @@
   ;; Format: machine irc.example.com login YourNickname password YourPassword
   ;; The auth-sources variable is already set in init.el
 
-  ;; Custom connect function for quick access
-  (defun my/erc-connect-libera ()
-    "Connect to Libera.Chat IRC server."
-    (interactive)
-    (erc-tls :server "irc.libera.chat" :port 6697
-             :nick erc-nick :full-name erc-user-full-name))
-
-  (defun my/erc-connect-oftc ()
-    "Connect to OFTC IRC server."
-    (interactive)
-    (erc-tls :server "irc.oftc.net" :port 6697
-             :nick erc-nick :full-name erc-user-full-name))
-
-  ;; Key bindings
-  (global-set-key (kbd "C-c i") 'erc)
-  (global-set-key (kbd "C-c C-i") 'my/erc-connect-libera))
+  ;; Key binding
+  (global-set-key (kbd "C-c i") 'erc))
 
 ;; Optional: Load private ERC configuration if it exists
 ;; This file should contain your actual credentials and NOT be committed to git

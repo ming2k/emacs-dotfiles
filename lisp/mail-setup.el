@@ -64,10 +64,10 @@
           (:name "Last 7 days" :query "date:7d..now" :key ?w)
           (:name "Messages with attachments" :query "flag:attach" :key ?a)))
 
-  ;; Load mu4e private configuration if it exists
+  ;; Load mail private configuration if it exists
   ;; This file should contain your actual credentials and NOT be committed to git
   ;; IMPORTANT: Load this INSIDE :config to ensure mu4e is loaded first
-  (let ((private-config (expand-file-name "private/mu4e-private.el" user-emacs-directory)))
+  (let ((private-config (expand-file-name "private/mail-private.el" user-emacs-directory)))
     (when (file-exists-p private-config)
       (load-file private-config)))
 

@@ -204,8 +204,10 @@ docs/README.org
 # Multiple Corsor
 .mc-lists.el
 
-# Private email configuration (contains passwords and personal info)
-private/
+# Private configuration (contains passwords and personal info)
+# Ignore all files in private/
+private/*
+# But track example files
 !private/*.example.el
 !private/README.org
 
