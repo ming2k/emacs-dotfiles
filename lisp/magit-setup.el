@@ -72,13 +72,15 @@
   (git-gutter:hide-gutter t)
   :config
   ;; Add safety check for git-gutter updates
-  (defadvice git-gutter:live-update (around safe-update activate)
+  (defun my-git-gutter-safe-update (orig-fun &rest args)
     "Safely update git-gutter to avoid array errors."
     (when (and (buffer-file-name)
                (vc-backend (buffer-file-name)))
       (condition-case nil
-          ad-do-it
-        (error nil)))))
+          (apply orig-fun args)
+        (error nil))))
+
+  (advice-add 'git-gutter:live-update :around #'my-git-gutter-safe-update))
 
 ;; Git time machine for browsing history
 (use-package git-timemachine
