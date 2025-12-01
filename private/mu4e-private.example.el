@@ -1,8 +1,8 @@
-;;; mail-private.example.el --- Example private mail configuration -*- lexical-binding: t; -*-
+;;; mu4e-private.example.el --- Example private mu4e configuration -*- lexical-binding: t; -*-
 
 ;;; Commentary:
-;; Copy this file to mail-private.el and fill in your actual credentials
-;; The mail-private.el file should be added to .gitignore to keep your data private
+;; Copy this file to mu4e-private.el and fill in your actual credentials
+;; The mu4e-private.el file should be added to .gitignore to keep your data private
 ;;
 ;; IMPORTANT: This file is loaded AFTER mu4e is loaded (from mail-setup.el),
 ;; so all mu4e functions and variables are available. You can use
@@ -64,7 +64,13 @@
 ;;   Test with: openssl s_client -connect mail.server.com:587 -starttls smtp
 
 ;; Mail sync command (if different from default)
-;; (setq mu4e-get-mail-command "mbsync -a")
+;; Default: "mbsync -a" syncs all channels
+;; You can specify a specific channel to sync only certain folders:
+;;   - "mbsync account-default" - sync only default folders (INBOX, Sent, Drafts, etc.)
+;;   - "mbsync account-lists" - sync only mailing list folders
+;;   - "mbsync account" - sync all folders (if you have a Group defined in .mbsyncrc)
+;; Example for syncing only default folders with C-c C-u:
+;; (setq mu4e-get-mail-command "mbsync hihusky-default")
 
 ;; ====================================================================
 ;; SINGLE ACCOUNT EXAMPLE (with subdirectory organization)
@@ -135,4 +141,5 @@
 ;;                 (mu4e-refile-folder . "/personal/Archive")     ; or "/personal/INBOX"
 ;;                 (mu4e-trash-folder . "/personal/Deleted Items"))))) ; Match your server
 
-;;; mail-private.example.el ends here
+(provide 'mu4e-private)
+;;; mu4e-private.example.el ends here
