@@ -61,7 +61,7 @@
         which-key-separator " → "
         which-key-prefix-prefix "+"
         which-key-special-keys '("SPC" "TAB" "RET" "ESC" "DEL"))
-  
+
   ;; Better popup appearance
   (setq which-key-show-prefix 'echo
         which-key-popup-type 'side-window
@@ -70,10 +70,10 @@
         which-key-max-description-length 32
         which-key-compute-remaps t
         which-key-use-C-h-commands t)
-    
+
   ;; Performance optimization
   (setq which-key-lighter nil)
-  
+
   :bind (("C-h K" . which-key-show-top-level)
          ("C-h M" . which-key-show-major-mode)))
 

@@ -11,7 +11,11 @@
 
 (global-visual-line-mode 1)
 
+;;; Fill column indicator - disabled by default, enabled only in prog-mode
+(setq-default display-fill-column-indicator-mode nil)
+
 ;;; Sentence Wrap
+;; Enable fill column indicator only in programming modes
 (add-hook 'prog-mode-hook
           (lambda ()
             (visual-line-mode -1)
@@ -20,6 +24,11 @@
             (setq display-fill-column-indicator-column 80)
             (display-fill-column-indicator-mode 1)
             (auto-fill-mode 1)))
+
+;; Disable fill column indicator in *scratch* buffer (lisp-interaction-mode)
+(add-hook 'lisp-interaction-mode-hook
+          (lambda ()
+            (display-fill-column-indicator-mode -1)))
 
 ;;; Clear flymake backends in programming modes
 (add-hook 'prog-mode-hook

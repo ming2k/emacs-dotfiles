@@ -94,6 +94,9 @@
    ;; Line numbers
    `(line-number ((t (:foreground ,gruvbox-dark-comment :background ,gruvbox-dark-bg))))
    `(line-number-current-line ((t (:foreground ,gruvbox-dark-yellow :background ,gruvbox-dark-bg-soft :weight bold))))
+
+   ;; Fill column indicator
+   `(fill-column-indicator ((t (:foreground ,gruvbox-dark-comment))))
    
    ;; Search
    `(isearch ((t (:background ,gruvbox-dark-match :foreground ,gruvbox-dark-bg))))
