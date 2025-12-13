@@ -55,6 +55,15 @@
                               (:from . 18)
                               (:subject . 44)))
 
+  ;; Message view fields
+  (setq mu4e-view-fields
+        '(:subject
+          :from
+          :to
+          :cc
+          :date
+          :attachments))
+
   ;; IMPORTANT: mu4e defaults are /sent, /drafts, /trash (lowercase)
 
   ;; Bookmarks for common searches

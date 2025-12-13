@@ -7,8 +7,8 @@
 
 (require 'eww)
 
-;; Use external browser for certain sites
-(setq browse-url-browser-function 'eww-browse-url)
+;; Use external browser as default
+(setq browse-url-browser-function 'browse-url-xdg-open)
 
 ;; Set default search engine
 (setq eww-search-prefix "https://duckduckgo.com/html/?q=")
