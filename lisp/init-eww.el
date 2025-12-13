@@ -29,5 +29,5 @@
 (setq url-cookie-file (expand-file-name "cookies" user-emacs-directory))
 (setq url-cookie-save-interval 3600)
 
-(provide 'eww-setup)
+(provide 'init-eww)
 ;;; eww-setup.el ends here

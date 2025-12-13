@@ -1,4 +1,4 @@
-;;; config/lang/common-lisp-config.el -*- lexical-binding: t; -*-
+;;; init-lisp.el -*- lexical-binding: t; -*-
 
 ;;; Common Lisp Mode Configuration
 (use-package lisp-mode
@@ -17,6 +17,6 @@
     ;; Parentheses matching
     (show-paren-mode 1)))
 
-(provide 'lisp-setup)
+(provide 'init-lisp)
 
-;;; config/lang/common-lisp-config.el ends here
+;;; init-lisp.el ends here

@@ -335,6 +335,6 @@
 (add-to-list 'auto-mode-alist '("tailwind\\.config\\.[jt]s\\'" . javascript-mode))
 (add-to-list 'auto-mode-alist '("postcss\\.config\\.[jt]s\\'" . javascript-mode))
 
-(provide 'web-dev)
+(provide 'init-web)
 
 ;;; config/tools/web-dev.el ends here

@@ -241,5 +241,5 @@
      (shell . t)
      (python . t))))
 
-(provide 'org-setup)
+(provide 'init-org)
 ;;; org-setup.el ends here

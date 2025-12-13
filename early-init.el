@@ -39,8 +39,11 @@
 (setq make-backup-files nil)
 
 ;; -----------------------------------------------------------------------------
-;; Builtin Pacakge Manager
+;; Package Manager
 ;; -----------------------------------------------------------------------------
+
+;; Prevent package.el from modifying init.el
+(setq package-enable-at-startup nil)
 
 ;; Add package archives
 (setq package-archives
@@ -48,35 +51,37 @@
         ("melpa" . "https://melpa.org/packages/")
         ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
 
-;; Initialize package system
-(package-initialize)
-
-;; Add config directories to load-path early for require/provide system
-(let ((config-dir (expand-file-name "config" user-emacs-directory)))
-  (when (file-directory-p config-dir)
-    ;; Add all config category directories to load-path for flat structure
-    (dolist (category '("core" "ui" "tools" "lang" "frameworks" "platform"))
-      (let ((category-dir (expand-file-name category config-dir)))
+;; Add lisp directory to load-path early
+(let ((lisp-dir (expand-file-name "lisp" user-emacs-directory)))
+  (when (file-directory-p lisp-dir)
+    (add-to-list 'load-path lisp-dir)
+    (dolist (category '("lang"))
+      (let ((category-dir (expand-file-name category lisp-dir)))
         (when (file-directory-p category-dir)
           (add-to-list 'load-path category-dir))))))
 
 ;; -----------------------------------------------------------------------------
-;; Perfermance
+;; Performance
 ;; -----------------------------------------------------------------------------
 
 ;; Performance optimizations
 (setq read-process-output-max (* 1024 1024 2)) ; 2MB for LSP
 (setq process-adaptive-read-buffering nil)
 
+;; Optimize file-name-handler during startup
+(defvar file-name-handler-alist-original file-name-handler-alist)
+(setq file-name-handler-alist nil)
+
 ;; Increase garbage collection threshold during startup
 (setq gc-cons-threshold most-positive-fixnum)
 (setq gc-cons-percentage 0.6)
 
-;; Restore garbage collection settings after startup
+;; Restore settings after startup
 (add-hook 'emacs-startup-hook
           (lambda ()
             (setq gc-cons-threshold 16777216) ; 16MB
-            (setq gc-cons-percentage 0.1)))
+            (setq gc-cons-percentage 0.1)
+            (setq file-name-handler-alist file-name-handler-alist-original)))
 
 (provide 'early-init)
 ;;; early-init.el ends here

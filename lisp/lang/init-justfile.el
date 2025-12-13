@@ -1,4 +1,4 @@
-;;; justfile-setup.el -*- lexical-binding: t; -*-
+;;; init-justfile.el -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;; Justfile configuration
 ;;; Code:
@@ -9,5 +9,5 @@
   :mode (("\\(J\\|j\\)ustfile\\'" . just-mode)
          ("\\.just\\'" . just-mode)))
 
-(provide 'justfile-setup)
-;;; justfile-setup.el ends here
+(provide 'init-justfile)
+;;; init-justfile.el ends here

@@ -60,5 +60,5 @@
   (when (file-exists-p private-config)
     (load-file private-config)))
 
-(provide 'erc-setup)
+(provide 'init-erc)
 ;;; erc-setup.el ends here

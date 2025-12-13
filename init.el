@@ -37,51 +37,56 @@
 ;; Enable mouse support in terminal
 ;;(unless (display-graphic-p) )
 
-;; Add lisp directory to load-path
-(let ((lisp-dir (expand-file-name "lisp" user-emacs-directory)))
-  (when (file-directory-p lisp-dir)
-    (add-to-list 'load-path lisp-dir)
-    (dolist (category '("lang"))
-      (let ((category-dir (expand-file-name category lisp-dir)))
-        (when (file-directory-p category-dir)
-          (add-to-list 'load-path category-dir))))))
-
 ;; Package management setup
 (require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(package-initialize)
+
+;; Bootstrap use-package
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(require 'use-package)
+(setq use-package-always-ensure nil) ; We use :ensure t explicitly per package
+
+;; Custom file for Emacs-generated code
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(when (file-exists-p custom-file)
+  (load custom-file))
 
 ;;;; Make sure the file name and "provide" name are consistent
 
 ;; Load core config
-(require 'ming-editing)
-(require 'ming-session)
-(require 'ming-ui)
+(require 'init-completion)
+(require 'init-lsp)
+(require 'init-editing)
+(require 'init-session)
+(require 'init-ui)
 
 ;; Load tool config
-(require 'magit-setup)
-(require 'org-setup)
-(require 'web-dev)
-(require 'mail-setup)
-(require 'elfeed-setup)
-(require 'erc-setup)
-(require 'eww-setup)
+(require 'init-git)
+(require 'init-org)
+(require 'init-web)
+(require 'init-mail)
+(require 'init-elfeed)
+(require 'init-erc)
+(require 'init-eww)
 
 ;; Load language configurations
-(require 'cc-setup)
-(require 'python-setup)
-(require 'rust-setup)
-(require 'javascript-setup)
-(require 'typescript-setup)
-(require 'go-setup)
-(require 'shell-setup)
-(require 'lisp-setup)
-(require 'emacs-lisp-setup)
-(require 'yaml-setup)
-(require 'markdown-setup)
-(require 'zig-setup)
-(require 'json-setup)
-(require 'lua-setup)
-(require 'justfile-setup)
+(require 'init-cc)
+(require 'init-python)
+(require 'init-rust)
+(require 'init-javascript)
+(require 'init-typescript)
+(require 'init-go)
+(require 'init-shell)
+(require 'init-lisp)
+(require 'init-emacs-lisp)
+(require 'init-yaml)
+(require 'init-markdown)
+(require 'init-zig)
+(require 'init-json)
+(require 'init-lua)
+(require 'init-justfile)
 
 ;; Add a specific directory for themes to custom-theme-load-path
 (add-to-list 'custom-theme-load-path (expand-file-name "themes" user-emacs-directory))
@@ -112,15 +117,3 @@
 
 (provide 'init)
 ;;; init.el ends here
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages nil))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )

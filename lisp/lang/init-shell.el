@@ -1,19 +1,14 @@
-;;; config/lang/shell.el -*- lexical-binding: t; -*-
+;;; init-shell.el -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;; Shell scripting support with bash-language-server
 ;;; Code:
 
 
-;; Eglot configuration for shell scripting
-(use-package eglot
-  :ensure nil
-  :hook (sh-mode . eglot-ensure)
-  :config
-  ;; Add bash-language-server to eglot server programs
-  (add-to-list 'eglot-server-programs
-               '((sh-mode bash-ts-mode) . ("bash-language-server" "start")))
-  
-  ;; Shell-specific eglot settings
+;; Shell-specific eglot configuration
+(with-eval-after-load 'eglot
+  (add-hook 'sh-mode-hook 'eglot-ensure)
+
+  ;; Shell-specific LSP settings
   (add-hook 'sh-mode-hook
             (lambda ()
               (when (eglot-managed-p)
@@ -50,6 +45,6 @@
 
 (add-hook 'sh-mode-hook 'shell-mode-setup)
 
-(provide 'shell-setup)
+(provide 'init-shell)
 
-;;; config/lang/shell.el ends here
+;;; init-shell.el ends here

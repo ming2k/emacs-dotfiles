@@ -1,4 +1,4 @@
-;;; config/lang/markdown.el -*- lexical-binding: t; -*-
+;;; init-markdown.el -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;; Simple vanilla Markdown language support with visual line mode
 ;;; Code:
@@ -39,10 +39,5 @@
   ;; Setup completion behavior
   (setup-markdown-completion))
 
-;; Configure Markdown LSP server
-(with-eval-after-load 'eglot
-  (add-to-list 'eglot-server-programs
-               '((markdown-mode gfm-mode) . ("marksman"))))
-
-(provide 'markdown-setup)
-;;; config/lang/markdown.el ends here
+(provide 'init-markdown)
+;;; init-markdown.el ends here

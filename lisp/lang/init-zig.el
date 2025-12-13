@@ -1,4 +1,4 @@
-;;; config/lang/zig.el -*- lexical-binding: t; -*-
+;;; init-zig.el -*- lexical-binding: t; -*-
 
 ;; Enhanced Zig settings
 (setq zig-indent-offset 4
@@ -54,11 +54,8 @@
         indent-tabs-mode nil))
 
 
-;; Configure Zig LSP server
+;; Zig-specific LSP configuration
 (with-eval-after-load 'eglot
-  (add-to-list 'eglot-server-programs
-               '((zig-mode zig-ts-mode) . ("zls")))
-  
   ;; Zig-specific LSP settings
   (defun zig-eglot-workspace-config ()
     "Return Zig workspace configuration for zls."
@@ -69,7 +66,7 @@
        :enable_import_embedfile_argument_completions t
        :warn_style t
        :highlight_global_var_declarations t)))
-  
+
   (add-hook 'eglot-managed-mode-hook
             (lambda ()
               (when (derived-mode-p 'zig-mode 'zig-ts-mode)
@@ -133,6 +130,6 @@
         (compile "zig init"))
     (message "Zig not found. Install Zig from https://ziglang.org/")))
 
-(provide 'zig-setup)
+(provide 'init-zig)
 
-;;; config/lang/zig.el ends here
+;;; init-zig.el ends here

@@ -1,4 +1,4 @@
-;;; yaml-setup.el -*- lexical-binding: t; -*-
+;;; init-yaml.el -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;; YAML configuration
 ;;; Code:
@@ -44,11 +44,6 @@
               require-final-newline t
               font-lock-maximum-decoration t))
 
-;; Configure YAML LSP server
-(with-eval-after-load 'eglot
-  (add-to-list 'eglot-server-programs
-               '((yaml-ts-mode yaml-mode) . ("yaml-language-server" "--stdio"))))
+(provide 'init-yaml)
 
-(provide 'yaml-setup)
-
-;;; yaml-setup.el ends here
+;;; init-yaml.el ends here

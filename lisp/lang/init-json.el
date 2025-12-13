@@ -1,4 +1,4 @@
-;;; json-setup.el --- JSON mode configuration -*- lexical-binding: t; -*-
+;;; init-json.el --- JSON mode configuration -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;; JSON mode configuration with flyspell disabled
 ;;; Code:
@@ -30,11 +30,6 @@
     (setq json-reformat:indent-width 2
           json-reformat:pretty-string? nil)))
 
-;; Configure JSON LSP server
-(with-eval-after-load 'eglot
-  (add-to-list 'eglot-server-programs
-               '((json-ts-mode json-mode) . ("vscode-json-language-server" "--stdio"))))
-
 ;; JSON minor modes setup (without flyspell)
 (defun json-setup-minor-modes ()
   "Enable helpful minor modes for JSON."
@@ -45,6 +40,6 @@
   (setq-local tab-width 2
               indent-tabs-mode nil))
 
-(provide 'json-setup)
+(provide 'init-json)
 
-;;; json-setup.el ends here
+;;; init-json.el ends here

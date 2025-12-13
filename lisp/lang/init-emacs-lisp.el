@@ -1,4 +1,4 @@
-;;; config/lang/emacs-lisp-config.el -*- lexical-binding: t; -*-
+;;; init-emacs-lisp.el -*- lexical-binding: t; -*-
 
 ;;; Emacs Lisp Mode Configuration
 (use-package elisp-mode
@@ -35,6 +35,6 @@
 
 (add-hook 'emacs-lisp-mode-hook #'setup-elisp-hippie-expand)
 
-(provide 'emacs-lisp-setup)
+(provide 'init-emacs-lisp)
 
-;;; config/lang/emacs-lisp-config.el ends here
+;;; init-emacs-lisp.el ends here

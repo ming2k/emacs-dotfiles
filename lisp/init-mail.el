@@ -83,5 +83,5 @@
   ;; Key bindings
   (global-set-key (kbd "C-c m") 'mu4e))
 
-(provide 'mail-setup)
+(provide 'init-mail)
 ;;; mail-setup.el ends here

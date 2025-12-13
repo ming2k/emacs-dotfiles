@@ -1,6 +1,7 @@
-;;; config/core/ui.el -*- lexical-binding: t; -*-
+;;; init-ui.el -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;; Visual appearance enhancements including line numbers, highlighting, and colors
+
 ;;; Code:
 
 ;; Enable syntax highlighting globally
@@ -29,7 +30,7 @@
 
 ;; Rainbow delimiters
 (use-package rainbow-delimiters
-  :ensure nil
+  :ensure t
   :hook (prog-mode . rainbow-delimiters-mode))
 
 ;; Rainbow mode for color visualization
@@ -77,5 +78,5 @@
   :bind (("C-h K" . which-key-show-top-level)
          ("C-h M" . which-key-show-major-mode)))
 
-(provide 'ming-ui)
-;;; config/core/ui.el ends here
+(provide 'init-ui)
+;;; init-ui.el ends here

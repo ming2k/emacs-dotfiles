@@ -62,5 +62,5 @@
   (when (file-exists-p private-feeds)
     (load-file private-feeds)))
 
-(provide 'elfeed-setup)
+(provide 'init-elfeed)
 ;;; elfeed-setup.el ends here

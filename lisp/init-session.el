@@ -1,7 +1,8 @@
-;;; config/core/ming-session.el -*- lexical-binding: t; -*-
+;;; init-session.el -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;; Session management with desktop, savehist, saveplace and recentf
 ;; Optimized for session persistence and restoration
+
 ;;; Code:
 
 ;; Desktop save mode for session persistence
@@ -15,18 +16,18 @@
         desktop-restore-in-current-display nil
         desktop-restore-reuses-frames t     ; Reuse existing frames
         desktop-restore-eager 5)           ; Only restore first x buffers eagerly
-  
+
   ;; Limit number of buffers to restore for faster startup
   (setq desktop-buffers-not-to-save
         (concat "\\("
                 "^\\*.*\\*$\\|"              ; Don't save *scratch*, *Messages*, etc.
                 "COMMIT_EDITMSG\\|"          ; Git commit messages
                 "\\)"))
-  
+
    ;; Files to exclude from desktop restoration
   (setq desktop-files-not-to-save
         "\\(^/[^/:]*:\\|(ftp)$\\|^/tmp/\\|\\.gpg$\\)")
-  
+
   ;; Modes to exclude from desktop restoration
   (setq desktop-modes-not-to-save
         '(tags-table-mode
@@ -69,5 +70,5 @@
   :config
   (setq save-place-file (expand-file-name "places" user-emacs-directory)))
 
-(provide 'ming-session)
-;;; config/core/ming-session.el ends here
+(provide 'init-session)
+;;; init-session.el ends here
