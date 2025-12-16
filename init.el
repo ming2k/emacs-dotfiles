@@ -60,6 +60,7 @@
 (require 'init-lsp)
 (require 'init-editing)
 (require 'init-session)
+(require 'init-project)
 (require 'init-ui)
 
 ;; Load tool config
