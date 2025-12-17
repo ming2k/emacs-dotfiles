@@ -73,6 +73,15 @@
           (:name "Last 7 days" :query "date:7d..now" :key ?w)
           (:name "Messages with attachments" :query "flag:attach" :key ?a)))
 
+  ;; Pre-unlock authinfo.gpg when mu4e starts to cache GPG password
+  ;; This triggers the password prompt once, then GPG agent caches it
+  (add-hook 'mu4e-main-mode-hook
+            (lambda ()
+              (when (file-exists-p "~/.authinfo.gpg")
+                ;; Silently access the file to unlock and cache the password
+                (ignore-errors
+                  (auth-source-search :max 1)))))
+
   ;; Load mu4e private configuration if it exists
   ;; This file should contain your actual credentials and NOT be committed to git
   ;; IMPORTANT: Load this INSIDE :config to ensure mu4e is loaded first

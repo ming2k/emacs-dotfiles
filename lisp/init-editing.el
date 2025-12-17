@@ -93,13 +93,16 @@
         yas-trigger-key (kbd "C-j")))
 
 ;;; EasyPG - GPG encryption support
+;; Use GPG agent for password caching across Emacs and system
 (use-package epa-file
   :ensure nil
   :config
   (epa-file-enable)
-  (setq epa-file-cache-passphrase-for-symmetric-encryption t
-        epa-file-select-keys nil
-        epg-pinentry-mode 'loopback))
+  ;; Use GPG agent with loopback pinentry for password caching
+  (setq epg-pinentry-mode 'loopback
+        ;; Let GPG agent handle caching
+        epa-file-cache-passphrase-for-symmetric-encryption nil
+        epa-file-select-keys nil))
 
 (provide 'init-editing)
 ;;; init-editing.el ends here
