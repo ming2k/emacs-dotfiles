@@ -54,7 +54,7 @@
 ;;   :custom
 ;;   (forge-database-file (expand-file-name "forge-database.sqlite" user-emacs-directory)))
 
-;; Git gutter for showing changes in buffer
+;; Git-gutter - Show git diff indicators in the fringe
 (use-package git-gutter
   :ensure t
   :hook ((prog-mode . git-gutter-mode)
@@ -82,14 +82,14 @@
 
   (advice-add 'git-gutter:live-update :around #'my-git-gutter-safe-update))
 
-;; Git time machine for browsing history
+;; Git-timemachine - Step through git revisions of a file
 (use-package git-timemachine
   :ensure t
   :bind ("C-x v t" . git-timemachine)
   :custom
   (git-timemachine-abbreviation-length 6))
 
-;; Git link for sharing URLs
+;; Git-link - Generate URLs for files/commits and copy to clipboard
 (use-package git-link
   :ensure t
   :bind (("C-c g u" . git-link)

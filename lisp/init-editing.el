@@ -42,6 +42,7 @@
 ;;; Code Folding
 (add-hook 'prog-mode-hook 'hs-minor-mode)
 
+;; Savefold - Automatically save and restore code folding state across sessions
 (use-package savefold
   :ensure t
   :init

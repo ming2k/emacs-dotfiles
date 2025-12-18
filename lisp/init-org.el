@@ -229,7 +229,8 @@
   
   ;; Hook to create date directories automatically
   (advice-add 'org-roam-capture- :before #'org-roam-ensure-date-directory))
-;;; Org-Babel Configuration
+
+;; Org-Babel (ob) - Execute code blocks within Org documents
 (use-package ob
   :ensure nil
   :after org

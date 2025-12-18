@@ -9,7 +9,7 @@
           (lambda ()
             (setq-local flymake-diagnostic-functions nil)))
 
-;;; Flymake - Error checking (LSP-only)
+;; Flymake - Built-in on-the-fly syntax checking
 (use-package flymake
   :ensure nil
   :config
@@ -22,7 +22,7 @@
               ("C-c ! p" . flymake-goto-prev-error)
               ("C-c ! l" . flymake-show-buffer-diagnostics)))
 
-;;; Eglot - LSP client
+;; Eglot - Built-in LSP client (Emacs Polyglot)
 (use-package eglot
   :ensure nil
   :config

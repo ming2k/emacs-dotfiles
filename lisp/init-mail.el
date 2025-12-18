@@ -5,6 +5,7 @@
 
 ;;; Code:
 
+;; mu4e - Mail User Agent for Emacs (email client using mu/mbsync)
 (use-package mu4e
   :ensure nil  ; mu4e comes with mu package, not from ELPA
   :if (executable-find "mu")
@@ -41,7 +42,7 @@
   ;; mu4e doesn't fetch mail itself - use mbsync/isync, offlineimap, or fetchmail
   ;; Example: Using mbsync (recommended)
   (setq mu4e-get-mail-command "mbsync -a"  ; Replace with your mail sync command
-        mu4e-update-interval 300  ; Update every 5 minutes (in seconds)
+        mu4e-update-interval nil  ; Disable automatic updates (manual only)
         mu4e-change-filenames-when-moving t)  ; Avoid sync conflicts
 
   ;; Headers list sorting
@@ -73,14 +74,18 @@
           (:name "Last 7 days" :query "date:7d..now" :key ?w)
           (:name "Messages with attachments" :query "flag:attach" :key ?a)))
 
-  ;; Pre-unlock authinfo.gpg when mu4e starts to cache GPG password
-  ;; This triggers the password prompt once, then GPG agent caches it
-  (add-hook 'mu4e-main-mode-hook
-            (lambda ()
-              (when (file-exists-p "~/.authinfo.gpg")
-                ;; Silently access the file to unlock and cache the password
-                (ignore-errors
-                  (auth-source-search :max 1)))))
+  ;; Unlock authinfo.gpg before updating mail (triggered by C-c C-c in mu4e)
+  ;; This ensures GPG password is cached before mbsync runs
+  ;; If user cancels password entry (C-g), the entire update is aborted
+  (advice-add 'mu4e-update-mail-and-index :before
+              (lambda (&rest _args)
+                (when (file-exists-p "~/.authinfo.gpg")
+                  ;; Don't catch quit signal - let C-g cancel the entire operation
+                  (condition-case err
+                      (auth-source-search :max 1)
+                    (error
+                     (message "Failed to unlock authinfo.gpg: %s" (error-message-string err))
+                     (signal (car err) (cdr err)))))))
 
   ;; Load mu4e private configuration if it exists
   ;; This file should contain your actual credentials and NOT be committed to git
