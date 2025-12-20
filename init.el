@@ -80,6 +80,7 @@
 (require 'init-typescript)
 (require 'init-go)
 (require 'init-shell)
+(require 'init-nushell)
 (require 'init-lisp)
 (require 'init-emacs-lisp)
 (require 'init-yaml)
