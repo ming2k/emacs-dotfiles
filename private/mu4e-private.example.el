@@ -14,6 +14,14 @@
 
 ;;; Code:
 
+;; Cache GPG password in gpg-agent before mail update (optional)
+;; If your mbsync uses 'pass' command (PassCmd in .mbsyncrc), enable this to
+;; cache GPG password before mail update. This prompts in minibuffer once,
+;; then mbsync can retrieve passwords without prompting.
+;; In theory, any GPG file encrypted with the same key can be used here.
+;; Set to nil to disable, or set to a GPG file path:
+;; (setq mu4e-unlock-gpg-file "~/.password-store/email/mail.example.com/user.gpg")
+
 ;; Personal Information
 (setq user-mail-address "your-email@example.com"
       user-full-name "Your Full Name")

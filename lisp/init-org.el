@@ -4,6 +4,11 @@
 ;; and Zettelkasten-style note-taking
 ;;; Code:
 
+;;; HTML Export Support
+(use-package htmlize
+  :ensure t
+  :defer t)
+
 ;;; Core Org Configuration
 (use-package org
   :ensure nil
@@ -82,6 +87,9 @@
   (org-edit-src-content-indentation 0)  ; No extra indentation inside src blocks
   (org-src-preserve-indentation t)      ; Preserve indentation as written
   (org-src-tab-acts-natively t)         ; TAB behaves according to source mode
+
+  ;; HTML export settings
+  (org-html-htmlize-output-type 'inline-css)  ; Use inline CSS (built-in, no htmlize needed)
 
   :config
   ;; Set font for org tables
@@ -240,7 +248,8 @@
    'org-babel-load-languages
    '((emacs-lisp . t)
      (shell . t)
-     (python . t))))
+     (python . t)
+     (dot . t))))
 
 (provide 'init-org)
 ;;; org-setup.el ends here

@@ -38,7 +38,14 @@
   ;; Git commit message settings
   (setq git-commit-summary-max-length 50
         git-commit-fill-column 72)
-  
+
+  ;; GPG commit signing with loopback pinentry
+  ;; Inherits epg-pinentry-mode 'loopback from init-editing.el
+  ;; To enable GPG signing for commits, set in your git config:
+  ;;   git config --global user.signingkey YOUR_KEY_ID
+  ;;   git config --global commit.gpgsign true
+  (setq epg-pinentry-mode 'loopback)
+
 )
 
 ;; Enhanced diffs and merge conflicts (optional - comment out if causing issues)

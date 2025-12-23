@@ -53,6 +53,9 @@
 (when (file-exists-p custom-file)
   (load custom-file))
 
+;; Add lisp directory to load-path
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+
 ;;;; Make sure the file name and "provide" name are consistent
 
 ;; Load core config
@@ -71,24 +74,6 @@
 (require 'init-elfeed)
 (require 'init-erc)
 (require 'init-eww)
-
-;; Load language configurations
-(require 'init-cc)
-(require 'init-python)
-(require 'init-rust)
-(require 'init-javascript)
-(require 'init-typescript)
-(require 'init-go)
-(require 'init-shell)
-(require 'init-nushell)
-(require 'init-lisp)
-(require 'init-emacs-lisp)
-(require 'init-yaml)
-(require 'init-markdown)
-(require 'init-zig)
-(require 'init-json)
-(require 'init-lua)
-(require 'init-justfile)
 
 ;; Add a specific directory for themes to custom-theme-load-path
 (add-to-list 'custom-theme-load-path (expand-file-name "themes" user-emacs-directory))

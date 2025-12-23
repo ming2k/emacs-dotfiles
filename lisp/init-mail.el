@@ -74,17 +74,27 @@
           (:name "Last 7 days" :query "date:7d..now" :key ?w)
           (:name "Messages with attachments" :query "flag:attach" :key ?a)))
 
-  ;; Unlock authinfo.gpg before updating mail (triggered by C-c C-c in mu4e)
-  ;; This ensures GPG password is cached before mbsync runs
-  ;; If user cancels password entry (C-g), the entire update is aborted
+  ;; Configuration for GPG password caching before mail update
+  ;; Set in private/mu4e-private.el to customize behavior
+  (defvar mu4e-unlock-gpg-file nil
+    "When non-nil, decrypt this GPG file before updating mail to cache gpg-agent password.
+This prompts for GPG password in minibuffer, caching it in gpg-agent so external
+commands like mbsync's 'pass' can use the cached password without prompting.
+In theory, any GPG-encrypted file using the same key can be used here.
+Example: \"~/.password-store/email/mail.example.com/user.gpg\"")
+
+  ;; Cache GPG password in gpg-agent before updating mail
   (advice-add 'mu4e-update-mail-and-index :before
               (lambda (&rest _args)
-                (when (file-exists-p "~/.authinfo.gpg")
-                  ;; Don't catch quit signal - let C-g cancel the entire operation
+                (when mu4e-unlock-gpg-file
                   (condition-case err
-                      (auth-source-search :max 1)
+                      ;; Visit the GPG file to trigger auto-decryption via epa-file
+                      ;; This uses loopback pinentry (minibuffer prompt) and caches password
+                      ;; Then immediately kill the buffer without saving
+                      (let ((buf (find-file-noselect (expand-file-name mu4e-unlock-gpg-file))))
+                        (kill-buffer buf))
                     (error
-                     (message "Failed to unlock authinfo.gpg: %s" (error-message-string err))
+                     (message "Failed to unlock GPG file: %s" (error-message-string err))
                      (signal (car err) (cdr err)))))))
 
   ;; Load mu4e private configuration if it exists
