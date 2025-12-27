@@ -70,6 +70,8 @@
           ((json-ts-mode json-mode) . ("vscode-json-language-server" "--stdio"))
           ;; Markdown
           ((markdown-mode gfm-mode) . ("marksman"))
+          ;; CMake
+          (cmake-mode . ("cmake-language-server"))
           ;; Zig
           ((zig-mode zig-ts-mode) . ("zls")))))
 

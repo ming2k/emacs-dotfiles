@@ -55,6 +55,7 @@
 
 ;; Add lisp directory to load-path
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+(add-to-list 'load-path (expand-file-name "lisp/lang" user-emacs-directory))
 
 ;;;; Make sure the file name and "provide" name are consistent
 
@@ -65,6 +66,25 @@
 (require 'init-session)
 (require 'init-project)
 (require 'init-ui)
+
+;; Load language config
+(require 'init-cc)
+(require 'init-python)
+(require 'init-rust)
+(require 'init-go)
+(require 'init-javascript)
+(require 'init-typescript)
+(require 'init-shell)
+(require 'init-lua)
+(require 'init-yaml)
+(require 'init-json)
+(require 'init-markdown)
+(require 'init-zig)
+(require 'init-lisp)
+(require 'init-emacs-lisp)
+(require 'init-justfile)
+(require 'init-nushell)
+(require 'init-cmake)
 
 ;; Load tool config
 (require 'init-git)
