@@ -105,6 +105,19 @@ For authentication setup, see [[file:authinfo.org][Authentication Setup Guide]].
 
 * Prerequisites
 
+** Quick Start
+
+To use mu4e, you need to install two essential packages:
+
+1. *mu* - Mail indexer and search tool (provides mu4e for Emacs)
+2. *isync* - Mail synchronization tool (provides mbsync command)
+
+After installation, initialize mu with:
+#+BEGIN_SRC bash
+mu init --maildir=~/.local/share/mail --my-address=your-email@example.com
+mu index
+#+END_SRC
+
 ** System Packages
 
 *** Debian/Ubuntu
@@ -121,6 +134,13 @@ brew install mu isync
 #+BEGIN_SRC bash
 sudo pacman -S mu isync
 #+END_SRC
+
+*** Void Linux
+#+BEGIN_SRC bash
+sudo xbps-install -S mu isync cyrus-sasl-modules
+#+END_SRC
+
+Note: ~cyrus-sasl-modules~ is required for mbsync authentication (SASL support).
 
 ** Password Management
 

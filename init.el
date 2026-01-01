@@ -63,6 +63,7 @@
 (require 'init-completion)
 (require 'init-lsp)
 (require 'init-editing)
+(require 'init-compilation)
 (require 'init-session)
 (require 'init-project)
 (require 'init-ui)
@@ -106,7 +107,7 @@
 (setq select-enable-clipboard t
       select-enable-primary nil) ; `primary` uses different clipboard mechanism with `clipboard`
 
-;; Clipboard for linux
+;; Clipboard for Wayland (Niri)
 (defun wl-copy (text)
   (let ((process-connection-type nil))
     (let ((proc (start-process "wl-copy" "*Messages*" "wl-copy" "-f" "-n")))
