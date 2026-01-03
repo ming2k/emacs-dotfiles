@@ -39,6 +39,17 @@
       lazy-highlight-cleanup nil
       lazy-highlight-initial-delay 0)
 
+;;; Multiple Cursors - VS Code-style multiple cursor editing
+(use-package multiple-cursors
+  :ensure t
+  :bind (("C-c m n" . mc/mark-next-like-this)
+         ("C-c m p" . mc/mark-previous-like-this)
+         ("C-c m a" . mc/mark-all-like-this)
+         ("C-c m l" . mc/edit-lines)
+         ("C-S-<mouse-1>" . mc/add-cursor-on-click))
+  :config
+  (setq mc/always-run-for-all t))
+
 ;;; Code Folding
 (add-hook 'prog-mode-hook 'hs-minor-mode)
 
