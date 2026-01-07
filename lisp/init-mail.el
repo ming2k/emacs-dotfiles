@@ -104,6 +104,24 @@ Example: \"~/.password-store/email/mail.example.com/user.gpg\"")
     (when (file-exists-p private-config)
       (load-file private-config)))
 
+  ;; HTML email rendering with shr
+  (setq mu4e-view-prefer-html nil  ; Prefer plain text, but render HTML when needed
+        mu4e-html2text-command 'mu4e-shr2text)  ; Use shr for HTML rendering
+
+  ;; shr (Simple HTML Renderer) optimization for email
+  (setq shr-width 80  ; Wrap at 80 characters for better readability
+        shr-use-colors nil  ; Don't use HTML colors (keep Emacs theme consistent)
+        shr-use-fonts nil  ; Don't use HTML fonts (keep consistent)
+        shr-indentation 2  ; Indent nested elements by 2 spaces
+        shr-bullet "• "  ; Use bullet point for lists
+        shr-image-animate nil  ; Don't animate GIFs (performance)
+        shr-discard-aria-hidden t  ; Remove ARIA hidden elements
+        shr-cookie-policy nil  ; Don't show cookie warnings
+        shr-emphasize nil)  ; Don't use asterisks for bold/italic
+
+  ;; Inhibit images by default for faster loading (toggle with 'I' in mu4e)
+  (setq shr-inhibit-images t)
+
   ;; Key bindings
   (global-set-key (kbd "C-c m") 'mu4e))
 

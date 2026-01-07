@@ -83,9 +83,9 @@
 (require 'init-zig)
 (require 'init-lisp)
 (require 'init-emacs-lisp)
-(require 'init-justfile)
 (require 'init-nushell)
 (require 'init-cmake)
+(require 'init-verilog)
 
 ;; Load tool config
 (require 'init-git)
@@ -107,16 +107,28 @@
 (setq select-enable-clipboard t
       select-enable-primary nil) ; `primary` uses different clipboard mechanism with `clipboard`
 
-;; Clipboard for Wayland (Niri)
+;; Wayland clipboard integration
+;; Use wl-clipboard for system clipboard access
 (defun wl-copy (text)
-  (let ((process-connection-type nil))
-    (let ((proc (start-process "wl-copy" "*Messages*" "wl-copy" "-f" "-n")))
+  "Copy TEXT to Wayland clipboard asynchronously.
+Uses make-process with pipe connection to handle large content without blocking."
+  (when text
+    (let ((proc (make-process
+                 :name "wl-copy"
+                 :buffer nil
+                 :command '("wl-copy" "-f" "-n") ; -f: foreground, -n: no newline
+                 :connection-type 'pipe)))
       (process-send-string proc text)
       (process-send-eof proc))))
+
 (defun wl-paste ()
-  (shell-command-to-string "wl-paste -n"))
-(setq interprogram-cut-function 'wl-copy)
-(setq interprogram-paste-function 'wl-paste)
+  "Paste from Wayland clipboard."
+  (shell-command-to-string "wl-paste -n 2>/dev/null")) ; -n: no newline
+
+;; Integrate with Emacs clipboard system
+(setq interprogram-cut-function 'wl-copy ; Use wl-copy when copying from Emacs
+      interprogram-paste-function 'wl-paste ; Use wl-paste when pasting to Emacs
+      save-interprogram-paste-before-kill t) ; Save clipboard to kill-ring before new kill
 
 ;; Performance optimizations
 (setq highlight-nonselected-windows nil)
