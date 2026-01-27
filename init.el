@@ -87,6 +87,9 @@
 (require 'init-cmake)
 (require 'init-verilog)
 
+;; Load utils
+(require 'init-utils)
+
 ;; Load tool config
 (require 'init-git)
 (require 'init-org)

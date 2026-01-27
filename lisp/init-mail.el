@@ -123,7 +123,8 @@ Example: \"~/.password-store/email/mail.example.com/user.gpg\"")
   (setq shr-inhibit-images t)
 
   ;; Key bindings
-  (global-set-key (kbd "C-c m") 'mu4e))
+  ;; (global-set-key (kbd "C-c m") 'mu4e)
+  )
 
 (provide 'init-mail)
 ;;; mail-setup.el ends here
