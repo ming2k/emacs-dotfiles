@@ -55,6 +55,11 @@
         corfu-auto-prefix 1
         corfu-popupinfo-delay '(0.5 . 0.2))
 
+  ;; Disable corfu-auto in the minibuffer: in shell-command (M-!) when only one
+  ;; candidate matches, auto-completion commits it and inserts an extra space,
+  ;; interrupting typing.
+  (add-hook 'minibuffer-setup-hook (lambda () (setq-local corfu-auto nil)))
+
   ;; Disable corfu-mode in org-mode buffers
   (add-hook 'org-mode-hook (lambda () (corfu-mode -1)))
   :bind (:map corfu-map
@@ -67,7 +72,11 @@
               ("M-p" . corfu-popupinfo-scroll-down)
               ("C-h" . corfu-popupinfo-documentation)))
 
-;;; Enhanced dabbrev for word completion
+;;; Dabbrev - Dynamic abbreviation expansion
+;; Built-in completion that expands words based on text in open buffers.
+;; M-/ (dabbrev-expand): cycle through expansions from current and other buffers.
+;; C-M-/ (dabbrev-completion): show all matching expansions via completion UI.
+;; Useful as a lightweight, language-agnostic complement to LSP/Corfu.
 (use-package dabbrev
   :ensure nil
   :config
