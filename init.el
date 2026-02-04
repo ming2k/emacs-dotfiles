@@ -75,6 +75,7 @@
 (require 'init-go)
 (require 'init-javascript)
 (require 'init-typescript)
+(require 'init-dart)
 (require 'init-shell)
 (require 'init-lua)
 (require 'init-yaml)
