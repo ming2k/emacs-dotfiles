@@ -1,0 +1,65 @@
+#+TITLE: Org-roam Notes
+#+OPTIONS: toc:2 num:nil
+
+* Overview
+
+Org-roam is a Zettelkasten-style note-taking tool built on top of Org mode.
+Notes are stored under =~/org-roam/= organized by year.
+
+- Configuration: =~/.emacs.d/lisp/init-org.el=
+- Notes directory: =~/org-roam/=
+- File naming: ISO 8601 e.g. =20250903T143052+0800.org=
+
+* Key Bindings
+
+| Key       | Command                  |
+|-----------+--------------------------|
+| =C-c n f= | Find / create a node     |
+| =C-c n c= | Capture a new note       |
+| =C-c n i= | Insert a link to a node  |
+
+* Migration
+
+When moving org-roam to a new system:
+
+1. Copy only the =.org= files:
+   #+BEGIN_SRC bash
+   rsync -av ~/org-roam/ new-host:~/org-roam/ --include="*.org" --exclude="*"
+   #+END_SRC
+
+2. Do *not* copy =org-roam.db=. It is a derived cache rebuilt from the org
+   files. Copying a stale DB causes the index to be out of sync with the
+   filesystem on the new system.
+
+3. On the new system, start Emacs. =org-roam-db-autosync-mode= runs at
+   =after-init= and will rebuild the database automatically from the org files.
+
+4. To verify or force a rebuild manually:
+   #+BEGIN_SRC
+   M-x org-roam-db-sync
+   #+END_SRC
+   Or for a full clean rebuild:
+   #+BEGIN_SRC
+   M-x org-roam-db-clear-all
+   M-x org-roam-db-sync
+   #+END_SRC
+
+* Troubleshooting
+
+** Newly created notes not appearing in search
+
+Symptom: after =C-c n c= or =C-c n f=, the new node does not appear in
+subsequent find results.
+
+Cause: the DB index was not updated. This happens when =org-roam-db-autosync-mode=
+was not active at the time the file was saved (e.g. it was started lazily and
+lost the =after-save-hook= registration window).
+
+Fix:
+#+BEGIN_SRC
+M-x org-roam-db-sync
+#+END_SRC
+
+This is prevented in the current config by loading autosync via
+=:hook (after-init . org-roam-db-autosync-mode)= so it is always active
+from startup, not deferred to the first keybinding press.

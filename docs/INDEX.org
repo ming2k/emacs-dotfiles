@@ -114,10 +114,10 @@ See: =~/.emacs.d/lisp/magit-setup.el=
 - Magit for Git integration
 - Key binding: =C-c g=
 
-*** Org Mode
-See: =~/.emacs.d/lisp/org-setup.el=
-- Note-taking and task management
-- Key bindings: =C-c c= (capture), =C-c a= (agenda)
+*** Org Mode & Org-roam
+See: [[file:org-roam.org][org-roam.org]] and =~/.emacs.d/lisp/init-org.el=
+- Note-taking, task management, Zettelkasten
+- Key bindings: =C-c c= (capture), =C-c a= (agenda), =C-c n f= (find note)
 
 *** Language Support
 Individual language configurations in =~/.emacs.d/lisp/lang/=:

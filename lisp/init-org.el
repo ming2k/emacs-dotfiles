@@ -199,42 +199,38 @@
 ;;; Org-Roam Configuration  
 (use-package org-roam
   :ensure t
+  ;; Load at startup so autosync is always active, not lazily on first keybinding.
+  ;; This ensures the after-save-hook is registered before any file is created,
+  ;; preventing newly captured notes from missing the DB index.
+  :hook (after-init . org-roam-db-autosync-mode)
   :bind (("C-c n f" . org-roam-node-find)
          ("C-c n c" . org-roam-capture)
          ("C-c n i" . org-roam-node-insert))
+  :custom
+  (org-roam-directory (expand-file-name "~/org-roam/"))
+  (org-roam-db-location (expand-file-name "~/org-roam/org-roam.db"))
+  (org-roam-completion-everywhere nil)
   :config
-  ;; Set org-roam directory and database location first
-  (setq org-roam-directory (expand-file-name "~/org-roam/"))
-  (setq org-roam-db-location (expand-file-name "org-roam.db" org-roam-directory))
-  (setq org-roam-completion-everywhere nil)
-  (setq org-roam-completion-ignore-case nil)
-  (setq org-roam-completion-system nil)
-  
   ;; Ensure the directory exists
   (unless (file-directory-p org-roam-directory)
     (make-directory org-roam-directory t))
-  
+
   ;; Simple default capture template
   (setq org-roam-capture-templates
         '(("d" "default" plain "%?"
-           ;; :target (file+head "%<%Y/%m/%d>/%<%Y%m%d%H%M%S>.org"
-           :target (file+head "%<%Y>/%<%Y%m%dT%H%M%S%z>.org" ; Following ISO 8601 format "20250903T143052+0800"
+           :target (file+head "%<%Y>/%<%Y%m%dT%H%M%S%z>.org" ; ISO 8601 format e.g. 20250903T143052+0800
                               "#+title: ${title}\n#+created: %U\n")
            :unnarrowed t)))
-  
-  ;; Enable automatic database sync (only if function exists)
-  (when (fboundp 'org-roam-db-autosync-mode)
-    (org-roam-db-autosync-mode))
-  
+
   ;; Define date directory function
   (defun org-roam-ensure-date-directory (&rest _)
-    "Ensure the current date directory structure exists in org-roam directory."
+    "Ensure the current year directory exists in org-roam directory."
     (when org-roam-directory
       (let* ((today (format-time-string "%Y"))
              (date-dir (expand-file-name today org-roam-directory)))
         (unless (file-directory-p date-dir)
           (make-directory date-dir t)))))
-  
+
   ;; Hook to create date directories automatically
   (advice-add 'org-roam-capture- :before #'org-roam-ensure-date-directory))
 
