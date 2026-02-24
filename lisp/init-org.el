@@ -196,7 +196,13 @@
             (insert content))
           (message "Created org file: %s" filepath))))))
 
-;;; Org-Roam Configuration  
+;;; Org-Roam Configuration
+
+;; emacsql requires either Emacs built with --with-sqlite3 (not available in
+;; emacs-wayland/PGTK builds) or this C module wrapping the system libsqlite3.
+(use-package sqlite3
+  :ensure t)
+
 (use-package org-roam
   :ensure t
   ;; Load at startup so autosync is always active, not lazily on first keybinding.

@@ -129,6 +129,21 @@ Uses make-process with pipe connection to handle large content without blocking.
   "Paste from Wayland clipboard."
   (shell-command-to-string "wl-paste -n 2>/dev/null")) ; -n: no newline
 
+;; When running as a daemon, WAYLAND_DISPLAY may not be set at startup.
+;; Discover the socket from XDG_RUNTIME_DIR when the first client frame appears.
+(defun my/ensure-wayland-display (&optional _frame)
+  (unless (getenv "WAYLAND_DISPLAY")
+    (let* ((xdg (or (getenv "XDG_RUNTIME_DIR")
+                    (format "/run/user/%d" (user-uid))))
+           (sock (car (file-expand-wildcards
+                       (expand-file-name "wayland-[0-9]" xdg)))))
+      (when sock
+        (setenv "WAYLAND_DISPLAY" (file-name-nondirectory sock))))))
+
+(if (daemonp)
+    (add-hook 'server-after-make-frame-hook #'my/ensure-wayland-display)
+  (my/ensure-wayland-display))
+
 ;; Integrate with Emacs clipboard system
 (setq interprogram-cut-function 'wl-copy ; Use wl-copy when copying from Emacs
       interprogram-paste-function 'wl-paste ; Use wl-paste when pasting to Emacs
