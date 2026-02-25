@@ -95,9 +95,9 @@
 (require 'init-git)
 (require 'init-org)
 (require 'init-web)
-(require 'init-mail)
-(require 'init-elfeed)
-(require 'init-erc)
+;; (require 'init-mail)
+;; (require 'init-elfeed)
+;; (require 'init-erc)
 (require 'init-eww)
 
 ;; Add a specific directory for themes to custom-theme-load-path
