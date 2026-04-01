@@ -9,12 +9,20 @@
   :ensure t
   :defer t)
 
+(defvar my/org-agenda-prefix-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "a") #'org-agenda-list)
+    (define-key map (kbd "t") #'org-todo-list)
+    (define-key map (kbd "m") #'org-tags-view)
+    (define-key map (kbd "s") #'org-search-view)
+    map)
+  "Prefix keymap for Org agenda commands.")
+
 ;;; Core Org Configuration
 (use-package org
   :ensure nil
   :mode ("\\.org\\'" . org-mode)
-  :bind (("C-c a" . org-agenda)
-         ("C-c c" . org-capture)
+  :bind (("C-c c" . org-capture)
          ("C-c l" . org-store-link))
   :hook
   (org-mode . visual-line-mode)
@@ -65,6 +73,8 @@
    '("~/org/inbox.org"
      "~/org/next.org"
      "~/org/waiting.org"))
+  (org-agenda-window-setup 'current-window)
+  (org-agenda-restore-windows-after-quit t)
   
   ;; Refiling
   (org-refile-targets
@@ -92,6 +102,8 @@
   (org-html-htmlize-output-type 'inline-css)  ; Use inline CSS (built-in, no htmlize needed)
 
   :config
+  (keymap-global-set "C-c a" my/org-agenda-prefix-map)
+
   ;; Set font for org tables
   (set-face-attribute 'org-table nil :font "Sarasa Mono SC-13")
 

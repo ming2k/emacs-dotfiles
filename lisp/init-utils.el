@@ -2,6 +2,42 @@
 
 ;;; Code:
 
+(defconst my/disabled-builtin-commands
+  '(5x5
+    animate-birthday-present
+    blackbox
+    bubbles
+    decipher
+    doctor
+    dunnet
+    gomoku
+    hanoi
+    life
+    mpuz
+    pong
+    snake
+    solitaire
+    tetris
+    todo-show
+    zone
+    yow
+    spook)
+  "Built-in commands intentionally disabled in this config.")
+
+(dolist (command my/disabled-builtin-commands)
+  (put command 'disabled t))
+
+(mapatoms
+ (lambda (sym)
+   (when (and (commandp sym)
+              (get sym 'byte-obsolete-info))
+     (put sym 'disabled t))))
+
+(setq read-extended-command-predicate
+      (lambda (command buffer)
+        (and (command-completion-default-include-p command buffer)
+             (not (get command 'disabled)))))
+
 (defun copy-file-path ()
   "Copy the absolute path of the current file to the clipboard."
   (interactive)
