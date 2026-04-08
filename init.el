@@ -57,6 +57,13 @@
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 (add-to-list 'load-path (expand-file-name "lisp/lang" user-emacs-directory))
 
+;; Keep essential external tools visible even when Emacs starts from a GUI session.
+(let ((extra-paths '("/usr/local/texlive/2026/bin/x86_64-linux")))
+  (dolist (dir (reverse extra-paths))
+    (when (file-directory-p dir)
+      (add-to-list 'exec-path dir))))
+(setenv "PATH" (mapconcat #'identity (delete-dups (append exec-path (parse-colon-path (or (getenv "PATH") "")))) path-separator))
+
 ;;;; Make sure the file name and "provide" name are consistent
 
 ;; Load core config

@@ -47,8 +47,8 @@
 
   ;; LaTeX preview settings
   (org-startup-with-latex-preview nil)
-  (org-latex-compiler "pdflatex")  ; For export
-  (org-preview-latex-default-process 'dvipng)  ; For preview
+  (org-latex-compiler "/usr/local/texlive/2026/bin/x86_64-linux/pdflatex")  ; For export
+  (org-preview-latex-default-process 'dvisvgm)  ; For preview (Emacs built without PNG)
   
   ;; TODO Keywords with logging
   ;; ! = log timestamp, @ = prompt for note
@@ -107,32 +107,48 @@
   ;; Set font for org tables
   (set-face-attribute 'org-table nil :font "Sarasa Mono SC-13")
 
-  ;; LaTeX preview scale
-  (plist-put org-format-latex-options :scale 1.0)
+  ;; LaTeX preview scale and colors
+  (plist-put org-format-latex-options :scale 1.5)
+  (plist-put org-format-latex-options :foreground 'default)
+  (plist-put org-format-latex-options :background 'default)
 
   ;; LaTeX packages for export
   (setq org-latex-packages-alist
         '(("" "amsmath" t)
           ("" "amssymb" t)))
 
-  ;; Remove ulem from default packages to avoid missing package error
-  (setq org-latex-default-packages-alist
-        (delq (assoc "normalem" org-latex-default-packages-alist)
-              org-latex-default-packages-alist))
+  ;; Remove packages incompatible with latex/dvipng pipeline
+  ;; fontspec requires XeTeX/LuaTeX; ulem causes missing package errors
+  (dolist (pkg '("normalem" "fontspec"))
+    (setq org-latex-default-packages-alist
+          (cl-remove-if (lambda (x) (equal (cadr x) pkg))
+                        org-latex-default-packages-alist)))
 
-  ;; Configure dvipng to use latex instead of pdflatex
+  ;; Configure preview processes using TeX Live binaries directly
+  ;; dvipng kept for reference; dvisvgm used as default (Emacs built without PNG support)
   (setq org-preview-latex-process-alist
         '((dvipng
-           :programs ("latex" "dvipng")
+           :programs ("/usr/local/texlive/2026/bin/x86_64-linux/latex"
+                      "/usr/local/texlive/2026/bin/x86_64-linux/dvipng")
            :description "dvi > png"
            :message "you need to install the programs: latex and dvipng."
            :image-input-type "dvi"
            :image-output-type "png"
            :image-size-adjust (1.0 . 1.0)
-           :latex-compiler ("latex -interaction nonstopmode -output-directory %o %f")
-           :image-converter ("dvipng -D %D -T tight -o %O %f")
+           :latex-compiler ("/usr/local/texlive/2026/bin/x86_64-linux/latex -interaction nonstopmode -output-directory %o %f")
+           :image-converter ("/usr/local/texlive/2026/bin/x86_64-linux/dvipng -D %D -T tight -o %O %f")
            :transparent-image-converter
-           ("dvipng -D %D -T tight -bg Transparent -o %O %f"))))
+           ("/usr/local/texlive/2026/bin/x86_64-linux/dvipng -D %D -T tight -bg Transparent -o %O %f"))
+          (dvisvgm
+           :programs ("/usr/local/texlive/2026/bin/x86_64-linux/latex"
+                      "/usr/local/texlive/2026/bin/x86_64-linux/dvisvgm")
+           :description "dvi > svg"
+           :message "you need to install the programs: latex and dvisvgm."
+           :image-input-type "dvi"
+           :image-output-type "svg"
+           :image-size-adjust (1.7 . 1.5)
+           :latex-compiler ("/usr/local/texlive/2026/bin/x86_64-linux/latex -interaction nonstopmode -output-directory %o %f")
+           :image-converter ("/usr/local/texlive/2026/bin/x86_64-linux/dvisvgm %f -o %O -Z 1.5 --no-fonts"))))
 
   ;; Configure external applications for opening files
   (setq org-file-apps
