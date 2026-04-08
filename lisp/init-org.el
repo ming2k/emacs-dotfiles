@@ -46,9 +46,9 @@
   (org-startup-with-inline-images t)
 
   ;; LaTeX preview settings
-  (org-startup-with-latex-preview nil)
-  (org-latex-compiler "/usr/local/texlive/2026/bin/x86_64-linux/pdflatex")  ; For export
-  (org-preview-latex-default-process 'dvisvgm)  ; For preview (Emacs built without PNG)
+  (org-startup-with-latex-preview t)
+  (org-latex-compiler "pdflatex")
+  (org-preview-latex-default-process 'dvisvgm)
   
   ;; TODO Keywords with logging
   ;; ! = log timestamp, @ = prompt for note
@@ -124,31 +124,27 @@
           (cl-remove-if (lambda (x) (equal (cadr x) pkg))
                         org-latex-default-packages-alist)))
 
-  ;; Configure preview processes using TeX Live binaries directly
-  ;; dvipng kept for reference; dvisvgm used as default (Emacs built without PNG support)
   (setq org-preview-latex-process-alist
         '((dvipng
-           :programs ("/usr/local/texlive/2026/bin/x86_64-linux/latex"
-                      "/usr/local/texlive/2026/bin/x86_64-linux/dvipng")
+           :programs ("latex" "dvipng")
            :description "dvi > png"
            :message "you need to install the programs: latex and dvipng."
            :image-input-type "dvi"
            :image-output-type "png"
            :image-size-adjust (1.0 . 1.0)
-           :latex-compiler ("/usr/local/texlive/2026/bin/x86_64-linux/latex -interaction nonstopmode -output-directory %o %f")
-           :image-converter ("/usr/local/texlive/2026/bin/x86_64-linux/dvipng -D %D -T tight -o %O %f")
+           :latex-compiler ("latex -interaction nonstopmode -output-directory %o %f")
+           :image-converter ("dvipng -D %D -T tight -o %O %f")
            :transparent-image-converter
-           ("/usr/local/texlive/2026/bin/x86_64-linux/dvipng -D %D -T tight -bg Transparent -o %O %f"))
+           ("dvipng -D %D -T tight -bg Transparent -o %O %f"))
           (dvisvgm
-           :programs ("/usr/local/texlive/2026/bin/x86_64-linux/latex"
-                      "/usr/local/texlive/2026/bin/x86_64-linux/dvisvgm")
+           :programs ("latex" "dvisvgm")
            :description "dvi > svg"
            :message "you need to install the programs: latex and dvisvgm."
            :image-input-type "dvi"
            :image-output-type "svg"
            :image-size-adjust (1.7 . 1.5)
-           :latex-compiler ("/usr/local/texlive/2026/bin/x86_64-linux/latex -interaction nonstopmode -output-directory %o %f")
-           :image-converter ("/usr/local/texlive/2026/bin/x86_64-linux/dvisvgm %f -o %O -Z 1.5 --no-fonts"))))
+           :latex-compiler ("latex -interaction nonstopmode -output-directory %o %f")
+           :image-converter ("dvisvgm %f -o %O -Z 1.5 --no-fonts"))))
 
   ;; Configure external applications for opening files
   (setq org-file-apps

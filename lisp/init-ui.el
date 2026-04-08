@@ -40,8 +40,7 @@
          (web-mode . rainbow-mode)
          (html-mode . rainbow-mode)
          (scss-mode . rainbow-mode)
-         (sass-mode . rainbow-mode)
-         (org-mode . rainbow-mode)))
+         (sass-mode . rainbow-mode)))
 
 ;; Which-key - displays available keybindings in popup
 (use-package which-key
