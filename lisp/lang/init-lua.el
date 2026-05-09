@@ -1,15 +1,15 @@
 ;;; init-lua.el --- Lua development configuration -*- lexical-binding: t; -*-
 ;;; Commentary:
-;; Basic Lua language support
+;; Built-in Tree-sitter Lua support
 ;;; Code:
 
-(use-package lua-mode
-  :ensure t
-  :mode (("\\.lua\\'" . lua-mode)
-         ("\\.rockspec\\'" . lua-mode))
-  :interpreter ("lua" . lua-mode)
+(use-package lua-ts-mode
+  :ensure nil
+  :mode (("\\.lua\\'" . lua-ts-mode)
+         ("\\.rockspec\\'" . lua-ts-mode))
+  :interpreter ("lua" . lua-ts-mode)
   :config
-  (setq lua-indent-level 2))
+  (setq lua-ts-indent-offset 2))
 
 (provide 'init-lua)
 ;;; init-lua.el ends here

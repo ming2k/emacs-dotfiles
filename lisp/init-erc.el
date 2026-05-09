@@ -9,7 +9,7 @@
   :ensure nil  ; ERC is built into Emacs
   :config
   ;; Personal information - REPLACE WITH YOUR SETTINGS
-  ;; Better yet, set these in ~/.emacs.d/private/erc-private.el
+  ;; Better yet, set these in ~/.config/emacs/private/erc-private.el
   (setq erc-nick "YourNickname"
         erc-user-full-name "Your Full Name")
 

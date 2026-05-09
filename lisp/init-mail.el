@@ -18,7 +18,7 @@
                                                     "~/.local/share")))
 
   ;; SMTP configuration - REPLACE WITH YOUR SETTINGS
-  ;; To configure, copy this section to ~/.emacs.d/private/mail-private.el
+  ;; To configure, copy this section to ~/.config/emacs/private/mail-private.el
   ;; and fill in your actual values
   (setq user-mail-address "YOUR-EMAIL@example.com"
         user-full-name "YOUR FULL NAME"

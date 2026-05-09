@@ -26,7 +26,8 @@
   (define-key eww-mode-map (kbd "f") 'ace-link-eww))
 
 ;; Enable cookies
-(setq url-cookie-file (expand-file-name "cookies" user-emacs-directory))
+(setq url-cookie-file (expand-file-name "emacs/cookies" my/xdg-cache-home))
+(setq url-configuration-directory (expand-file-name "emacs/url" my/xdg-cache-home))
 (setq url-cookie-save-interval 3600)
 
 (provide 'init-eww)

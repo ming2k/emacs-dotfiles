@@ -18,6 +18,9 @@ This is the central documentation hub for Ming's Emacs configuration. All docume
 
 ** Core Tools Documentation
 - [[file:authinfo.org][Authentication Setup]] - GPG-encrypted credential management
+- [[file:explanation/vertico-completion-flow.md][Completion Flow]] - How Vertico, completion, sorting, and history interact
+- [[file:how-to/how-to-preserve-org-roam-vertico-history.md][Preserve Org-roam Vertico History]] - Fix restart-safe =C-c n f= history sorting
+- [[file:reference/completion-and-history.md][Completion and History Reference]] - Variables, files, sorters, and diagnostics
 - [[file:mail.org][Email (mu4e)]] - Complete email client setup
 - [[file:rss.org][RSS Reader (Elfeed)]] - Feed reader configuration
 - [[file:irc.org][IRC Client (ERC)]] - Internet Relay Chat setup
@@ -118,6 +121,8 @@ See: =~/.emacs.d/lisp/magit-setup.el=
 See: [[file:org-roam.org][org-roam.org]] and =~/.emacs.d/lisp/init-org.el=
 - Note-taking, task management, Zettelkasten
 - Key bindings: =C-c c= (capture), =C-c a= (agenda), =C-c n f= (find note)
+- Completion flow: [[file:explanation/vertico-completion-flow.md][Vertico Completion Flow]]
+- History persistence: [[file:how-to/how-to-preserve-org-roam-vertico-history.md][How to Preserve Org-roam Vertico History]]
 
 *** Language Support
 Individual language configurations in =~/.emacs.d/lisp/lang/=:
@@ -146,7 +151,11 @@ Individual language configurations in =~/.emacs.d/lisp/lang/=:
 │   ├── mail.org               # Email guide
 │   ├── rss.org                # RSS guide
 │   ├── irc.org                # IRC guide
-│   └── eww.org                # Browser guide
+│   ├── eww.org                # Browser guide
+│   ├── how-to/                # Task-oriented guides
+│   ├── reference/             # Lookup-oriented references
+│   ├── explanation/           # Conceptual explanations
+│   └── adr/                   # Architecture decision records
 │
 ├── lisp/                      # Configuration modules
 │   ├── ming-*.el              # Core configs

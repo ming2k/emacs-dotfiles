@@ -1,8 +1,5 @@
 ;;; init-rust.el -*- lexical-binding: t; -*-
 
-;; Use tree-sitter mode
-(add-to-list 'major-mode-remap-alist '(rust-mode . rust-ts-mode))
-
 ;; Rust mode configuration
 (add-hook 'rust-ts-mode-hook
           (lambda ()

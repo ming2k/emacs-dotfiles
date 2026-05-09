@@ -3,7 +3,7 @@
 ;; YAML configuration
 ;;; Code:
 
-;; YAML mode using built-in yaml-ts-mode (Emacs 29+) if available
+;; YAML mode using built-in yaml-ts-mode
 (use-package yaml-ts-mode
   :ensure nil
   :mode (("\\.ya?ml\\'" . yaml-ts-mode)
@@ -11,27 +11,11 @@
          ("docker-compose.*\\.ya?ml\\'" . yaml-ts-mode)
          ("\\.clang-format\\'" . yaml-ts-mode)
          ("\\.github/workflows/.*\\.ya?ml\\'" . yaml-ts-mode))
-  :when (treesit-language-available-p 'yaml)
   :hook ((yaml-ts-mode . yaml-setup-minor-modes)
          (yaml-ts-mode . eglot-ensure)
          (yaml-ts-mode . flymake-mode))
   :config
   (setq yaml-ts-mode-indent-offset 2))
-
-;; Fallback to yaml-mode when tree-sitter is not available
-(unless (treesit-language-available-p 'yaml)
-  (use-package yaml-mode
-    :ensure t
-    :mode (("\\.ya?ml\\'" . yaml-mode)
-           ("\\.ya?ml\\.j2\\'" . yaml-mode)
-           ("docker-compose.*\\.ya?ml\\'" . yaml-mode)
-           ("\\.clang-format\\'" . yaml-mode)
-           ("\\.github/workflows/.*\\.ya?ml\\'" . yaml-mode))
-    :hook ((yaml-mode . yaml-setup-minor-modes)
-           (yaml-mode . eglot-ensure)
-           (yaml-mode . flymake-mode))
-    :config
-    (setq yaml-indent-offset 2)))
 
 ;; YAML minor modes setup
 (defun yaml-setup-minor-modes ()

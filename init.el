@@ -48,10 +48,22 @@
 (require 'use-package)
 (setq use-package-always-ensure nil) ; We use :ensure t explicitly per package
 
-;; Custom file for Emacs-generated code
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+;; Custom file for Emacs-generated code (XDG state)
+(setq custom-file (expand-file-name "emacs/custom.el" my/xdg-state-home))
 (when (file-exists-p custom-file)
   (load custom-file))
+
+;; XDG overrides for packages without native XDG support
+(setq bookmark-default-file (expand-file-name "emacs/bookmarks" my/xdg-state-home)
+      desktop-path (list (expand-file-name "emacs" my/xdg-state-home))
+      desktop-dirname (expand-file-name "emacs" my/xdg-state-home)
+      mc/list-file (expand-file-name "emacs/.mc-lists.el" my/xdg-state-home)
+      org-id-locations-file (expand-file-name "emacs/.org-id-locations" my/xdg-state-home)
+      transient-history-file (expand-file-name "emacs/transient/history.el" my/xdg-state-home)
+      transient-levels-file (expand-file-name "emacs/transient/levels.el" my/xdg-state-home)
+      transient-values-file (expand-file-name "emacs/transient/values.el" my/xdg-state-home)
+      auto-save-list-file-prefix (expand-file-name "emacs/auto-save-list/saves-" my/xdg-cache-home)
+      tramp-persistency-file-name (expand-file-name "emacs/tramp" my/xdg-cache-home))
 
 ;; Add lisp directory to load-path
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
@@ -68,6 +80,7 @@
 
 ;; Load core config
 (require 'init-completion)
+(require 'init-treesit)
 (require 'init-lsp)
 (require 'init-editing)
 (require 'init-compilation)

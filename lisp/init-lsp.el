@@ -48,7 +48,7 @@
               (setq-local completion-at-point-functions
                           (list #'eglot-completion-at-point))))
 
-  ;; LSP server programs for all languages
+  ;; Eglot is built in; these external server executables must be on PATH.
   (setq eglot-server-programs
         '(;; C/C++
           ((c-ts-mode c++-ts-mode) . ("clangd"))
@@ -63,17 +63,17 @@
           ;; Go
           (go-ts-mode . ("gopls"))
           ;; Shell
-          ((sh-mode bash-ts-mode) . ("bash-language-server" "start"))
+          (bash-ts-mode . ("bash-language-server" "start"))
           ;; YAML
-          ((yaml-ts-mode yaml-mode) . ("yaml-language-server" "--stdio"))
+          (yaml-ts-mode . ("yaml-language-server" "--stdio"))
           ;; JSON
-          ((json-ts-mode json-mode) . ("vscode-json-language-server" "--stdio"))
+          (json-ts-mode . ("vscode-json-language-server" "--stdio"))
           ;; Markdown
-          ((markdown-mode gfm-mode) . ("marksman"))
+          (markdown-ts-mode . ("marksman"))
           ;; CMake
-          (cmake-mode . ("cmake-language-server"))
+          (cmake-ts-mode . ("cmake-language-server"))
           ;; Zig
-          ((zig-mode zig-ts-mode) . ("zls")))))
+          (zig-ts-mode . ("zls")))))
 
 (provide 'init-lsp)
 ;;; init-lsp.el ends here

@@ -85,12 +85,17 @@ Fast lookup for common commands and locations.
 | ~/.emacs.d/docs/rss.org           | RSS reader guide                |
 | ~/.emacs.d/docs/irc.org           | IRC client guide                |
 | ~/.emacs.d/docs/eww.org           | Web browser guide               |
+| ~/.emacs.d/docs/explanation/      | Conceptual explanations         |
+| ~/.emacs.d/docs/how-to/           | Task-oriented guides            |
+| ~/.emacs.d/docs/reference/        | Lookup references               |
+| ~/.emacs.d/docs/adr/              | Architecture decisions          |
 
 ** Data Locations
 | Location                          | Description                     |
 |-----------------------------------+---------------------------------|
 | ~/.local/share/mail/              | Email storage (Maildir)         |
 | ~/.cache/mu/                      | Email search database           |
+| ~/.local/state/emacs/history      | Savehist minibuffer history     |
 | ~/.emacs.d/elfeed/                | RSS feed database               |
 | ~/.authinfo.gpg                   | Encrypted credentials           |
 | ~/.mbsyncrc                       | Mail sync configuration         |

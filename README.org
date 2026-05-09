@@ -50,7 +50,11 @@ Keep It Simple, Stupid - follow Occam's Razor for all design decisions.
 ├── docs/                # Detailed documentation
 │   ├── mail.org         # Email setup guide
 │   ├── rss.org          # RSS reader guide
-│   └── irc.org          # IRC client guide
+│   ├── irc.org          # IRC client guide
+│   ├── how-to/          # Task-oriented guides
+│   ├── reference/       # Lookup-oriented references
+│   ├── explanation/     # Conceptual explanations
+│   └── adr/             # Architecture decision records
 ├── themes/              # Custom themes
 └── private/             # Your private settings (git-ignored)
     ├── *.el             # Your actual credentials
@@ -126,27 +130,58 @@ Use =~/.authinfo.gpg= for encrypted password storage (recommended).
 sudo apt install mu4e isync  # or: brew install mu isync
 
 # Tree-sitter (Emacs 29+)
-# Install grammars via: M-x treesit-install-language-grammar
+# Grammar installation needs git and a C compiler/toolchain.
+# This config enables built-in *-ts-mode remapping globally.
+# When a grammar is missing, Emacs asks before downloading/building it.
+#
+# You can also install grammars manually:
+# M-x treesit-install-language-grammar
+#
+# Useful grammar names for this config:
+# bash c cpp cmake go gomod html javascript json lua markdown markdown-inline
+# python rust typescript tsx yaml zig
 #+END_SRC
 
 ** Optional Language Servers
 
+Eglot is built into Emacs, but the language servers themselves are external programs. Install only the servers for languages you use, and make sure their executables are available in =PATH=.
+
 #+BEGIN_SRC bash
 # C/C++
-sudo apt install clangd
+sudo apt install clangd  # or your distro's clang-tools package
 
 # Python
-pip install python-lsp-server[all] ruff black isort
+npm install -g pyright  # provides pyright-langserver
 
 # Rust
-rustup component add rust-analyzer rustfmt clippy
+rustup component add rust-analyzer
 
 # JavaScript/TypeScript
-npm install -g typescript-language-server typescript prettier
+npm install -g typescript-language-server typescript
 
 # Go
 go install golang.org/x/tools/gopls@latest
+
+# Bash
+npm install -g bash-language-server
+
+# YAML
+npm install -g yaml-language-server
+
+# JSON
+npm install -g vscode-langservers-extracted
+
+# Markdown
+# Install marksman from your OS package manager or upstream release.
+
+# CMake
+pipx install cmake-language-server  # or: pip install cmake-language-server
+
+# Zig
+# Install zls from your OS package manager or upstream release.
 #+END_SRC
+
+The corresponding executables used by this config are =clangd=, =pyright-langserver=, =rust-analyzer=, =typescript-language-server=, =gopls=, =bash-language-server=, =yaml-language-server=, =vscode-json-language-server=, =marksman=, =cmake-language-server=, and =zls=.
 
 * Troubleshooting
 

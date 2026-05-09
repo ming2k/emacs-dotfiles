@@ -1,9 +1,5 @@
 ;;; init-cc.el -*- lexical-binding: t; -*-
 
-;; Use tree-sitter modes
-(add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
-(add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
-
 ;; C mode configuration
 (add-hook 'c-ts-mode-hook
           (lambda ()

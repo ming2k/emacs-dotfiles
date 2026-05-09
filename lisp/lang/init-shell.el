@@ -4,31 +4,29 @@
 ;;; Code:
 
 
-;; Shell-specific eglot configuration
-(with-eval-after-load 'eglot
-  (add-hook 'sh-mode-hook 'eglot-ensure)
+;; Shell-specific LSP settings
+(defun my/bash-eglot-workspace-config ()
+  "Configure bash-language-server for the current workspace."
+  (when (eglot-managed-p)
+    (setq-local eglot-workspace-configuration
+                '((:bashIde . (:globPattern "**/*@(.sh|.inc|.bash|.command)"))))))
 
-  ;; Shell-specific LSP settings
-  (add-hook 'sh-mode-hook
-            (lambda ()
-              (when (eglot-managed-p)
-                ;; Configure shell-specific LSP settings
-                (setq-local eglot-workspace-configuration
-                           '((:bashIde . (:globPattern "**/*@(.sh|.inc|.bash|.command)"))))))))
-
-;; Enhanced shell mode settings
+;; Enhanced shell mode settings.
 (use-package sh-script
   :ensure nil
-  :mode (("\\.sh\\'" . sh-mode)
-         ("\\.bash\\'" . sh-mode)
+  :mode (("\\.sh\\'" . bash-ts-mode)
+         ("\\.bash\\'" . bash-ts-mode)
          ("\\.zsh\\'" . sh-mode)
          ("\\.fish\\'" . sh-mode))
+  :interpreter (("bash" . bash-ts-mode)
+                ("sh" . bash-ts-mode))
+  :hook ((bash-ts-mode . eglot-ensure)
+         (eglot-managed-mode . my/bash-eglot-workspace-config))
   :config
-  ;; Set default shell for sh-mode
   (setq sh-basic-offset 2
         sh-indentation 2)
-  
-  ;; Auto-detect shell type
+
+  ;; Keep unsupported shell dialects on sh-mode.
   (add-hook 'sh-mode-hook
             (lambda ()
               (if (string-match "\\.zsh\\'" (buffer-name))
@@ -44,6 +42,7 @@
   (local-set-key (kbd "C-c C-x") 'executable-set-magic))
 
 (add-hook 'sh-mode-hook 'shell-mode-setup)
+(add-hook 'bash-ts-mode-hook 'shell-mode-setup)
 
 (provide 'init-shell)
 

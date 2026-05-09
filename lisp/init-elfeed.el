@@ -10,7 +10,7 @@
   :config
   ;; Where to store the elfeed database
   (setq elfeed-db-directory
-        (expand-file-name "elfeed" user-emacs-directory))
+        (expand-file-name "emacs/elfeed" my/xdg-data-home))
 
   ;; Show entry content in the same window
   (setq elfeed-show-entry-switch 'display-buffer)

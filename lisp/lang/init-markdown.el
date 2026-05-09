@@ -17,26 +17,19 @@
   ;; Completely clear completion functions to avoid dabbrev errors
   (setq-local completion-at-point-functions nil))
 
-;; Setup function to be called when markdown-mode is loaded
+;; Setup function to be called when markdown-ts-mode is loaded
 (defun setup-markdown-completion ()
   "Setup markdown completion behavior."
-  (add-hook 'markdown-mode-hook #'markdown-disable-completion)
-  (add-hook 'gfm-mode-hook #'markdown-disable-completion))
+  (add-hook 'markdown-ts-mode-hook #'markdown-disable-completion))
 
 ;; Markdown mode settings
-(use-package markdown-mode
-  :ensure t
-  :mode (("\\.md\\'" . markdown-mode)
-         ("\\.markdown\\'" . markdown-mode)
-         ("README\\.md\\'" . gfm-mode))
-  :hook ((markdown-mode . eglot-ensure)
-         (gfm-mode . eglot-ensure))
+(use-package markdown-ts-mode
+  :ensure nil
+  :mode (("\\.md\\'" . markdown-ts-mode)
+         ("\\.markdown\\'" . markdown-ts-mode)
+         ("README\\.md\\'" . markdown-ts-mode))
+  :hook (markdown-ts-mode . eglot-ensure)
   :config
-  ;; Basic markdown settings
-  (setq markdown-command "pandoc"
-        markdown-fontify-code-blocks-natively t
-        markdown-indent-on-enter nil)
-  ;; Setup completion behavior
   (setup-markdown-completion))
 
 (provide 'init-markdown)

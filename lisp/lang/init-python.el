@@ -1,8 +1,5 @@
 ;;; init-python.el -*- lexical-binding: t; -*-
 
-;; Use tree-sitter mode
-(add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
-
 ;; Auto-activate venv for Python buffers (buffer-local, no pollution)
 (defun my/python-auto-activate-venv ()
   "Set buffer-local venv if found in project root."

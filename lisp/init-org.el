@@ -104,9 +104,6 @@
   :config
   (keymap-global-set "C-c a" my/org-agenda-prefix-map)
 
-  ;; Set font for org tables
-  (set-face-attribute 'org-table nil :font "Sarasa Mono SC-13")
-
   ;; LaTeX preview scale and colors
   (plist-put org-format-latex-options :scale 1.5)
   (plist-put org-format-latex-options :foreground 'default)
@@ -241,28 +238,17 @@
   (org-roam-db-location (expand-file-name "~/org-roam/org-roam.db"))
   (org-roam-completion-everywhere nil)
   :config
-  ;; Ensure the directory exists
   (unless (file-directory-p org-roam-directory)
     (make-directory org-roam-directory t))
+  (let ((year-directory (expand-file-name (format-time-string "%Y") org-roam-directory)))
+    (unless (file-directory-p year-directory)
+      (make-directory year-directory t)))
 
-  ;; Simple default capture template
   (setq org-roam-capture-templates
         '(("d" "default" plain "%?"
            :target (file+head "%<%Y>/%<%Y%m%dT%H%M%S%z>.org" ; ISO 8601 format e.g. 20250903T143052+0800
                               "#+title: ${title}\n#+created: %U\n")
-           :unnarrowed t)))
-
-  ;; Define date directory function
-  (defun org-roam-ensure-date-directory (&rest _)
-    "Ensure the current year directory exists in org-roam directory."
-    (when org-roam-directory
-      (let* ((today (format-time-string "%Y"))
-             (date-dir (expand-file-name today org-roam-directory)))
-        (unless (file-directory-p date-dir)
-          (make-directory date-dir t)))))
-
-  ;; Hook to create date directories automatically
-  (advice-add 'org-roam-capture- :before #'org-roam-ensure-date-directory))
+           :unnarrowed t))))
 
 ;; Org-Babel (ob) - Execute code blocks within Org documents
 (use-package ob

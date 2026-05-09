@@ -6,11 +6,42 @@
 
 ;;; Code:
 
+;; XDG Base Directory support
+(defvar my/xdg-config-home (or (getenv "XDG_CONFIG_HOME") (expand-file-name "~/.config")))
+(defvar my/xdg-data-home (or (getenv "XDG_DATA_HOME") (expand-file-name "~/.local/share")))
+(defvar my/xdg-cache-home (or (getenv "XDG_CACHE_HOME") (expand-file-name "~/.cache")))
+(defvar my/xdg-state-home (or (getenv "XDG_STATE_HOME") (expand-file-name "~/.local/state")))
+
+;; Redirect config to XDG_CONFIG_HOME/emacs
+(setq user-emacs-directory (expand-file-name "emacs/" my/xdg-config-home))
+
+;; Ensure XDG directories exist
+(dolist (dir (list user-emacs-directory
+                   (expand-file-name "emacs/" my/xdg-data-home)
+                   (expand-file-name "emacs/" my/xdg-cache-home)
+                   (expand-file-name "emacs/" my/xdg-state-home)))
+  (unless (file-directory-p dir)
+    (make-directory dir t)))
+
 ;; -----------------------------------------------------------------------------
 ;; Basic UI Framework and Style
 ;; -----------------------------------------------------------------------------
 
-(set-face-attribute 'default nil :family "JetBrainsMono Nerd Font" :height 120)
+(defun my/apply-font-config (&optional frame)
+  "Apply the GUI font stack to FRAME or the current frame."
+  (when (display-graphic-p frame)
+    (let ((frame (or frame (selected-frame))))
+      (set-face-attribute 'default frame :family "JetBrains Mono" :height 120)
+      (dolist (range '((#xE000 . #xF8FF)
+                       (#xF0000 . #xFFFFD)
+                       (#x100000 . #x10FFFD)))
+        (set-fontset-font t range
+                          (font-spec :family "Symbols Nerd Font Mono")
+                          frame)))))
+
+(add-to-list 'default-frame-alist '(font . "JetBrains Mono-12"))
+(add-hook 'window-setup-hook #'my/apply-font-config)
+(add-hook 'after-make-frame-functions #'my/apply-font-config)
 
 ;; Get straight to a clean editor when starting Emacs
 (setq inhibit-startup-screen t)
@@ -50,6 +81,11 @@
       '(("gnu" . "https://elpa.gnu.org/packages/")
         ("melpa" . "https://melpa.org/packages/")
         ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
+
+;; Redirect package and native compilation cache to XDG
+(setq package-user-dir (expand-file-name "emacs/elpa/" my/xdg-data-home))
+(when (fboundp 'startup-redirect-eln-cache)
+  (startup-redirect-eln-cache (expand-file-name "emacs/eln-cache/" my/xdg-cache-home)))
 
 ;; Add lisp directory to load-path early
 (let ((lisp-dir (expand-file-name "lisp" user-emacs-directory)))

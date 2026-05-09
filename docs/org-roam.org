@@ -18,6 +18,17 @@ Notes are stored under =~/org-roam/= organized by year.
 | =C-c n c= | Capture a new note       |
 | =C-c n i= | Insert a link to a node  |
 
+* Completion and Sorting
+
+The =C-c n f= minibuffer is ordinary Emacs completion shown through Vertico.
+Org-roam provides node candidates; Vertico filters, sorts, and displays them;
+Org-roam handles the selected string after =RET=.
+
+- Flow explanation: [[file:explanation/vertico-completion-flow.md][Vertico Completion Flow]]
+- Task guide: [[file:how-to/how-to-preserve-org-roam-vertico-history.md][How to Preserve Org-roam Vertico History]]
+- Lookup tables: [[file:reference/completion-and-history.md][Completion and History Reference]]
+- Decision record: [[file:adr/0001-preserve-minibuffer-history-with-savehist.md][ADR 0001]]
+
 * Migration
 
 When moving org-roam to a new system:
@@ -63,3 +74,15 @@ M-x org-roam-db-sync
 This is prevented in the current config by loading autosync via
 =:hook (after-init . org-roam-db-autosync-mode)= so it is always active
 from startup, not deferred to the first keybinding press.
+
+** Recent notes not staying at top after restart
+
+Symptom: after using =C-c n f=, recently selected notes appear near the top of
+Vertico results during the same Emacs session, but the order is lost after
+restart.
+
+Cause: =org-roam-node-history= was not restored by =savehist= before Vertico used
+it. The common failure mode is setting =savehist-file= after =(savehist-mode 1)=,
+which makes startup read one history file and shutdown write another.
+
+Fix: see [[file:how-to/how-to-preserve-org-roam-vertico-history.md][How to Preserve Org-roam Vertico History]].

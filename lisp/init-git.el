@@ -28,7 +28,7 @@
   ;; Git settings
   (magit-save-repository-buffers 'dontask)
   (magit-repository-directories '(("~/projects" . 2)
-                                  ("~/.emacs.d" . 0)))
+                                  ("~/.config/emacs" . 0)))
   
   ;; Log settings
   (magit-log-auto-more t)

@@ -5,9 +5,9 @@
 ;;; Code:
 
 ;;; TreeSitter Dir Config
-;; (setq treesit-extra-load-path '("/home/ming/.emacs.d/tree-sitter"))
-;; (unless (file-exists-p "/home/ming/.emacs.d/tree-sitter")
-;;   (make-directory "/home/ming/.emacs.d/tree-sitter" t))
+;; (setq treesit-extra-load-path (list (expand-file-name "tree-sitter" user-emacs-directory)))
+;; (unless (file-exists-p (expand-file-name "tree-sitter" user-emacs-directory))
+;;   (make-directory (expand-file-name "tree-sitter" user-emacs-directory) t))
 
 (global-visual-line-mode 1)
 
@@ -59,7 +59,8 @@
   :init
   (savefold-mode 1)
   :config
-  (setq savefold-backends '(outline org hideshow)))
+  (setq savefold-backends '(outline org hideshow)
+        savefold-backup-directory (expand-file-name "emacs/savefold/" my/xdg-state-home)))
 
 ;;; TreeSit Folding
 (use-package treesit-fold

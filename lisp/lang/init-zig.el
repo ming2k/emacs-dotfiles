@@ -1,14 +1,10 @@
 ;;; init-zig.el -*- lexical-binding: t; -*-
 
-;; Enhanced Zig settings
-(setq zig-indent-offset 4
-      zig-format-on-save nil)
-
-;; Built-in Zig tree-sitter mode (Emacs 29+)
+;; Zig tree-sitter mode, when provided by the running Emacs/package set.
 (use-package zig-ts-mode
   :ensure nil
   :mode "\\.zig\\'"
-  :when (treesit-language-available-p 'zig)
+  :if (fboundp 'zig-ts-mode)
   :hook ((zig-ts-mode . zig-setup-minor-modes)
          (zig-ts-mode . eglot-ensure)
          (zig-ts-mode . flymake-mode))
@@ -22,27 +18,6 @@
               ("C-c C-i" . zig-init))
   :config
   (setq zig-ts-mode-indent-offset 4))
-
-;; Fallback Zig mode for older Emacs
-(use-package zig-mode
-  :ensure t
-  :mode "\\.zig\\'"
-  :unless (treesit-language-available-p 'zig)
-  :hook ((zig-mode . zig-setup-minor-modes)
-         (zig-mode . eglot-ensure)
-         (zig-mode . flymake-mode))
-  :bind (:map zig-mode-map
-              ("C-c C-b" . zig-build)
-              ("C-c C-r" . zig-run)
-              ("C-c C-t" . zig-test)
-              ("C-c C-k" . zig-check)
-              ("C-c C-f" . zig-format-buffer)
-              ("C-c C-h" . zig-doc)
-              ("C-c C-i" . zig-init))
-  :config
-  (setq zig-indent-offset 4
-        zig-format-on-save nil))
-
 
 ;; Zig minor modes setup
 (defun zig-setup-minor-modes ()
@@ -69,7 +44,7 @@
 
   (add-hook 'eglot-managed-mode-hook
             (lambda ()
-              (when (derived-mode-p 'zig-mode 'zig-ts-mode)
+              (when (derived-mode-p 'zig-ts-mode)
                 (setq-local eglot-workspace-configuration
                            (zig-eglot-workspace-config))))))
 
